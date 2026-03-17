@@ -1,0 +1,2102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verdant Wellness — Meta Ads Performance</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon@3/build/global/luxon.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1/dist/chartjs-adapter-luxon.umd.min.js"></script>
+<style>
+:root {
+  --meta-primary: #1877f2;
+  --meta-dark: #0d5bc6;
+  --meta-light: #e7f0ff;
+  --meta-pale: #f0f6ff;
+  --bg: #f5f8ff;
+  --card-bg: #ffffff;
+  --text-main: #1a1a2e;
+  --text-mid: #888fb3;
+  --text-light: #b0b7d1;
+  --border: #e2e8f0;
+  --shadow: 0 1px 4px rgba(0,0,0,0.06), 0 2px 12px rgba(0,0,0,0.04);
+  --shadow-hover: 0 2px 8px rgba(0,0,0,0.10), 0 4px 16px rgba(0,0,0,0.06);
+  --radius: 16px;
+  --radius-sm: 8px;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text-main);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+.header {
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-left { display: flex; align-items: center; gap: 16px; }
+.back-link {
+  color: var(--text-mid);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--meta-primary); }
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+.header-dot {
+  width: 12px; height: 12px;
+  background: var(--meta-primary);
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.demo-banner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 10px 32px;
+  font-size: 13px;
+  color: #5a6577;
+  background: linear-gradient(90deg, var(--meta-pale), var(--meta-light));
+  border-bottom: 1px solid var(--border);
+}
+
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  padding: 12px 32px 0;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+}
+.tab-btn {
+  padding: 10px 24px;
+  border: none;
+  background: transparent;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-mid);
+  cursor: pointer;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  transition: all 0.2s;
+}
+.tab-btn:hover { background: var(--meta-light); color: var(--meta-dark); }
+.tab-btn.active { background: var(--meta-primary); color: #fff; }
+.tab-content { display: none; padding: 24px 32px; max-width: 1280px; margin: 0 auto; }
+.tab-content.active { display: block; }
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.metric-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.2s;
+}
+.metric-card:hover { box-shadow: var(--shadow-hover); }
+.metric-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.metric-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+.metric-sub { font-size: 11px; color: var(--text-mid); margin-top: 4px; }
+.metric-trend { font-size: 11px; margin-top: 3px; font-weight: 600; }
+.trend-up { color: #2b7b31; }
+.trend-down { color: #e53935; }
+.trend-neutral { color: var(--text-mid); }
+
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 16px;
+  margin-top: 8px;
+}
+
+.chart-section {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+}
+.chart-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.chart-controls label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-mid);
+}
+.toggle-group {
+  display: flex;
+  gap: 4px;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+}
+.toggle-btn {
+  padding: 5px 14px;
+  border: none;
+  background: transparent;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+.toggle-btn.active { background: #fff; color: var(--text-main); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.series-toggles { display: flex; gap: 8px; flex-wrap: wrap; }
+.series-toggle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  cursor: pointer;
+  border-radius: 20px;
+  transition: all 0.2s;
+}
+.series-toggle.active { border-color: currentColor; color: var(--text-main); }
+.series-dot { width: 8px; height: 8px; border-radius: 50%; }
+.chart-canvas-wrap { position: relative; height: 340px; }
+.chart-canvas-wrap canvas { width: 100% !important; }
+
+.normalize-btn {
+  padding: 5px 14px; border-radius: 6px; border: 1.5px solid var(--border);
+  background: #fff; color: var(--text-mid); font-size: 12px; font-weight: 600;
+  cursor: pointer; font-family: var(--font); transition: all 0.15s; white-space: nowrap;
+}
+.normalize-btn:hover { border-color: var(--meta-primary); color: var(--meta-primary); }
+.normalize-btn.active { background: var(--meta-primary); color: #fff; border-color: var(--meta-primary); }
+
+.table-section {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+.table-toolbar {
+  display: flex;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  align-items: center;
+}
+.table-toolbar input,
+.table-toolbar select {
+  font-family: var(--font);
+  font-size: 13px;
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--text-main);
+}
+.table-toolbar input { min-width: 200px; }
+.csv-btn {
+  margin-left: auto;
+  padding: 6px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.csv-btn:hover { border-color: var(--meta-primary); color: var(--meta-primary); }
+.table-wrap { overflow-x: auto; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+thead th {
+  text-align: left;
+  padding: 12px 14px;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-mid);
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s;
+}
+thead th:hover { color: var(--meta-primary); }
+thead th .sort-indicator { margin-left: 4px; font-size: 10px; }
+tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+tbody tr:hover { background: var(--meta-light); }
+tbody tr.row-paused { opacity: 0.5; }
+tfoot td {
+  padding: 12px 14px;
+  font-weight: 700;
+  border-top: 2px solid var(--border);
+  background: var(--bg);
+  white-space: nowrap;
+}
+
+thead th:first-child,
+tbody td:first-child,
+tfoot td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: var(--card-bg);
+}
+thead th:first-child { background: var(--card-bg); z-index: 3; }
+tfoot td:first-child { background: var(--bg); }
+tbody tr:hover td:first-child { background: var(--meta-light); }
+
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.badge-active { background: #e8f5e9; color: #2e7d32; }
+.badge-paused { background: #f5f5f5; color: #9e9e9e; }
+.badge-image { background: #e3f2fd; color: #1565c0; }
+.badge-video { background: #fce4ec; color: #c62828; }
+.badge-carousel { background: #fff3e0; color: #e65100; }
+.badge-dynamic { background: #f3e5f5; color: #7b1fa2; }
+.badge-facebook { background: #e3f2fd; color: #1877f2; }
+.badge-instagram { background: #fce4ec; color: #e1306c; }
+
+.th-inner { display: flex; align-items: center; justify-content: space-between; gap: 4px; white-space: nowrap; }
+.th-label { cursor: pointer; flex: 1; }
+.th-arrow {
+  background: none; border: none; padding: 1px 4px; font-size: 11px;
+  cursor: pointer; color: var(--text-light); line-height: 1; border-radius: 3px; flex-shrink: 0;
+}
+.th-arrow:hover { background: rgba(0,0,0,0.06); color: var(--text-main); }
+.th-arrow.filter-active { color: var(--meta-primary); background: var(--meta-light); }
+.col-filtered { background: #fffbe6 !important; }
+
+.col-filter-drop {
+  position: fixed; background: #fff; border: 1.5px solid var(--border); border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12); padding: 8px; min-width: 180px; z-index: 9999; display: none;
+}
+.col-filter-drop.open { display: block; }
+.cfd-sort-btn {
+  display: block; width: 100%; text-align: left; padding: 6px 10px; border: none;
+  background: none; font-size: 12px; cursor: pointer; border-radius: 5px;
+  font-family: var(--font); color: var(--text-main);
+}
+.cfd-sort-btn:hover { background: var(--meta-light); }
+.cfd-sort-btn.active { color: var(--meta-primary); font-weight: 700; }
+.cfd-divider { border: none; border-top: 1px solid #eef1fa; margin: 6px 0; }
+.cfd-label { font-size: 11px; color: var(--text-mid); padding: 0 2px 4px; }
+.cfd-filter-row { display: flex; align-items: center; gap: 5px; }
+.cfd-op {
+  padding: 4px 6px; border: 1.5px solid var(--border); border-radius: 5px;
+  font-size: 12px; font-family: var(--font); background: #fff; cursor: pointer; width: 50px;
+}
+.cfd-val {
+  padding: 4px 8px; border: 1.5px solid var(--border); border-radius: 5px;
+  font-size: 12px; font-family: var(--font); width: 90px;
+}
+.cfd-val:focus, .cfd-op:focus { outline: none; border-color: var(--meta-primary); }
+.cfd-clear {
+  margin-top: 8px; display: block; width: 100%; padding: 5px;
+  border: 1.5px solid var(--border); border-radius: 5px; background: none;
+  font-size: 12px; color: #e53935; cursor: pointer; font-family: var(--font);
+}
+.cfd-clear:hover { border-color: #e53935; background: #fff5f5; }
+
+.target-cpa-bar {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+  padding: 10px 16px; background: var(--meta-light); border: 1px solid #b3d4fc;
+  border-radius: var(--radius-sm); flex-wrap: wrap;
+}
+.target-cpa-bar label { font-size: 12px; font-weight: 600; color: var(--meta-dark); }
+.target-cpa-bar input {
+  width: 80px; padding: 5px 8px; border: 1.5px solid #b3d4fc; border-radius: 6px;
+  font-size: 13px; font-family: var(--font); text-align: center;
+}
+.target-cpa-bar input:focus { outline: none; border-color: var(--meta-primary); }
+.target-cpa-hint { font-size: 11px; color: var(--text-mid); }
+
+.cell-great { color: #1b5e20; font-weight: 700; }
+.cell-ok { color: #f9a825; font-weight: 700; }
+.cell-poor { color: #e53935; font-weight: 700; }
+
+.type-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.type-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+.type-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  font-size: 15px;
+  font-weight: 700;
+}
+.type-card-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 13px;
+}
+.type-card-stat .label { color: var(--text-mid); font-weight: 500; }
+.type-card-stat .value { font-weight: 700; }
+
+.platform-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.platform-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+.platform-card-header {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 17px; font-weight: 700; margin-bottom: 16px;
+}
+.platform-card .type-card-stat { padding: 6px 0; }
+
+.fatigue-section {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+.fatigue-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex; align-items: center; gap: 8px;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+}
+.pagination-info { font-size: 13px; color: var(--text-mid); }
+.pagination-btns { display: flex; gap: 4px; }
+.page-btn {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+.page-btn:hover { border-color: var(--meta-primary); color: var(--meta-primary); }
+.page-btn.active { background: var(--meta-primary); color: #fff; border-color: var(--meta-primary); }
+.page-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* Date Range Picker */
+.drp-wrap { position: relative; display: inline-flex; align-items: center; gap: 6px; }
+.drp-trigger {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  background: #fff; color: var(--text-main); font-size: 13px; font-weight: 500;
+  cursor: pointer; font-family: var(--font); transition: border-color 0.15s;
+}
+.drp-trigger:hover { border-color: var(--meta-primary); }
+.drp-arrow { color: var(--text-mid); font-size: 10px; margin-left: 4px; }
+.drp-step-btn {
+  background: none; border: 1.5px solid var(--border); border-radius: 6px;
+  font-size: 16px; cursor: pointer; color: var(--meta-primary); padding: 3px 8px;
+  font-family: var(--font); transition: all 0.15s; line-height: 1;
+}
+.drp-step-btn:hover { background: var(--meta-light); border-color: var(--meta-primary); }
+.drp-dropdown {
+  position: absolute; top: calc(100% + 4px); right: 0;
+  background: #fff; border: 1px solid var(--border); border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.14); z-index: 9999; min-width: 540px;
+  display: none;
+}
+.drp-dropdown.open { display: block; }
+.drp-body { display: flex; }
+.drp-presets {
+  width: 200px; border-right: 1px solid #eef1fa; padding: 10px 0;
+  overflow-y: auto; max-height: 370px;
+}
+.drp-preset-item {
+  padding: 7px 16px; font-size: 13px; color: #444;
+  cursor: pointer; transition: background 0.12s;
+}
+.drp-preset-item:hover { background: var(--meta-light); }
+.drp-preset-item.active { background: var(--meta-primary); color: #fff; }
+.drp-divider { border: none; border-top: 1px solid #eef1fa; margin: 4px 0; }
+.drp-calendar-side { flex: 1; padding: 14px 16px 10px; min-width: 300px; }
+.drp-date-inputs { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.drp-date-inputs input {
+  flex: 1; padding: 5px 8px; border: 1.5px solid var(--border); border-radius: 6px;
+  font-size: 12px; font-family: var(--font); color: var(--text-main); text-align: center;
+}
+.drp-date-inputs input:focus { outline: none; border-color: var(--meta-primary); }
+.drp-date-sep { color: var(--text-mid); font-size: 13px; }
+.drp-cal-scroll { max-height: 350px; overflow-y: auto; overscroll-behavior: contain; }
+.drp-cal-month { margin-bottom: 6px; }
+.drp-cal-month-label {
+  font-weight: 600; font-size: 13px; color: var(--meta-dark);
+  padding: 6px 0 4px; position: sticky; top: 0; background: #fff; z-index: 1;
+}
+.drp-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; }
+.drp-cal-dow { text-align: center; font-size: 11px; font-weight: 600; color: var(--text-mid); padding: 4px 0; }
+.drp-cal-day {
+  text-align: center; padding: 6px 0; font-size: 12px; cursor: pointer;
+  border-radius: 6px; transition: background 0.1s; color: #333;
+}
+.drp-cal-day:hover { background: var(--meta-light); }
+.drp-cal-day.outside { color: #ccc; cursor: default; }
+.drp-cal-day.in-range { background: var(--meta-light); border-radius: 0; }
+.drp-cal-day.range-start { background: var(--meta-primary); color: #fff; border-radius: 6px 0 0 6px; }
+.drp-cal-day.range-end { background: var(--meta-primary); color: #fff; border-radius: 0 6px 6px 0; }
+.drp-cal-day.range-start.range-end { border-radius: 6px; }
+.drp-cal-day.today { font-weight: 700; }
+.drp-actions {
+  display: flex; justify-content: flex-end; gap: 8px;
+  padding: 10px 16px; border-top: 1px solid #eef1fa;
+}
+.drp-btn-cancel {
+  padding: 5px 14px; border: 1.5px solid var(--border); border-radius: 6px;
+  background: #fff; color: #556; font-size: 12px; font-weight: 500;
+  cursor: pointer; font-family: var(--font);
+}
+.drp-btn-cancel:hover { border-color: #999; }
+.drp-btn-apply {
+  padding: 5px 14px; border: none; border-radius: 6px;
+  background: var(--meta-primary); color: #fff; font-size: 12px; font-weight: 600;
+  cursor: pointer; font-family: var(--font);
+}
+.drp-btn-apply:hover { background: var(--meta-dark); }
+
+@media (max-width: 1100px) {
+  .metrics-grid { grid-template-columns: repeat(3, 1fr); }
+  .platform-cards { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .header { padding: 12px 16px; flex-direction: column; align-items: flex-start; gap: 8px; }
+  .tab-bar { padding: 8px 16px 0; overflow-x: auto; }
+  .tab-content { padding: 16px; }
+  .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .metric-value { font-size: 18px; }
+  .chart-controls { gap: 8px; }
+  .type-cards-grid { grid-template-columns: 1fr; }
+  .platform-cards { grid-template-columns: 1fr; }
+  .drp-dropdown { min-width: calc(100vw - 32px); right: auto; left: 0; max-width: 100vw; }
+  .drp-body { flex-direction: column; }
+  .drp-presets { width: 100%; border-right: none; border-bottom: 1px solid #eef1fa; max-height: 150px; display: flex; flex-wrap: wrap; gap: 2px; padding: 8px; }
+  .drp-preset-item { padding: 5px 10px; font-size: .78rem; }
+  .drp-calendar-side { min-width: unset; padding: 10px 12px 8px; }
+  .metric-label { font-size: 11px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <a href="../work.html" class="back-link">&larr; Back to Work</a>
+    <div class="header-title">
+      <span class="header-dot"></span>
+      Verdant Wellness &mdash; Meta Ads Performance
+    </div>
+  </div>
+  <div class="drp-wrap" id="drpWrap">
+    <button class="drp-step-btn" id="drpStepBack" type="button">&#8249;</button>
+    <button class="drp-trigger" id="drpTrigger" type="button">
+      <span id="drpText">All Time</span>
+      <span class="drp-arrow">&#9662;</span>
+    </button>
+    <button class="drp-step-btn" id="drpStepFwd" type="button">&#8250;</button>
+    <div class="drp-dropdown" id="drpDropdown">
+      <div class="drp-body">
+        <div class="drp-presets" id="drpPresets">
+          <div class="drp-preset-item" data-preset="custom">Custom</div>
+          <hr class="drp-divider"/>
+          <div class="drp-preset-item" data-preset="7">Last 7 days</div>
+          <div class="drp-preset-item" data-preset="14">Last 14 days</div>
+          <div class="drp-preset-item" data-preset="30">Last 30 days</div>
+          <div class="drp-preset-item" data-preset="60">Last 60 days</div>
+          <div class="drp-preset-item" data-preset="90">Last 90 days</div>
+          <div class="drp-preset-item" data-preset="180">Last 180 days</div>
+          <div class="drp-preset-item" data-preset="365">Last 1 year</div>
+          <hr class="drp-divider"/>
+          <div class="drp-preset-item" data-preset="thismonth">This month</div>
+          <div class="drp-preset-item" data-preset="lastmonth">Last month</div>
+          <div class="drp-preset-item" data-preset="thisquarter">This quarter</div>
+          <div class="drp-preset-item" data-preset="lastquarter">Last quarter</div>
+          <hr class="drp-divider"/>
+          <div class="drp-preset-item active" data-preset="all">All time</div>
+        </div>
+        <div class="drp-calendar-side">
+          <div class="drp-date-inputs">
+            <input type="text" id="drpStartInput" placeholder="MM/DD/YYYY">
+            <span class="drp-date-sep">&ndash;</span>
+            <input type="text" id="drpEndInput" placeholder="MM/DD/YYYY">
+          </div>
+          <div class="drp-cal-scroll" id="drpCalScroll"></div>
+        </div>
+      </div>
+      <div class="drp-actions">
+        <button class="drp-btn-cancel" id="drpCancel" type="button">Cancel</button>
+        <button class="drp-btn-apply" id="drpApply" type="button">Apply</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Demo Notice -->
+<div class="demo-banner">
+  This dashboard uses simulated data for a fictional DTC supplement brand. The structure, metrics, and functionality are real &mdash; built to be customized for any business, channel, or KPI set.
+</div>
+
+<!-- Tab Bar -->
+<div class="tab-bar">
+  <button class="tab-btn active" data-tab="campaigns">Campaigns</button>
+  <button class="tab-btn" data-tab="adsets">Ad Sets</button>
+  <button class="tab-btn" data-tab="ads">Ads / Creative</button>
+  <button class="tab-btn" data-tab="placements">Placements</button>
+</div>
+
+<!-- TAB 1: Campaigns -->
+<div class="tab-content active" id="tab-campaigns">
+  <div class="section-title">Overview</div>
+  <div class="metrics-grid" id="camp-metrics-row1"></div>
+  <div class="metrics-grid" id="camp-metrics-row2"></div>
+
+  <div class="section-title">Performance Trend</div>
+  <div class="chart-section">
+    <div class="chart-controls">
+      <div class="toggle-group" id="chart-granularity">
+        <button class="toggle-btn active" data-gran="daily">Daily</button>
+        <button class="toggle-btn" data-gran="weekly">Weekly</button>
+        <button class="toggle-btn" data-gran="monthly">Monthly</button>
+      </div>
+      <div class="series-toggles" id="chart-series-toggles"></div>
+      <button class="normalize-btn" id="btnNormalize" title="Rebase all series to 100 at first data point">&#8660; Normalize</button>
+    </div>
+    <div class="chart-canvas-wrap">
+      <canvas id="perfChart"></canvas>
+    </div>
+  </div>
+
+  <div class="target-cpa-bar">
+    <label>Target CPA:</label>
+    <input type="number" id="targetCpaInput" value="45" min="1" step="1">
+    <span class="target-cpa-hint">Color-codes CPA column in the table below</span>
+  </div>
+
+  <div class="section-title">Campaign Breakdown</div>
+  <div class="table-section" id="camp-table-section">
+    <div class="table-toolbar">
+      <input type="text" id="camp-search" placeholder="Search campaigns...">
+      <button class="csv-btn" id="camp-csv">Export CSV</button>
+    </div>
+    <div class="table-wrap">
+      <table id="campaign-table">
+        <thead><tr></tr></thead>
+        <tbody></tbody>
+        <tfoot><tr></tr></tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 2: Ad Sets -->
+<div class="tab-content" id="tab-adsets">
+  <div class="section-title">Ad Set Overview</div>
+  <div class="metrics-grid" id="adset-metrics"></div>
+
+  <div class="section-title">Ad Set Performance</div>
+  <div class="table-section" id="adset-table-section">
+    <div class="table-toolbar">
+      <input type="text" id="adset-search" placeholder="Search ad sets...">
+      <button class="csv-btn" id="adset-csv">Export CSV</button>
+    </div>
+    <div class="table-wrap">
+      <table id="adset-table">
+        <thead><tr></tr></thead>
+        <tbody></tbody>
+        <tfoot><tr></tr></tfoot>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-title">Audience Performance Summary</div>
+  <div class="type-cards-grid" id="audience-cards"></div>
+</div>
+
+<!-- TAB 3: Ads / Creative -->
+<div class="tab-content" id="tab-ads">
+  <div class="section-title">Creative Overview</div>
+  <div class="metrics-grid" id="ads-metrics"></div>
+
+  <div class="section-title">Format Performance Summary</div>
+  <div class="type-cards-grid" id="format-cards"></div>
+
+  <div class="section-title">Creative Performance</div>
+  <div class="table-section" id="ads-table-section">
+    <div class="table-toolbar">
+      <input type="text" id="ads-search" placeholder="Search ads...">
+      <button class="csv-btn" id="ads-csv">Export CSV</button>
+    </div>
+    <div class="table-wrap">
+      <table id="ads-table">
+        <thead><tr></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="ads-pagination"></div>
+  </div>
+
+  <div class="section-title">Creative Fatigue Alerts</div>
+  <div class="fatigue-section">
+    <div class="fatigue-header">&#9888; Ads with Frequency &gt; 3.5 and Declining CTR</div>
+    <div class="table-wrap">
+      <table id="fatigue-table">
+        <thead><tr></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 4: Placements -->
+<div class="tab-content" id="tab-placements">
+  <div class="section-title">Placement Overview</div>
+  <div class="metrics-grid" id="pl-metrics"></div>
+
+  <div class="section-title">Platform Split</div>
+  <div class="platform-cards" id="platform-cards"></div>
+
+  <div class="section-title">Placement Type Breakdown</div>
+  <div class="type-cards-grid" id="placement-type-cards"></div>
+
+  <div class="section-title">Placement Performance</div>
+  <div class="table-section" id="pl-table-section">
+    <div class="table-toolbar">
+      <input type="text" id="pl-search" placeholder="Search placements...">
+      <button class="csv-btn" id="pl-csv">Export CSV</button>
+    </div>
+    <div class="table-wrap">
+      <table id="placement-table">
+        <thead><tr></tr></thead>
+        <tbody></tbody>
+        <tfoot><tr></tr></tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="col-filter-drop" id="colFilterDrop"></div>
+
+<script>
+// ==================== SEEDED RANDOM ====================
+function seededRandom(seed) {
+  let s = seed;
+  return function() {
+    s = (s * 16807 + 0) % 2147483647;
+    return (s - 1) / 2147483646;
+  };
+}
+const rand = seededRandom(42);
+
+// ==================== HELPERS ====================
+function fmtCurrency(v) {
+  if (Math.abs(v) >= 100000) return '$' + (v/1000).toFixed(1) + 'K';
+  return '$' + v.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function fmtShort(v) {
+  return '$' + v.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function fmtPct(v) { return (v*100).toFixed(2) + '%'; }
+function fmtNum(v) { return Math.round(v).toLocaleString('en-US'); }
+function fmtRoas(v) { return v.toFixed(2) + 'x'; }
+function fmtFreq(v) { return v.toFixed(2); }
+function randV(base, pct) { return base * (1 + (rand() * 2 - 1) * pct); }
+
+// ==================== DATE RANGE ====================
+const DATA_START = new Date(2025, 0, 1);
+const DATA_END = new Date(2026, 2, 15);
+const days = [];
+for (let d = new Date(DATA_START); d <= DATA_END; d = new Date(d.getTime() + 86400000)) {
+  days.push(new Date(d));
+}
+const DATA_MIN_ISO = '2025-01-01';
+const DATA_MAX_ISO = '2026-03-15';
+function toISO(d) { return d.toISOString().slice(0,10); }
+
+// ==================== CAMPAIGN DEFINITIONS ====================
+const campaignDefs = [
+  { id: 1, name: '1. PROS - TOF - Broad Interest - LR', objective: 'Conversions', status: 'Active', funnel: 'TOF', dailySpend: 85, cpm: 12, ctr: 0.012, cvr: 0.018, aov: 55 },
+  { id: 2, name: '2. PROS - TOF - LAL 1% Purchasers - LR', objective: 'Conversions', status: 'Active', funnel: 'TOF', dailySpend: 75, cpm: 14, ctr: 0.014, cvr: 0.022, aov: 55 },
+  { id: 3, name: '3. PROS - TOF - LAL 3% Purchasers - LR', objective: 'Conversions', status: 'Active', funnel: 'TOF', dailySpend: 55, cpm: 13, ctr: 0.013, cvr: 0.019, aov: 55 },
+  { id: 4, name: '4. PROS - MOF - Engagement Retarget', objective: 'Conversions', status: 'Active', funnel: 'MOF', dailySpend: 35, cpm: 16, ctr: 0.018, cvr: 0.032, aov: 55 },
+  { id: 5, name: '5. RET - BOF - Add to Cart 7d', objective: 'Conversions', status: 'Active', funnel: 'BOF', dailySpend: 25, cpm: 22, ctr: 0.028, cvr: 0.065, aov: 58 },
+  { id: 6, name: '6. RET - BOF - View Content 14d', objective: 'Conversions', status: 'Active', funnel: 'BOF', dailySpend: 20, cpm: 20, ctr: 0.024, cvr: 0.048, aov: 56 },
+  { id: 7, name: '7. RET - BOF - Purchaser Winback 60d', objective: 'Conversions', status: 'Active', funnel: 'BOF', dailySpend: 15, cpm: 18, ctr: 0.022, cvr: 0.042, aov: 62 },
+  { id: 8, name: '8. PROS - TOF - Broad - Turmeric', objective: 'Conversions', status: 'Active', funnel: 'TOF', dailySpend: 50, cpm: 11, ctr: 0.011, cvr: 0.016, aov: 42 },
+  { id: 9, name: '9. PROS - TOF - Interest Stack - Omega3', objective: 'Conversions', status: 'Active', funnel: 'TOF', dailySpend: 40, cpm: 10, ctr: 0.010, cvr: 0.014, aov: 38 },
+  { id: 10, name: '10. DPA - Catalog Sales - All Products', objective: 'Catalog Sales', status: 'Active', funnel: 'BOF', dailySpend: 30, cpm: 15, ctr: 0.020, cvr: 0.038, aov: 52 },
+  { id: 11, name: '11. BRAND - Awareness - Video Views', objective: 'Awareness', status: 'Paused', funnel: 'TOF', dailySpend: 20, cpm: 6, ctr: 0.008, cvr: 0.004, aov: 55 },
+  { id: 12, name: '12. PROS - TOF - ASC - Advantage+', objective: 'Conversions', status: 'Active', funnel: 'TOF', dailySpend: 65, cpm: 12, ctr: 0.015, cvr: 0.026, aov: 55 },
+];
+
+// ==================== SEASONAL MULTIPLIERS ====================
+function getSeasonalMult(date) {
+  const m = date.getMonth(), d = date.getDate(), y = date.getFullYear();
+  if (m === 11 && d >= 24 && d <= 26) return 0.25;
+  if (m === 11 && d === 23) return 0.5;
+  if (m === 11 && d === 27) return 0.6;
+  const thDay = (function() { let c=0; for(let i=1;i<=30;i++){if(new Date(y,10,i).getDay()===4){c++;if(c===4)return i;}} return 28; })();
+  if (m === 10 && d === thDay) return 0.4;
+  if (m === 10 && d === thDay - 1) return 0.65;
+  const bf = thDay + 1, cm = thDay + 4;
+  if (m === 10 && d === bf) return 2.2;
+  if (m === 10 && d === bf + 1) return 1.9;
+  if (m === 10 && d === cm) return 2.1;
+  if (m === 10 && d === cm + 1) return 1.6;
+  if (m === 10 && d >= thDay - 5 && d < thDay - 1) return 1.3;
+  if (m === 0 && d === 1) return 1.8;
+  if (m === 6 && d >= 3 && d <= 5) return 0.55;
+  if (m === 0) { if(d<=7) return 1.6+(7-d)*0.03; if(d<=15) return 1.4; if(d<=21) return 1.25; return 1.15; }
+  if (m === 1) { return d <= 10 ? 1.1 : 1.0; }
+  if (m === 2) return 1.0 + (d > 15 ? 0.05 : 0);
+  if (m === 3) return 1.0;
+  if (m === 4) return 0.95 - (d/31)*0.08;
+  if (m === 5) return 0.85;
+  if (m === 6) return 0.78;
+  if (m === 7) return d <= 15 ? 0.82 : 0.88;
+  if (m === 8) return 0.95 + (d/30)*0.1;
+  if (m === 9) { return d <= 15 ? 1.05 : 1.1 + (d-15)/16*0.1; }
+  if (m === 10) { return d <= 10 ? 1.15 : 1.25; }
+  if (m === 11) { if(d<=10) return 1.35; if(d<=20) return 1.2; if(d<=22) return 1.0; if(d>=28) return 1.1+(d-28)*0.12; return 0.8; }
+  return 1.0;
+}
+
+function getCampSeasonal(camp, baseMult, dayIndex) {
+  if (camp.funnel === 'BOF') {
+    const wave1 = Math.sin(dayIndex * 0.035) * 0.25;
+    const wave2 = Math.sin(dayIndex * 0.09 + 1.2) * 0.15;
+    let budgetShift = 1.0;
+    if (dayIndex > 60 && dayIndex <= 120) budgetShift = 1.3;
+    if (dayIndex > 180 && dayIndex <= 210) budgetShift = 0.6;
+    if (dayIndex > 300 && dayIndex <= 380) budgetShift = 1.5;
+    return Math.max(0.3, Math.min((1 + wave1 + wave2) * budgetShift * (baseMult > 1.3 ? 1.2 : 1.0), 2.5));
+  }
+  if (camp.funnel === 'MOF') return 1 + (baseMult - 1) * 0.8;
+  if (camp.name.includes('ASC')) return baseMult > 1.2 ? baseMult * 1.08 : baseMult;
+  if (camp.objective === 'Awareness') return 1 + (baseMult - 1) * 0.5;
+  return baseMult;
+}
+
+function getGrowthMult(dayIndex, total) { return 1.0 + (dayIndex / total) * 0.3; }
+
+// ==================== GENERATE DAILY CAMPAIGN DATA ====================
+const dailyData = [];
+const totalDays = days.length;
+
+days.forEach((date, di) => {
+  const dow = date.getDay();
+  const wkend = (dow === 0 || dow === 6) ? 0.85 : 1.0;
+  const fri = dow === 5 ? 1.05 : 1.0;
+  const mon = dow === 1 ? 1.03 : 1.0;
+  const baseSeas = getSeasonalMult(date);
+  const growth = getGrowthMult(di, totalDays);
+
+  campaignDefs.forEach(camp => {
+    if (camp.status === 'Paused' && di > 200) return;
+    const cs = getCampSeasonal(camp, baseSeas, di);
+    const mult = cs * wkend * fri * mon * growth;
+    const noise = camp.funnel === 'BOF' ? 0.35 : 0.18;
+
+    const spend = randV(camp.dailySpend, noise) * mult;
+    const impr = Math.round((spend / camp.cpm) * 1000 * randV(1, 0.08));
+    const reach = Math.round(impr * randV(0.75, 0.1));
+    const clicks = Math.round(impr * camp.ctr * randV(1, 0.15));
+    const convBoost = cs > 1.2 ? 1 + (cs - 1.2) * 0.25 : 1.0;
+    const purchases = Math.max(0, clicks * camp.cvr * randV(1, 0.2) * convBoost);
+    const revenue = purchases * camp.aov * randV(1, 0.05);
+
+    dailyData.push({
+      date: new Date(date), campaign: camp.name, campId: camp.id,
+      spend, impr, reach, clicks, purchases, revenue
+    });
+  });
+});
+
+// ==================== AD SET DEFINITIONS ====================
+const adSetDefs = [
+  // Campaign 1: Broad Interest - LR
+  { name: 'Broad 18-65 - Health & Wellness', campaign: '1. PROS - TOF - Broad Interest - LR', audience: 'Broad', status: 'Active', spendShare: 0.35 },
+  { name: 'Interest: Supplements, Vitamins', campaign: '1. PROS - TOF - Broad Interest - LR', audience: 'Interest', status: 'Active', spendShare: 0.35 },
+  { name: 'Interest: Liver Health, Detox', campaign: '1. PROS - TOF - Broad Interest - LR', audience: 'Interest', status: 'Active', spendShare: 0.20 },
+  { name: 'Interest: Clean Eating, Organic', campaign: '1. PROS - TOF - Broad Interest - LR', audience: 'Interest', status: 'Paused', spendShare: 0.10 },
+  // Campaign 2: LAL 1%
+  { name: 'LAL 1% - 180d Purchasers', campaign: '2. PROS - TOF - LAL 1% Purchasers - LR', audience: 'Lookalike 1%', status: 'Active', spendShare: 0.50 },
+  { name: 'LAL 1% - 365d High-Value', campaign: '2. PROS - TOF - LAL 1% Purchasers - LR', audience: 'Lookalike 1%', status: 'Active', spendShare: 0.30 },
+  { name: 'LAL 1% - Email Subscribers', campaign: '2. PROS - TOF - LAL 1% Purchasers - LR', audience: 'Lookalike 1%', status: 'Active', spendShare: 0.20 },
+  // Campaign 3: LAL 3%
+  { name: 'LAL 3% - 180d Purchasers', campaign: '3. PROS - TOF - LAL 3% Purchasers - LR', audience: 'Lookalike 3%', status: 'Active', spendShare: 0.55 },
+  { name: 'LAL 3% - Add to Cart 90d', campaign: '3. PROS - TOF - LAL 3% Purchasers - LR', audience: 'Lookalike 3%', status: 'Active', spendShare: 0.45 },
+  // Campaign 4: MOF Engagement
+  { name: 'Engaged: Video Viewers 75%', campaign: '4. PROS - MOF - Engagement Retarget', audience: 'Retarget', status: 'Active', spendShare: 0.40 },
+  { name: 'Engaged: IG Profile Visitors 30d', campaign: '4. PROS - MOF - Engagement Retarget', audience: 'Retarget', status: 'Active', spendShare: 0.35 },
+  { name: 'Engaged: FB Page Likes', campaign: '4. PROS - MOF - Engagement Retarget', audience: 'Retarget', status: 'Active', spendShare: 0.25 },
+  // Campaign 5: ATC 7d
+  { name: 'Retarget: ATC 7d - All Products', campaign: '5. RET - BOF - Add to Cart 7d', audience: 'Retarget', status: 'Active', spendShare: 0.60 },
+  { name: 'Retarget: ATC 7d - LR Only', campaign: '5. RET - BOF - Add to Cart 7d', audience: 'Retarget', status: 'Active', spendShare: 0.40 },
+  // Campaign 6: View Content
+  { name: 'Retarget: VC 14d - All Products', campaign: '6. RET - BOF - View Content 14d', audience: 'Retarget', status: 'Active', spendShare: 0.55 },
+  { name: 'Retarget: VC 14d - LR Only', campaign: '6. RET - BOF - View Content 14d', audience: 'Retarget', status: 'Active', spendShare: 0.45 },
+  // Campaign 7: Winback
+  { name: 'Winback: Purchaser 30-60d', campaign: '7. RET - BOF - Purchaser Winback 60d', audience: 'Custom', status: 'Active', spendShare: 0.55 },
+  { name: 'Winback: Purchaser 60-90d', campaign: '7. RET - BOF - Purchaser Winback 60d', audience: 'Custom', status: 'Active', spendShare: 0.30 },
+  { name: 'Winback: Lapsed 90-180d', campaign: '7. RET - BOF - Purchaser Winback 60d', audience: 'Custom', status: 'Paused', spendShare: 0.15 },
+  // Campaign 8: Turmeric
+  { name: 'Broad 25-55 - Anti-Inflammatory', campaign: '8. PROS - TOF - Broad - Turmeric', audience: 'Broad', status: 'Active', spendShare: 0.45 },
+  { name: 'Interest: Turmeric, Curcumin', campaign: '8. PROS - TOF - Broad - Turmeric', audience: 'Interest', status: 'Active', spendShare: 0.35 },
+  { name: 'Interest: Joint Health, Arthritis', campaign: '8. PROS - TOF - Broad - Turmeric', audience: 'Interest', status: 'Active', spendShare: 0.20 },
+  // Campaign 9: Omega-3
+  { name: 'Interest: Fish Oil, Omega-3', campaign: '9. PROS - TOF - Interest Stack - Omega3', audience: 'Interest', status: 'Active', spendShare: 0.40 },
+  { name: 'Interest: Heart Health, Cardiovascular', campaign: '9. PROS - TOF - Interest Stack - Omega3', audience: 'Interest', status: 'Active', spendShare: 0.35 },
+  { name: 'Broad 30-65 - Wellness Enthusiast', campaign: '9. PROS - TOF - Interest Stack - Omega3', audience: 'Broad', status: 'Active', spendShare: 0.25 },
+  // Campaign 10: DPA
+  { name: 'DPA - All Products - Broad', campaign: '10. DPA - Catalog Sales - All Products', audience: 'Broad', status: 'Active', spendShare: 0.40 },
+  { name: 'DPA - Viewed Not Purchased 14d', campaign: '10. DPA - Catalog Sales - All Products', audience: 'Retarget', status: 'Active', spendShare: 0.35 },
+  { name: 'DPA - Cross-Sell Purchasers', campaign: '10. DPA - Catalog Sales - All Products', audience: 'Custom', status: 'Active', spendShare: 0.25 },
+  // Campaign 11: Brand Awareness
+  { name: 'Brand Awareness - Broad 18-65', campaign: '11. BRAND - Awareness - Video Views', audience: 'Broad', status: 'Paused', spendShare: 0.55 },
+  { name: 'Brand Awareness - Health Interest', campaign: '11. BRAND - Awareness - Video Views', audience: 'Interest', status: 'Paused', spendShare: 0.45 },
+  // Campaign 12: ASC
+  { name: 'ASC - Existing Customers', campaign: '12. PROS - TOF - ASC - Advantage+', audience: 'ASC', status: 'Active', spendShare: 0.30 },
+  { name: 'ASC - New Customers', campaign: '12. PROS - TOF - ASC - Advantage+', audience: 'ASC', status: 'Active', spendShare: 0.45 },
+  { name: 'ASC - Prospecting Expansion', campaign: '12. PROS - TOF - ASC - Advantage+', audience: 'ASC', status: 'Active', spendShare: 0.25 },
+];
+
+// ==================== AD DEFINITIONS ====================
+const adDefs = [
+  // LR ads
+  { name: 'LR - Testimonial Sarah - Video - v2', format: 'Video', adSet: 'LAL 1% - 180d Purchasers', spendShare: 0.08 },
+  { name: 'LR - Before/After Lifestyle - Image - Broad', format: 'Image', adSet: 'Broad 18-65 - Health & Wellness', spendShare: 0.07 },
+  { name: 'LR - 3 Signs Your Liver Needs Help - Carousel', format: 'Carousel', adSet: 'Interest: Supplements, Vitamins', spendShare: 0.06 },
+  { name: 'LR - Founder Story - Video - Retarget', format: 'Video', adSet: 'Retarget: ATC 7d - All Products', spendShare: 0.05 },
+  { name: 'LR - Doctor Recommended Badge - Image', format: 'Image', adSet: 'LAL 1% - 365d High-Value', spendShare: 0.05 },
+  { name: 'LR - Clinical Study Results - Carousel', format: 'Carousel', adSet: 'Interest: Liver Health, Detox', spendShare: 0.04 },
+  { name: 'LR - Morning Routine UGC - Video', format: 'Video', adSet: 'LAL 3% - 180d Purchasers', spendShare: 0.05 },
+  { name: 'LR - "I Tried It For 30 Days" - Video', format: 'Video', adSet: 'Broad 18-65 - Health & Wellness', spendShare: 0.06 },
+  { name: 'LR - Compare Ingredients - Image', format: 'Image', adSet: 'Interest: Supplements, Vitamins', spendShare: 0.04 },
+  { name: 'LR - Before/After Labs - Carousel - v2', format: 'Carousel', adSet: 'LAL 1% - 180d Purchasers', spendShare: 0.04 },
+  { name: 'LR - Unboxing Experience - Video - ASC', format: 'Video', adSet: 'ASC - New Customers', spendShare: 0.05 },
+  { name: 'LR - Customer Review Montage - Video', format: 'Video', adSet: 'Engaged: Video Viewers 75%', spendShare: 0.04 },
+  { name: 'LR - Supplement Facts Close-up - Image', format: 'Image', adSet: 'Retarget: VC 14d - All Products', spendShare: 0.03 },
+  { name: 'LR - "Why Your Liver Matters" - Carousel', format: 'Carousel', adSet: 'LAL 3% - Add to Cart 90d', spendShare: 0.04 },
+  { name: 'LR - 60-Day Challenge - Video - v1', format: 'Video', adSet: 'ASC - Prospecting Expansion', spendShare: 0.04 },
+  { name: 'LR - Flat Lay Product Shot - Image', format: 'Image', adSet: 'Interest: Liver Health, Detox', spendShare: 0.03 },
+  { name: 'LR - UGC Unboxing - Video - ASC', format: 'Video', adSet: 'ASC - New Customers', spendShare: 0.04 },
+  { name: 'LR - Testimonial Mike - Video', format: 'Video', adSet: 'Retarget: ATC 7d - LR Only', spendShare: 0.04 },
+  { name: 'LR - Ingredients Spotlight - Carousel', format: 'Carousel', adSet: 'LAL 1% - Email Subscribers', spendShare: 0.03 },
+  { name: 'LR - Limited Time Offer - Image', format: 'Image', adSet: 'Winback: Purchaser 30-60d', spendShare: 0.03 },
+  // Turmeric ads
+  { name: 'Turmeric - Anti-Inflammatory Benefits - Image', format: 'Image', adSet: 'Interest: Turmeric, Curcumin', spendShare: 0.04 },
+  { name: 'Turmeric - Joint Pain Relief - Video', format: 'Video', adSet: 'Broad 25-55 - Anti-Inflammatory', spendShare: 0.04 },
+  { name: 'Turmeric - Golden Latte Recipe - Carousel', format: 'Carousel', adSet: 'Interest: Turmeric, Curcumin', spendShare: 0.03 },
+  { name: 'Turmeric - Customer Success Story - Video', format: 'Video', adSet: 'Interest: Joint Health, Arthritis', spendShare: 0.03 },
+  { name: 'Turmeric - BioPerine Advantage - Image', format: 'Image', adSet: 'Broad 25-55 - Anti-Inflammatory', spendShare: 0.03 },
+  // Omega-3 ads
+  { name: 'Omega3 - Heart Health Facts - Image', format: 'Image', adSet: 'Interest: Fish Oil, Omega-3', spendShare: 0.03 },
+  { name: 'Omega3 - Purity Tested - Carousel', format: 'Carousel', adSet: 'Interest: Heart Health, Cardiovascular', spendShare: 0.03 },
+  { name: 'Omega3 - No Fishy Taste - Video', format: 'Video', adSet: 'Interest: Fish Oil, Omega-3', spendShare: 0.03 },
+  { name: 'Omega3 - Wild-Caught Source - Image', format: 'Image', adSet: 'Broad 30-65 - Wellness Enthusiast', spendShare: 0.02 },
+  { name: 'Omega3 - Doctor Q&A - Video', format: 'Video', adSet: 'Interest: Heart Health, Cardiovascular', spendShare: 0.02 },
+  // Bundle / Cross-sell
+  { name: 'Bundle - LR + Turmeric - Carousel - LAL1%', format: 'Carousel', adSet: 'LAL 1% - 365d High-Value', spendShare: 0.03 },
+  { name: 'Bundle - Complete Wellness Stack - Image', format: 'Image', adSet: 'DPA - Cross-Sell Purchasers', spendShare: 0.02 },
+  { name: 'Bundle - Save 20% - Carousel - Winback', format: 'Carousel', adSet: 'Winback: Purchaser 30-60d', spendShare: 0.02 },
+  // DPA
+  { name: 'DPA - Product Catalog - Dynamic', format: 'Dynamic', adSet: 'DPA - All Products - Broad', spendShare: 0.04 },
+  { name: 'DPA - Viewed Products Retarget - Dynamic', format: 'Dynamic', adSet: 'DPA - Viewed Not Purchased 14d', spendShare: 0.03 },
+  { name: 'DPA - Cross-Sell Recommendations - Dynamic', format: 'Dynamic', adSet: 'DPA - Cross-Sell Purchasers', spendShare: 0.02 },
+  // Brand Awareness
+  { name: 'Brand - Our Mission - Video - 30s', format: 'Video', adSet: 'Brand Awareness - Broad 18-65', spendShare: 0.02 },
+  { name: 'Brand - Meet the Founders - Video - 15s', format: 'Video', adSet: 'Brand Awareness - Health Interest', spendShare: 0.02 },
+  { name: 'Brand - Customer Stories Reel - Video', format: 'Video', adSet: 'Brand Awareness - Broad 18-65', spendShare: 0.01 },
+  // MOF specific
+  { name: 'LR - Social Proof Compilation - Video', format: 'Video', adSet: 'Engaged: IG Profile Visitors 30d', spendShare: 0.03 },
+  { name: 'LR - FAQ Answers - Carousel', format: 'Carousel', adSet: 'Engaged: FB Page Likes', spendShare: 0.02 },
+  { name: 'LR - Expert Endorsement - Image', format: 'Image', adSet: 'Engaged: Video Viewers 75%', spendShare: 0.02 },
+  // Retarget specific
+  { name: 'LR - Free Shipping Reminder - Image', format: 'Image', adSet: 'Retarget: VC 14d - LR Only', spendShare: 0.02 },
+  { name: 'LR - Last Chance 10% Off - Image', format: 'Image', adSet: 'Retarget: ATC 7d - All Products', spendShare: 0.03 },
+  { name: 'Greens - Daily Greens Smoothie - Video', format: 'Video', adSet: 'ASC - Existing Customers', spendShare: 0.02 },
+  { name: 'Greens - Ingredient Breakdown - Carousel', format: 'Carousel', adSet: 'ASC - Existing Customers', spendShare: 0.02 },
+  // Additional to hit ~55
+  { name: 'LR - Podcast Clip Dr. Chen - Video', format: 'Video', adSet: 'LAL 3% - 180d Purchasers', spendShare: 0.03 },
+  { name: 'LR - Stat Graphic 97% Purity - Image', format: 'Image', adSet: 'Interest: Supplements, Vitamins', spendShare: 0.02 },
+  { name: 'Turmeric - vs Ibuprofen Study - Image', format: 'Image', adSet: 'Interest: Joint Health, Arthritis', spendShare: 0.02 },
+  { name: 'Omega3 - Brain Health Benefits - Carousel', format: 'Carousel', adSet: 'Interest: Fish Oil, Omega-3', spendShare: 0.02 },
+  { name: 'LR - Testimonial Jessica - Video - v1', format: 'Video', adSet: 'Engaged: IG Profile Visitors 30d', spendShare: 0.02 },
+  { name: 'LR - "What Doctors Don\'t Tell You" - Video', format: 'Video', adSet: 'Broad 18-65 - Health & Wellness', spendShare: 0.03 },
+  { name: 'LR - 5 Star Reviews Collage - Image', format: 'Image', adSet: 'Retarget: VC 14d - All Products', spendShare: 0.02 },
+  { name: 'Bundle - LR + Omega3 - Image', format: 'Image', adSet: 'Winback: Purchaser 60-90d', spendShare: 0.01 },
+  { name: 'LR - Subscription Save 15% - Carousel', format: 'Carousel', adSet: 'Winback: Purchaser 30-60d', spendShare: 0.02 },
+];
+
+// ==================== PLACEMENT DEFINITIONS ====================
+const placementDefs = [
+  { name: 'Facebook Feed', platform: 'Facebook', type: 'Feed', spendShare: 0.28 },
+  { name: 'Facebook Stories', platform: 'Facebook', type: 'Stories', spendShare: 0.06 },
+  { name: 'Facebook Reels', platform: 'Facebook', type: 'Reels', spendShare: 0.05 },
+  { name: 'Facebook Right Column', platform: 'Facebook', type: 'Right Column', spendShare: 0.03 },
+  { name: 'Facebook Marketplace', platform: 'Facebook', type: 'Feed', spendShare: 0.04 },
+  { name: 'Facebook Video Feeds', platform: 'Facebook', type: 'Feed', spendShare: 0.05 },
+  { name: 'Instagram Feed', platform: 'Instagram', type: 'Feed', spendShare: 0.22 },
+  { name: 'Instagram Stories', platform: 'Instagram', type: 'Stories', spendShare: 0.10 },
+  { name: 'Instagram Reels', platform: 'Instagram', type: 'Reels', spendShare: 0.08 },
+  { name: 'Instagram Explore', platform: 'Instagram', type: 'Explore', spendShare: 0.04 },
+  { name: 'Instagram Search', platform: 'Instagram', type: 'Search', spendShare: 0.02 },
+  { name: 'Audience Network - Native', platform: 'Facebook', type: 'Audience Network', spendShare: 0.02 },
+  { name: 'Audience Network - Interstitial', platform: 'Facebook', type: 'Audience Network', spendShare: 0.01 },
+];
+
+// ==================== AGGREGATE CAMPAIGN TOTALS ====================
+function aggCampTotals(data) {
+  const t = {};
+  campaignDefs.forEach(c => { t[c.name] = { spend:0, impr:0, reach:0, clicks:0, purchases:0, revenue:0 }; });
+  data.forEach(r => {
+    const c = t[r.campaign]; if(!c) return;
+    c.spend += r.spend; c.impr += r.impr; c.reach += r.reach;
+    c.clicks += r.clicks; c.purchases += r.purchases; c.revenue += r.revenue;
+  });
+  return t;
+}
+
+// Full-period totals for ad sets/ads/placements (no date filtering)
+const fullCampTotals = aggCampTotals(dailyData);
+
+// Compute grand total spend for proportional allocation
+let grandTotalSpend = 0;
+Object.values(fullCampTotals).forEach(c => grandTotalSpend += c.spend);
+
+// Build ad set data from campaign totals
+function buildAdSetData() {
+  return adSetDefs.map(as => {
+    const ct = fullCampTotals[as.campaign];
+    if (!ct) return null;
+    const s = as.spendShare;
+    const spend = ct.spend * s * randV(1, 0.05);
+    const impr = Math.round(ct.impr * s * randV(1, 0.08));
+    const reach = Math.round(impr * randV(0.72, 0.08));
+    const clicks = Math.round(ct.clicks * s * randV(1, 0.08));
+    const purchases = ct.purchases * s * randV(1, 0.12);
+    const revenue = ct.revenue * s * randV(1, 0.08);
+    const freq = impr > 0 && reach > 0 ? impr / reach : 1;
+    return {
+      name: as.name, campaign: as.campaign, status: as.status, audience: as.audience,
+      spend, impr, reach, freq, clicks, purchases, revenue,
+      ctr: impr > 0 ? clicks/impr : 0, cpc: clicks > 0 ? spend/clicks : 0,
+      cpa: purchases > 0 ? spend/purchases : Infinity, roas: spend > 0 ? revenue/spend : 0,
+    };
+  }).filter(Boolean);
+}
+const adSetData = buildAdSetData();
+
+// Build ad data
+function buildAdData() {
+  // Map ad set names to their data
+  const asMap = {};
+  adSetData.forEach(a => { asMap[a.name] = a; });
+
+  return adDefs.map(ad => {
+    const as = asMap[ad.adSet];
+    if (!as) return null;
+    // Use spend share relative to total
+    const spend = grandTotalSpend * ad.spendShare * randV(1, 0.08);
+    const campDef = campaignDefs.find(c => c.name === as.campaign);
+    const cpm = campDef ? campDef.cpm : 12;
+    const baseCtr = campDef ? campDef.ctr : 0.013;
+    const baseCvr = campDef ? campDef.cvr : 0.02;
+
+    // Format-based modifiers
+    let ctrMod = 1, cvrMod = 1;
+    if (ad.format === 'Video') { ctrMod = 1.15; cvrMod = 0.95; }
+    if (ad.format === 'Carousel') { ctrMod = 1.08; cvrMod = 1.05; }
+    if (ad.format === 'Dynamic') { ctrMod = 1.20; cvrMod = 1.15; }
+
+    const impr = Math.round((spend / cpm) * 1000 * randV(1, 0.1));
+    const reach = Math.round(impr * randV(0.70, 0.1));
+    const freq = reach > 0 ? impr / reach : 1;
+    const clicks = Math.round(impr * baseCtr * ctrMod * randV(1, 0.15));
+    const purchases = Math.max(0, clicks * baseCvr * cvrMod * randV(1, 0.2));
+    const aov = campDef ? campDef.aov : 55;
+    const revenue = purchases * aov * randV(1, 0.05);
+
+    // Video-specific metrics
+    let thruPlays = null, hookRate = null;
+    if (ad.format === 'Video') {
+      thruPlays = Math.round(impr * randV(0.25, 0.15));
+      hookRate = randV(0.35, 0.2);
+    }
+
+    const status = as.status === 'Paused' ? 'Paused' : (rand() > 0.12 ? 'Active' : 'Paused');
+
+    return {
+      name: ad.name, format: ad.format, adSet: ad.adSet, campaign: as.campaign, status,
+      spend, impr, reach, freq, clicks, purchases, revenue,
+      ctr: impr > 0 ? clicks/impr : 0, cpc: clicks > 0 ? spend/clicks : 0,
+      cpa: purchases > 0 ? spend/purchases : Infinity, roas: spend > 0 ? revenue/spend : 0,
+      thruPlays, hookRate,
+    };
+  }).filter(Boolean);
+}
+const adData = buildAdData();
+
+// Build placement data
+function buildPlacementData() {
+  // Placement-specific CTR/CVR modifiers
+  const plMods = {
+    'Facebook Feed': { ctr: 1.0, cvr: 1.0 },
+    'Facebook Stories': { ctr: 0.85, cvr: 0.80 },
+    'Facebook Reels': { ctr: 1.10, cvr: 0.75 },
+    'Facebook Right Column': { ctr: 0.50, cvr: 0.90 },
+    'Facebook Marketplace': { ctr: 0.70, cvr: 0.85 },
+    'Facebook Video Feeds': { ctr: 0.90, cvr: 0.80 },
+    'Instagram Feed': { ctr: 1.05, cvr: 1.05 },
+    'Instagram Stories': { ctr: 0.95, cvr: 0.90 },
+    'Instagram Reels': { ctr: 1.20, cvr: 0.70 },
+    'Instagram Explore': { ctr: 0.80, cvr: 0.65 },
+    'Instagram Search': { ctr: 0.60, cvr: 0.55 },
+    'Audience Network - Native': { ctr: 0.40, cvr: 0.30 },
+    'Audience Network - Interstitial': { ctr: 0.35, cvr: 0.20 },
+  };
+
+  return placementDefs.map(pl => {
+    const spend = grandTotalSpend * pl.spendShare * randV(1, 0.06);
+    const avgCpm = 12;
+    const mod = plMods[pl.name] || { ctr: 1, cvr: 1 };
+    const impr = Math.round((spend / avgCpm) * 1000 * randV(1, 0.08));
+    const clicks = Math.round(impr * 0.014 * mod.ctr * randV(1, 0.12));
+    const purchases = Math.max(0, clicks * 0.025 * mod.cvr * randV(1, 0.15));
+    const revenue = purchases * 54 * randV(1, 0.06);
+
+    return {
+      name: pl.name, platform: pl.platform, type: pl.type,
+      spend, impr, clicks, purchases, revenue,
+      ctr: impr > 0 ? clicks/impr : 0, cpc: clicks > 0 ? spend/clicks : 0,
+      cpa: purchases > 0 ? spend/purchases : Infinity, roas: spend > 0 ? revenue/spend : 0,
+    };
+  });
+}
+const placementData = buildPlacementData();
+
+// ==================== DATE RANGE STATE ====================
+let currentRange = [null, null];
+
+function getFilteredDaily() {
+  if (!currentRange[0] || !currentRange[1]) return dailyData;
+  return dailyData.filter(r => {
+    const iso = r.date.toISOString().slice(0,10);
+    return iso >= currentRange[0] && iso <= currentRange[1];
+  });
+}
+
+function pctChange(cur, prev) {
+  if (!prev || prev === 0) return null;
+  return ((cur - prev) / Math.abs(prev)) * 100;
+}
+
+// ==================== RENDER HELPERS ====================
+function renderMetrics(id, metrics) {
+  const el = document.getElementById(id);
+  el.innerHTML = metrics.map(m => {
+    let trend = '';
+    if (m.trend !== undefined && m.trend !== null) {
+      const p = m.trend;
+      const cls = m.inv ? (p > 0 ? 'trend-down' : p < 0 ? 'trend-up' : 'trend-neutral')
+        : (p > 0 ? 'trend-up' : p < 0 ? 'trend-down' : 'trend-neutral');
+      const arrow = p > 0 ? '&#9650;' : p < 0 ? '&#9660;' : '&mdash;';
+      trend = '<div class="metric-trend ' + cls + '">' + arrow + ' ' + Math.abs(p).toFixed(1) + '% vs prev period</div>';
+    }
+    const sub = m.sub ? '<div class="metric-sub">' + m.sub + '</div>' : '';
+    return '<div class="metric-card"><div class="metric-label">' + m.label + '</div><div class="metric-value">' + m.value + '</div>' + sub + trend + '</div>';
+  }).join('');
+}
+
+function fmtCpaColored(cpa, target) {
+  if (cpa <= 0 || cpa === Infinity) return '&mdash;';
+  let cls = 'cell-poor';
+  if (cpa <= target) cls = 'cell-great';
+  else if (cpa <= target * 1.3) cls = 'cell-ok';
+  return '<span class="' + cls + '">' + fmtShort(cpa) + '</span>';
+}
+
+function statusBadge(s) {
+  return '<span class="badge badge-' + s.toLowerCase() + '">' + s + '</span>';
+}
+function formatBadge(f) {
+  const cls = f === 'Video' ? 'badge-video' : f === 'Carousel' ? 'badge-carousel' : f === 'Dynamic' ? 'badge-dynamic' : 'badge-image';
+  return '<span class="badge ' + cls + '">' + f + '</span>';
+}
+function platformBadge(p) {
+  return '<span class="badge badge-' + p.toLowerCase() + '">' + p + '</span>';
+}
+
+// ==================== GENERIC TABLE SYSTEM ====================
+function buildTable(cfg) {
+  const { tableId, cols, rows, sortState, filterState, searchId, csvId, paginationId, pageSize, footerTotals, onRender } = cfg;
+  let currentPage = 1;
+
+  function getSearchText() {
+    if (!searchId) return '';
+    const el = document.getElementById(searchId);
+    return el ? el.value.toLowerCase() : '';
+  }
+
+  function render() {
+    const search = getSearchText();
+    let filtered = rows;
+
+    // Text search
+    if (search) {
+      filtered = filtered.filter(r => {
+        return cols.some(c => {
+          const v = r[c.key];
+          return v !== null && v !== undefined && String(v).toLowerCase().includes(search);
+        });
+      });
+    }
+
+    // Column filters
+    if (filterState) {
+      Object.entries(filterState).forEach(([col, f]) => {
+        const val = parseFloat(f.val);
+        if (!isNaN(val)) {
+          filtered = filtered.filter(r => {
+            const cv = typeof r[col] === 'number' ? r[col] : 0;
+            if (f.op === 'gt') return cv > val;
+            if (f.op === 'gte') return cv >= val;
+            if (f.op === 'lt') return cv < val;
+            if (f.op === 'lte') return cv <= val;
+            if (f.op === 'eq') return Math.abs(cv - val) < 0.001;
+            return true;
+          });
+        }
+      });
+    }
+
+    // Sort
+    const sorted = [...filtered].sort((a, b) => {
+      let av = a[sortState.col], bv = b[sortState.col];
+      if (av === Infinity) av = 999999999;
+      if (bv === Infinity) bv = 999999999;
+      if (typeof av === 'string') { av = av.toLowerCase(); bv = (bv||'').toLowerCase(); }
+      return sortState.asc ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
+    });
+
+    // Pagination
+    let pageRows = sorted;
+    let totalPages = 1;
+    if (paginationId && pageSize) {
+      totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
+      if (currentPage > totalPages) currentPage = totalPages;
+      const start = (currentPage - 1) * pageSize;
+      pageRows = sorted.slice(start, start + pageSize);
+    }
+
+    // Render thead
+    const thead = document.querySelector('#' + tableId + ' thead tr');
+    thead.innerHTML = cols.map(c => {
+      const sortInd = sortState.col === c.key ? (sortState.asc ? ' &#9650;' : ' &#9660;') : '';
+      if (c.numeric && filterState) {
+        const hasF = filterState[c.key] && filterState[c.key].val !== '';
+        const aCls = hasF ? 'th-arrow filter-active' : 'th-arrow';
+        return '<th data-col="' + c.key + '" class="' + (hasF ? 'col-filtered' : '') + '"><div class="th-inner"><span class="th-label">' + c.label + '<span class="sort-indicator">' + sortInd + '</span></span><button class="' + aCls + '" data-col="' + c.key + '">&#9662;</button></div></th>';
+      }
+      return '<th data-col="' + c.key + '">' + c.label + '<span class="sort-indicator">' + sortInd + '</span></th>';
+    }).join('');
+
+    // Render tbody
+    const tbody = document.querySelector('#' + tableId + ' tbody');
+    tbody.innerHTML = pageRows.map(r => {
+      const cls = r.status === 'Paused' ? ' class="row-paused"' : '';
+      return '<tr' + cls + '>' + cols.map(c => '<td>' + c.fmt(r[c.key], r) + '</td>').join('') + '</tr>';
+    }).join('');
+
+    // Render tfoot if needed
+    if (footerTotals) {
+      const tfoot = document.querySelector('#' + tableId + ' tfoot');
+      if (tfoot) {
+        const tr = tfoot.querySelector('tr') || tfoot.insertRow();
+        const totals = footerTotals(filtered);
+        tr.innerHTML = cols.map(c => '<td>' + (totals[c.key] !== undefined ? c.fmt(totals[c.key], totals) : '') + '</td>').join('');
+      }
+    }
+
+    // Render pagination
+    if (paginationId && pageSize) {
+      const pEl = document.getElementById(paginationId);
+      const start = (currentPage - 1) * pageSize + 1;
+      const end = Math.min(currentPage * pageSize, sorted.length);
+      let btns = '';
+      btns += '<button class="page-btn" data-p="prev" ' + (currentPage <= 1 ? 'disabled' : '') + '>&laquo;</button>';
+      for (let i = 1; i <= totalPages; i++) {
+        if (totalPages > 7 && i > 2 && i < totalPages - 1 && Math.abs(i - currentPage) > 1) {
+          if (i === 3 || i === totalPages - 2) btns += '<span style="padding:0 4px;color:var(--text-light)">...</span>';
+          continue;
+        }
+        btns += '<button class="page-btn' + (i === currentPage ? ' active' : '') + '" data-p="' + i + '">' + i + '</button>';
+      }
+      btns += '<button class="page-btn" data-p="next" ' + (currentPage >= totalPages ? 'disabled' : '') + '>&raquo;</button>';
+      pEl.innerHTML = '<div class="pagination-info">Showing ' + start + '&ndash;' + end + ' of ' + sorted.length + '</div><div class="pagination-btns">' + btns + '</div>';
+      pEl.querySelectorAll('.page-btn').forEach(b => {
+        b.addEventListener('click', () => {
+          const p = b.dataset.p;
+          if (p === 'prev') currentPage = Math.max(1, currentPage - 1);
+          else if (p === 'next') currentPage = Math.min(totalPages, currentPage + 1);
+          else currentPage = parseInt(p);
+          render();
+        });
+      });
+    }
+
+    // Wire sort
+    thead.querySelectorAll('.th-label, th:not(:has(.th-inner))').forEach(el => {
+      el.addEventListener('click', () => {
+        const col = (el.closest('th') || el).dataset.col;
+        if (sortState.col === col) sortState.asc = !sortState.asc;
+        else { sortState.col = col; sortState.asc = false; }
+        render();
+      });
+    });
+
+    // Wire filter arrows
+    if (filterState) {
+      thead.querySelectorAll('.th-arrow').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openFilterDrop(btn.dataset.col, btn, sortState, filterState, render);
+        });
+      });
+    }
+
+    if (onRender) onRender(filtered);
+  }
+
+  // Wire search
+  if (searchId) {
+    document.getElementById(searchId).addEventListener('input', () => { currentPage = 1; render(); });
+  }
+
+  // Wire CSV export
+  if (csvId) {
+    document.getElementById(csvId).addEventListener('click', () => {
+      const header = cols.map(c => c.label).join(',');
+      const body = rows.map(r => cols.map(c => {
+        let v = r[c.key];
+        if (typeof v === 'number') return v === Infinity ? '' : v;
+        return '"' + String(v||'').replace(/"/g, '""') + '"';
+      }).join(',')).join('\n');
+      const blob = new Blob([header + '\n' + body], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = tableId + '.csv';
+      a.click();
+    });
+  }
+
+  render();
+  return render;
+}
+
+function openFilterDrop(col, anchor, sortState, filterState, renderFn) {
+  const drop = document.getElementById('colFilterDrop');
+  const rect = anchor.getBoundingClientRect();
+  drop.style.top = (rect.bottom + 4) + 'px';
+  drop.style.left = Math.max(0, rect.left - 80) + 'px';
+  const existing = filterState[col] || { op: 'gt', val: '' };
+  const sortAscAct = sortState.col === col && sortState.asc;
+  const sortDescAct = sortState.col === col && !sortState.asc;
+  drop.innerHTML = '<button class="cfd-sort-btn ' + (sortAscAct ? 'active' : '') + '" data-action="sort-asc">Sort ascending &#8593;</button>' +
+    '<button class="cfd-sort-btn ' + (sortDescAct ? 'active' : '') + '" data-action="sort-desc">Sort descending &#8595;</button>' +
+    '<hr class="cfd-divider"><div class="cfd-label">Filter where value is:</div>' +
+    '<div class="cfd-filter-row"><select class="cfd-op" id="cfdOp">' +
+    '<option value="gt"' + (existing.op==='gt'?' selected':'') + '>&gt;</option>' +
+    '<option value="gte"' + (existing.op==='gte'?' selected':'') + '>&gt;=</option>' +
+    '<option value="lt"' + (existing.op==='lt'?' selected':'') + '>&lt;</option>' +
+    '<option value="lte"' + (existing.op==='lte'?' selected':'') + '>&lt;=</option>' +
+    '<option value="eq"' + (existing.op==='eq'?' selected':'') + '>=</option>' +
+    '</select><input type="number" class="cfd-val" id="cfdVal" value="' + existing.val + '" placeholder="value"></div>' +
+    '<button class="cfd-clear" data-action="clear">Clear filter</button>';
+
+  drop.classList.add('open');
+
+  drop.querySelector('[data-action="sort-asc"]').onclick = () => { sortState.col = col; sortState.asc = true; drop.classList.remove('open'); renderFn(); };
+  drop.querySelector('[data-action="sort-desc"]').onclick = () => { sortState.col = col; sortState.asc = false; drop.classList.remove('open'); renderFn(); };
+
+  const applyF = () => {
+    const op = document.getElementById('cfdOp').value;
+    const val = document.getElementById('cfdVal').value;
+    if (val !== '') filterState[col] = { op, val }; else delete filterState[col];
+    drop.classList.remove('open'); renderFn();
+  };
+  document.getElementById('cfdVal').addEventListener('keydown', e => { if (e.key === 'Enter') applyF(); });
+  document.getElementById('cfdOp').addEventListener('change', () => { if (document.getElementById('cfdVal').value !== '') applyF(); });
+  drop.querySelector('[data-action="clear"]').onclick = () => { delete filterState[col]; drop.classList.remove('open'); renderFn(); };
+}
+
+// Close filter dropdown on outside click
+document.addEventListener('click', (e) => {
+  const drop = document.getElementById('colFilterDrop');
+  if (drop.classList.contains('open') && !drop.contains(e.target) && !e.target.classList.contains('th-arrow')) {
+    drop.classList.remove('open');
+  }
+});
+
+// ==================== TAB 1: CAMPAIGNS ====================
+const campSort = { col: 'spend', asc: false };
+const campFilters = {};
+let renderCampaignsTab;
+
+function initCampaignsTab() {
+  const filtered = getFilteredDaily();
+  const totals = aggCampTotals(filtered);
+
+  let tSpend=0, tImpr=0, tReach=0, tClicks=0, tPurch=0, tRev=0;
+  Object.values(totals).forEach(c => {
+    tSpend+=c.spend; tImpr+=c.impr; tReach+=c.reach; tClicks+=c.clicks; tPurch+=c.purchases; tRev+=c.revenue;
+  });
+
+  const ctr = tImpr > 0 ? tClicks/tImpr : 0;
+  const cpc = tClicks > 0 ? tSpend/tClicks : 0;
+  const roas = tSpend > 0 ? tRev/tSpend : 0;
+
+  // Previous period for comparison
+  let prev = null;
+  if (currentRange[0] && currentRange[1]) {
+    const cs = new Date(currentRange[0]+'T00:00:00'), ce = new Date(currentRange[1]+'T00:00:00');
+    const span = Math.round((ce-cs)/86400000)+1;
+    const pe = new Date(cs); pe.setDate(pe.getDate()-1);
+    const ps = new Date(pe); ps.setDate(ps.getDate()-span+1);
+    if (toISO(ps) >= DATA_MIN_ISO) {
+      const pf = dailyData.filter(r => { const iso = r.date.toISOString().slice(0,10); return iso >= toISO(ps) && iso <= toISO(pe); });
+      const pt = aggCampTotals(pf);
+      let pS=0,pI=0,pR=0,pCl=0,pP=0,pRv=0;
+      Object.values(pt).forEach(c => { pS+=c.spend; pI+=c.impr; pR+=c.reach; pCl+=c.clicks; pP+=c.purchases; pRv+=c.revenue; });
+      prev = { spend:pS, impr:pI, reach:pR, clicks:pCl, purch:pP, rev:pRv,
+        ctr: pI>0?pCl/pI:0, cpc: pCl>0?pS/pCl:0, roas: pS>0?pRv/pS:0 };
+    }
+  }
+
+  renderMetrics('camp-metrics-row1', [
+    { label: 'Total Spend', value: fmtCurrency(tSpend), trend: prev ? pctChange(tSpend, prev.spend) : undefined },
+    { label: 'Impressions', value: fmtNum(tImpr), trend: prev ? pctChange(tImpr, prev.impr) : undefined },
+    { label: 'Reach', value: fmtNum(tReach), trend: prev ? pctChange(tReach, prev.reach) : undefined },
+    { label: 'Clicks', value: fmtNum(tClicks), trend: prev ? pctChange(tClicks, prev.clicks) : undefined },
+  ]);
+  renderMetrics('camp-metrics-row2', [
+    { label: 'CTR', value: fmtPct(ctr), trend: prev ? pctChange(ctr, prev.ctr) : undefined },
+    { label: 'CPC', value: fmtShort(cpc), trend: prev ? pctChange(cpc, prev.cpc) : undefined, inv: true },
+    { label: 'Purchases', value: fmtNum(tPurch), trend: prev ? pctChange(tPurch, prev.purch) : undefined },
+    { label: 'ROAS', value: fmtRoas(roas), trend: prev ? pctChange(roas, prev.roas) : undefined },
+  ]);
+
+  // Build campaign rows
+  const campRows = campaignDefs.map(c => {
+    const t = totals[c.name];
+    const freq = t.reach > 0 ? t.impr / t.reach : 0;
+    return {
+      name: c.name, status: c.status, objective: c.objective,
+      spend: t.spend, impr: t.impr, reach: t.reach, freq,
+      clicks: t.clicks, ctr: t.impr>0?t.clicks/t.impr:0,
+      cpc: t.clicks>0?t.spend/t.clicks:0, purchases: t.purchases,
+      cpa: t.purchases>0?t.spend/t.purchases:Infinity,
+      roas: t.spend>0?t.revenue/t.spend:0,
+      cvr: t.clicks>0?t.purchases/t.clicks:0,
+    };
+  });
+
+  function getTarget() { return parseFloat(document.getElementById('targetCpaInput').value) || 45; }
+
+  const campCols = [
+    { key: 'name', label: 'Campaign', fmt: v => v },
+    { key: 'status', label: 'Status', fmt: statusBadge },
+    { key: 'objective', label: 'Objective', fmt: v => v },
+    { key: 'spend', label: 'Spend', fmt: fmtCurrency, numeric: true },
+    { key: 'impr', label: 'Impr', fmt: fmtNum, numeric: true },
+    { key: 'reach', label: 'Reach', fmt: fmtNum, numeric: true },
+    { key: 'freq', label: 'Freq', fmt: fmtFreq, numeric: true },
+    { key: 'clicks', label: 'Clicks', fmt: fmtNum, numeric: true },
+    { key: 'ctr', label: 'CTR', fmt: fmtPct, numeric: true },
+    { key: 'cpc', label: 'CPC', fmt: fmtShort, numeric: true },
+    { key: 'purchases', label: 'Purchases', fmt: v => fmtNum(v), numeric: true },
+    { key: 'cpa', label: 'CPA', fmt: (v,r) => fmtCpaColored(v, getTarget()), numeric: true },
+    { key: 'roas', label: 'ROAS', fmt: fmtRoas, numeric: true },
+    { key: 'cvr', label: 'Conv Rate', fmt: fmtPct, numeric: true },
+  ];
+
+  const campFooter = (rows) => {
+    let s=0,i=0,re=0,cl=0,p=0,rv=0;
+    rows.forEach(r => { s+=r.spend; i+=r.impr; re+=r.reach; cl+=r.clicks; p+=r.purchases; rv+=r.roas*r.spend; });
+    return { name:'Total', status:'', objective:'', spend:s, impr:i, reach:re,
+      freq: re>0?i/re:0, clicks:cl, ctr:i>0?cl/i:0, cpc:cl>0?s/cl:0,
+      purchases:p, cpa:p>0?s/p:Infinity, roas:s>0?rv/s:0, cvr:cl>0?p/cl:0 };
+  };
+
+  renderCampaignsTab = buildTable({
+    tableId: 'campaign-table', cols: campCols, rows: campRows,
+    sortState: campSort, filterState: campFilters,
+    searchId: 'camp-search', csvId: 'camp-csv', footerTotals: campFooter,
+  });
+
+  document.getElementById('targetCpaInput').addEventListener('input', renderCampaignsTab);
+}
+
+// ==================== CHART ====================
+let updateChart;
+(function initChart() {
+  const seriesDefs = [
+    { key: 'spend', label: 'Spend', color: '#1877f2', yAxis: 'y' },
+    { key: 'purchases', label: 'Purchases', color: '#e65100', yAxis: 'y' },
+    { key: 'roas', label: 'ROAS', color: '#7b1fa2', yAxis: 'y1' },
+    { key: 'cpa', label: 'CPA', color: '#e53935', yAxis: 'y1' },
+    { key: 'ctr', label: 'CTR', color: '#2b7b31', yAxis: 'y1' },
+  ];
+  const active = new Set(['spend', 'purchases']);
+  let gran = 'daily';
+  let norm = false;
+
+  const togCont = document.getElementById('chart-series-toggles');
+  togCont.innerHTML = seriesDefs.map(s =>
+    '<button class="series-toggle ' + (active.has(s.key)?'active':'') + '" data-series="' + s.key + '"><span class="series-dot" style="background:' + s.color + '"></span>' + s.label + '</button>'
+  ).join('');
+
+  togCont.querySelectorAll('.series-toggle').forEach(b => {
+    b.addEventListener('click', () => {
+      const k = b.dataset.series;
+      if (active.has(k)) active.delete(k); else active.add(k);
+      b.classList.toggle('active');
+      updateChart();
+    });
+  });
+
+  document.querySelectorAll('#chart-granularity .toggle-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('#chart-granularity .toggle-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      gran = b.dataset.gran;
+      updateChart();
+    });
+  });
+
+  const normBtn = document.getElementById('btnNormalize');
+  normBtn.addEventListener('click', () => { norm = !norm; normBtn.classList.toggle('active'); updateChart(); });
+
+  const ctx = document.getElementById('perfChart').getContext('2d');
+  let chart = null;
+
+  updateChart = function() {
+    const fd = getFilteredDaily();
+    // Aggregate by date
+    const byDate = {};
+    fd.forEach(r => {
+      const k = r.date.toISOString().slice(0,10);
+      if (!byDate[k]) byDate[k] = { spend:0, impr:0, clicks:0, purchases:0, revenue:0 };
+      const b = byDate[k];
+      b.spend+=r.spend; b.impr+=r.impr; b.clicks+=r.clicks; b.purchases+=r.purchases; b.revenue+=r.revenue;
+    });
+
+    let dateKeys = Object.keys(byDate).sort();
+
+    // Group by granularity
+    const grouped = {};
+    dateKeys.forEach(k => {
+      let gk = k;
+      if (gran === 'weekly') {
+        const d = new Date(k+'T00:00:00');
+        const day = d.getDay();
+        const mon = new Date(d); mon.setDate(mon.getDate() - ((day+6)%7));
+        gk = mon.toISOString().slice(0,10);
+      } else if (gran === 'monthly') {
+        gk = k.slice(0,7) + '-01';
+      }
+      if (!grouped[gk]) grouped[gk] = { spend:0, impr:0, clicks:0, purchases:0, revenue:0 };
+      const g = grouped[gk], b = byDate[k];
+      g.spend+=b.spend; g.impr+=b.impr; g.clicks+=b.clicks; g.purchases+=b.purchases; g.revenue+=b.revenue;
+    });
+
+    const labels = Object.keys(grouped).sort();
+    const datasets = [];
+
+    seriesDefs.forEach(s => {
+      if (!active.has(s.key)) return;
+      let data = labels.map(l => {
+        const g = grouped[l];
+        if (s.key === 'spend') return g.spend;
+        if (s.key === 'purchases') return g.purchases;
+        if (s.key === 'roas') return g.spend > 0 ? g.revenue/g.spend : 0;
+        if (s.key === 'cpa') return g.purchases > 0 ? g.spend/g.purchases : 0;
+        if (s.key === 'ctr') return g.impr > 0 ? (g.clicks/g.impr)*100 : 0;
+        return 0;
+      });
+
+      if (norm && data.length > 0 && data[0] !== 0) {
+        const base = data[0];
+        data = data.map(v => (v/base)*100);
+      }
+
+      datasets.push({
+        label: s.label, data, borderColor: s.color, backgroundColor: s.color + '20',
+        pointRadius: gran === 'daily' ? 0 : 3, borderWidth: 2, tension: 0.3,
+        yAxisID: norm ? 'y' : s.yAxis, fill: false,
+      });
+    });
+
+    if (chart) chart.destroy();
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: { labels, datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { display: true, position: 'top' } },
+        scales: {
+          x: { ticks: { maxTicksLimit: 20, font: { size: 11 } } },
+          y: { position: 'left', ticks: { font: { size: 11 } }, title: { display: !norm, text: norm ? 'Normalized' : 'Value' } },
+          y1: { position: 'right', display: !norm, grid: { drawOnChartArea: false }, ticks: { font: { size: 11 } } },
+        },
+      },
+    });
+  };
+
+  updateChart();
+})();
+
+// ==================== TAB 2: AD SETS ====================
+function initAdSetsTab() {
+  const activeCount = adSetData.filter(a => a.status === 'Active').length;
+  let tS=0,tP=0,tSp=0,tF=0;
+  adSetData.forEach(a => { tS+=a.spend; tP+=a.purchases; tF+=a.freq; tSp++; });
+  const avgFreq = tSp > 0 ? tF/tSp : 0;
+  const avgCpa = tP > 0 ? tS/tP : 0;
+  const avgRoas = tS > 0 ? adSetData.reduce((s,a)=>s+a.revenue,0)/tS : 0;
+
+  renderMetrics('adset-metrics', [
+    { label: 'Active Ad Sets', value: activeCount },
+    { label: 'Spend', value: fmtCurrency(tS) },
+    { label: 'Purchases', value: fmtNum(tP) },
+    { label: 'CPA', value: fmtShort(avgCpa) },
+    { label: 'ROAS', value: fmtRoas(avgRoas) },
+    { label: 'Avg Frequency', value: fmtFreq(avgFreq) },
+  ]);
+
+  const adsetCols = [
+    { key: 'name', label: 'Ad Set', fmt: v => v },
+    { key: 'campaign', label: 'Campaign', fmt: v => v },
+    { key: 'status', label: 'Status', fmt: statusBadge },
+    { key: 'audience', label: 'Audience', fmt: v => v },
+    { key: 'spend', label: 'Spend', fmt: fmtCurrency, numeric: true },
+    { key: 'impr', label: 'Impr', fmt: fmtNum, numeric: true },
+    { key: 'reach', label: 'Reach', fmt: fmtNum, numeric: true },
+    { key: 'freq', label: 'Freq', fmt: fmtFreq, numeric: true },
+    { key: 'clicks', label: 'Clicks', fmt: fmtNum, numeric: true },
+    { key: 'ctr', label: 'CTR', fmt: fmtPct, numeric: true },
+    { key: 'cpc', label: 'CPC', fmt: fmtShort, numeric: true },
+    { key: 'purchases', label: 'Purchases', fmt: v => fmtNum(v), numeric: true },
+    { key: 'cpa', label: 'CPA', fmt: v => v === Infinity ? '&mdash;' : fmtShort(v), numeric: true },
+    { key: 'roas', label: 'ROAS', fmt: fmtRoas, numeric: true },
+  ];
+
+  const asSort = { col: 'spend', asc: false };
+  const asFilters = {};
+
+  const asFooter = (rows) => {
+    let s=0,i=0,re=0,cl=0,p=0,rv=0;
+    rows.forEach(r => { s+=r.spend; i+=r.impr; re+=r.reach; cl+=r.clicks; p+=r.purchases; rv+=r.revenue; });
+    return { name:'Total', campaign:'', status:'', audience:'', spend:s, impr:i, reach:re,
+      freq:re>0?i/re:0, clicks:cl, ctr:i>0?cl/i:0, cpc:cl>0?s/cl:0,
+      purchases:p, cpa:p>0?s/p:Infinity, roas:s>0?rv/s:0 };
+  };
+
+  buildTable({
+    tableId: 'adset-table', cols: adsetCols, rows: adSetData,
+    sortState: asSort, filterState: asFilters,
+    searchId: 'adset-search', csvId: 'adset-csv', footerTotals: asFooter,
+  });
+
+  // Audience summary cards
+  const audiences = {};
+  adSetData.forEach(a => {
+    if (!audiences[a.audience]) audiences[a.audience] = { spend:0, impr:0, clicks:0, purchases:0, revenue:0, count:0 };
+    const au = audiences[a.audience];
+    au.spend+=a.spend; au.impr+=a.impr; au.clicks+=a.clicks; au.purchases+=a.purchases; au.revenue+=a.revenue; au.count++;
+  });
+
+  const auColors = { Broad:'#1877f2', Interest:'#e65100', 'Lookalike 1%':'#7b1fa2', 'Lookalike 3%':'#9c27b0', Retarget:'#2b7b31', Custom:'#f9a825', ASC:'#00897b' };
+  document.getElementById('audience-cards').innerHTML = Object.entries(audiences).map(([name, d]) => {
+    const roas = d.spend>0?d.revenue/d.spend:0;
+    const cpa = d.purchases>0?d.spend/d.purchases:0;
+    const ctr = d.impr>0?d.clicks/d.impr:0;
+    const color = auColors[name]||'#666';
+    return '<div class="type-card"><div class="type-card-header"><span class="badge" style="background:'+color+'22;color:'+color+'">'+name+'</span> <span style="font-size:12px;color:var(--text-mid)">'+d.count+' ad sets</span></div>' +
+      '<div class="type-card-stat"><span class="label">Spend</span><span class="value">'+fmtCurrency(d.spend)+'</span></div>' +
+      '<div class="type-card-stat"><span class="label">Purchases</span><span class="value">'+fmtNum(d.purchases)+'</span></div>' +
+      '<div class="type-card-stat"><span class="label">CPA</span><span class="value">'+fmtShort(cpa)+'</span></div>' +
+      '<div class="type-card-stat"><span class="label">ROAS</span><span class="value">'+fmtRoas(roas)+'</span></div>' +
+      '<div class="type-card-stat"><span class="label">CTR</span><span class="value">'+fmtPct(ctr)+'</span></div></div>';
+  }).join('');
+}
+
+// ==================== TAB 3: ADS / CREATIVE ====================
+function initAdsTab() {
+  const activeAds = adData.filter(a => a.status === 'Active').length;
+  const totalAds = adData.length;
+  const avgCtr = adData.reduce((s,a)=>s+a.ctr,0)/totalAds;
+  const avgCpa = adData.reduce((s,a)=>s+(a.cpa===Infinity?0:a.cpa),0) / adData.filter(a=>a.cpa!==Infinity).length;
+  const bestRoas = adData.reduce((best,a) => a.roas > best.roas ? a : best, adData[0]);
+  const worstCpa = adData.filter(a=>a.cpa!==Infinity).reduce((worst,a) => a.cpa > worst.cpa ? a : worst, adData[0]);
+
+  renderMetrics('ads-metrics', [
+    { label: 'Total Ads', value: totalAds },
+    { label: 'Active Ads', value: activeAds },
+    { label: 'Avg CTR', value: fmtPct(avgCtr) },
+    { label: 'Avg CPA', value: fmtShort(avgCpa) },
+    { label: 'Best ROAS Ad', value: fmtRoas(bestRoas.roas), sub: bestRoas.name },
+    { label: 'Worst CPA Ad', value: worstCpa.cpa === Infinity ? 'N/A' : fmtShort(worstCpa.cpa), sub: worstCpa.name },
+  ]);
+
+  // Format summary cards
+  const formats = {};
+  adData.forEach(a => {
+    if (!formats[a.format]) formats[a.format] = { spend:0, impr:0, clicks:0, purchases:0, revenue:0, count:0 };
+    const f = formats[a.format];
+    f.spend+=a.spend; f.impr+=a.impr; f.clicks+=a.clicks; f.purchases+=a.purchases; f.revenue+=a.revenue; f.count++;
+  });
+
+  const fmtColors = { Image:'#1565c0', Video:'#c62828', Carousel:'#e65100', Dynamic:'#7b1fa2' };
+  document.getElementById('format-cards').innerHTML = Object.entries(formats).map(([name, d]) => {
+    const roas = d.spend>0?d.revenue/d.spend:0;
+    const cpa = d.purchases>0?d.spend/d.purchases:0;
+    const ctr = d.impr>0?d.clicks/d.impr:0;
+    const color = fmtColors[name]||'#666';
+    return '<div class="type-card"><div class="type-card-header"><span class="badge" style="background:'+color+'22;color:'+color+'">'+name+'</span></div>' +
+      '<div class="type-card-stat"><span class="label">Spend</span><span class="value">'+fmtCurrency(d.spend)+'</span></div>' +
+      '<div class="type-card-stat"><span class="label">Purchases</span><span class="value">'+fmtNum(d.purchases)+'</span></div>' +
+      '<div class="type-card-stat"><span class="label">CPA</span><span class="value">'+fmtShort(cpa)+'</span></div>' +
+      '<div class="type-card-stat"><span class="label">ROAS</span><span class="value">'+fmtRoas(roas)+'</span></div>' +
+      '<div class="type-card-stat"><span class="label">CTR</span><span class="value">'+fmtPct(ctr)+'</span></div></div>';
+  }).join('');
+
+  // Ads table
+  const adsCols = [
+    { key: 'name', label: 'Ad Name', fmt: v => v },
+    { key: 'format', label: 'Format', fmt: formatBadge },
+    { key: 'status', label: 'Status', fmt: statusBadge },
+    { key: 'adSet', label: 'Ad Set', fmt: v => v },
+    { key: 'spend', label: 'Spend', fmt: fmtCurrency, numeric: true },
+    { key: 'impr', label: 'Impr', fmt: fmtNum, numeric: true },
+    { key: 'reach', label: 'Reach', fmt: fmtNum, numeric: true },
+    { key: 'freq', label: 'Freq', fmt: fmtFreq, numeric: true },
+    { key: 'clicks', label: 'Clicks', fmt: fmtNum, numeric: true },
+    { key: 'ctr', label: 'CTR', fmt: fmtPct, numeric: true },
+    { key: 'cpc', label: 'CPC', fmt: fmtShort, numeric: true },
+    { key: 'purchases', label: 'Purchases', fmt: v => fmtNum(v), numeric: true },
+    { key: 'cpa', label: 'CPA', fmt: v => v === Infinity ? '&mdash;' : fmtShort(v), numeric: true },
+    { key: 'roas', label: 'ROAS', fmt: fmtRoas, numeric: true },
+    { key: 'thruPlays', label: 'ThruPlays', fmt: v => v !== null ? fmtNum(v) : '&mdash;', numeric: true },
+    { key: 'hookRate', label: 'Hook Rate', fmt: v => v !== null ? fmtPct(v) : '&mdash;', numeric: true },
+  ];
+
+  const adsSort = { col: 'spend', asc: false };
+  const adsFilters = {};
+
+  buildTable({
+    tableId: 'ads-table', cols: adsCols, rows: adData,
+    sortState: adsSort, filterState: adsFilters,
+    searchId: 'ads-search', csvId: 'ads-csv',
+    paginationId: 'ads-pagination', pageSize: 20,
+  });
+
+  // Creative fatigue alerts
+  const fatigueAds = adData.filter(a => a.freq > 3.5 && a.status === 'Active').map(a => {
+    const ctrNow = a.ctr;
+    const ctr7dAgo = ctrNow * randV(1.15, 0.08); // simulated higher past CTR
+    const ctrChange = ((ctrNow - ctr7dAgo) / ctr7dAgo) * 100;
+    return { ...a, ctrNow, ctr7dAgo, ctrChange };
+  }).filter(a => a.ctrChange < 0).sort((a,b) => a.ctrChange - b.ctrChange);
+
+  const fatigueCols = [
+    { key: 'name', label: 'Ad Name', fmt: v => v },
+    { key: 'format', label: 'Format', fmt: formatBadge },
+    { key: 'freq', label: 'Frequency', fmt: v => '<strong>' + fmtFreq(v) + '</strong>' },
+    { key: 'ctrNow', label: 'CTR', fmt: fmtPct },
+    { key: 'ctr7dAgo', label: 'CTR 7d Ago', fmt: fmtPct },
+    { key: 'ctrChange', label: 'CTR Change', fmt: v => '<span class="cell-poor">' + v.toFixed(1) + '%</span>' },
+    { key: 'spend', label: 'Spend', fmt: fmtCurrency },
+    { key: 'name', label: 'Action', fmt: () => '<span style="color:var(--meta-primary);font-weight:600;cursor:pointer">Refresh Creative</span>' },
+  ];
+
+  const fThead = document.querySelector('#fatigue-table thead tr');
+  fThead.innerHTML = fatigueCols.map(c => '<th>' + c.label + '</th>').join('');
+  const fTbody = document.querySelector('#fatigue-table tbody');
+  fTbody.innerHTML = fatigueAds.map(r =>
+    '<tr>' + fatigueCols.map(c => '<td>' + c.fmt(r[c.key], r) + '</td>').join('') + '</tr>'
+  ).join('');
+  if (fatigueAds.length === 0) {
+    fTbody.innerHTML = '<tr><td colspan="' + fatigueCols.length + '" style="text-align:center;padding:24px;color:var(--text-mid)">No creative fatigue detected</td></tr>';
+  }
+}
+
+// ==================== TAB 4: PLACEMENTS ====================
+function initPlacementsTab() {
+  const bestCtr = placementData.reduce((b,p) => p.ctr > b.ctr ? p : b, placementData[0]);
+  const bestCpa = placementData.filter(p=>p.cpa!==Infinity).reduce((b,p) => p.cpa < b.cpa ? p : b, placementData[0]);
+  const mostSpend = placementData.reduce((b,p) => p.spend > b.spend ? p : b, placementData[0]);
+
+  renderMetrics('pl-metrics', [
+    { label: 'Total Placements', value: placementData.length },
+    { label: 'Highest CTR', value: fmtPct(bestCtr.ctr), sub: bestCtr.name },
+    { label: 'Lowest CPA', value: fmtShort(bestCpa.cpa), sub: bestCpa.name },
+    { label: 'Most Spend', value: fmtCurrency(mostSpend.spend), sub: mostSpend.name },
+  ]);
+
+  // Platform split cards
+  const platforms = {};
+  placementData.forEach(p => {
+    if (!platforms[p.platform]) platforms[p.platform] = { spend:0, impr:0, clicks:0, purchases:0, revenue:0 };
+    const pl = platforms[p.platform];
+    pl.spend+=p.spend; pl.impr+=p.impr; pl.clicks+=p.clicks; pl.purchases+=p.purchases; pl.revenue+=p.revenue;
+  });
+
+  document.getElementById('platform-cards').innerHTML = Object.entries(platforms).map(([name, d]) => {
+    const roas = d.spend>0?d.revenue/d.spend:0;
+    const cpa = d.purchases>0?d.spend/d.purchases:0;
+    const ctr = d.impr>0?d.clicks/d.impr:0;
+    const color = name === 'Facebook' ? '#1877f2' : '#e1306c';
+    return '<div class="platform-card"><div class="platform-card-header">' + platformBadge(name) + ' ' + name + '</div>' +
+      '<div class="type-card-stat"><span class="label">Spend</span><span class="value">'+fmtCurrency(d.spend)+'</span></div>' +
+      '<div class="type-card-stat"><span class="label">Impressions</span><span class="value">'+fmtNum(d.impr)+'</span></div>' +
+      '<div class="type-card-stat"><span class="label">Clicks</span><span class="value">'+fmtNum(d.clicks)+'</span></div>' +
+      '<div class="type-card-stat"><span class="label">CTR</span><span class="value">'+fmtPct(ctr)+'</span></div>' +
+      '<div class="type-card-stat"><span class="label">Purchases</span><span class="value">'+fmtNum(d.purchases)+'</span></div>' +
+      '<div class="type-card-stat"><span class="label">CPA</span><span class="value">'+fmtShort(cpa)+'</span></div>' +
+      '<div class="type-card-stat"><span class="label">ROAS</span><span class="value">'+fmtRoas(roas)+'</span></div></div>';
+  }).join('');
+
+  // Placement type breakdown
+  const plTypes = {};
+  placementData.forEach(p => {
+    if (!plTypes[p.type]) plTypes[p.type] = { spend:0, impr:0, clicks:0, purchases:0, revenue:0 };
+    const t = plTypes[p.type];
+    t.spend+=p.spend; t.impr+=p.impr; t.clicks+=p.clicks; t.purchases+=p.purchases; t.revenue+=p.revenue;
+  });
+
+  const typeColors = { Feed:'#1877f2', Stories:'#e1306c', Reels:'#ff6f00', 'Right Column':'#78909c', 'Audience Network':'#f44336', Explore:'#9c27b0', Search:'#00897b' };
+  document.getElementById('placement-type-cards').innerHTML = Object.entries(plTypes).map(([name, d]) => {
+    const roas = d.spend>0?d.revenue/d.spend:0;
+    const cpa = d.purchases>0?d.spend/d.purchases:0;
+    const ctr = d.impr>0?d.clicks/d.impr:0;
+    const color = typeColors[name]||'#666';
+    return '<div class="type-card"><div class="type-card-header"><span style="width:10px;height:10px;border-radius:3px;background:'+color+';display:inline-block"></span> '+name+'</div>' +
+      '<div class="type-card-stat"><span class="label">Spend</span><span class="value">'+fmtCurrency(d.spend)+'</span></div>' +
+      '<div class="type-card-stat"><span class="label">CTR</span><span class="value">'+fmtPct(ctr)+'</span></div>' +
+      '<div class="type-card-stat"><span class="label">CPA</span><span class="value">'+fmtShort(cpa)+'</span></div>' +
+      '<div class="type-card-stat"><span class="label">ROAS</span><span class="value">'+fmtRoas(roas)+'</span></div></div>';
+  }).join('');
+
+  // Placement table
+  const plCols = [
+    { key: 'name', label: 'Placement', fmt: v => v },
+    { key: 'platform', label: 'Platform', fmt: platformBadge },
+    { key: 'spend', label: 'Spend', fmt: fmtCurrency, numeric: true },
+    { key: 'impr', label: 'Impr', fmt: fmtNum, numeric: true },
+    { key: 'clicks', label: 'Clicks', fmt: fmtNum, numeric: true },
+    { key: 'ctr', label: 'CTR', fmt: fmtPct, numeric: true },
+    { key: 'cpc', label: 'CPC', fmt: fmtShort, numeric: true },
+    { key: 'purchases', label: 'Purchases', fmt: v => fmtNum(v), numeric: true },
+    { key: 'cpa', label: 'CPA', fmt: v => v === Infinity ? '&mdash;' : fmtShort(v), numeric: true },
+    { key: 'roas', label: 'ROAS', fmt: fmtRoas, numeric: true },
+  ];
+
+  const plSort = { col: 'spend', asc: false };
+  const plFilters = {};
+
+  const plFooter = (rows) => {
+    let s=0,i=0,cl=0,p=0,rv=0;
+    rows.forEach(r => { s+=r.spend; i+=r.impr; cl+=r.clicks; p+=r.purchases; rv+=r.revenue; });
+    return { name:'Total', platform:'', spend:s, impr:i, clicks:cl,
+      ctr:i>0?cl/i:0, cpc:cl>0?s/cl:0, purchases:p, cpa:p>0?s/p:Infinity, roas:s>0?rv/s:0 };
+  };
+
+  buildTable({
+    tableId: 'placement-table', cols: plCols, rows: placementData,
+    sortState: plSort, filterState: plFilters,
+    searchId: 'pl-search', csvId: 'pl-csv', footerTotals: plFooter,
+  });
+}
+
+// ==================== TAB SWITCHING ====================
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    // Show/hide date picker
+    const drp = document.getElementById('drpWrap');
+    drp.style.display = btn.dataset.tab === 'campaigns' ? '' : 'none';
+  });
+});
+
+// ==================== DATE RANGE PICKER ====================
+(function initDRP() {
+  const wrap = document.getElementById('drpWrap');
+  const trigger = document.getElementById('drpTrigger');
+  const dropdown = document.getElementById('drpDropdown');
+  const textEl = document.getElementById('drpText');
+  const startInput = document.getElementById('drpStartInput');
+  const endInput = document.getElementById('drpEndInput');
+  const calScroll = document.getElementById('drpCalScroll');
+
+  let selStart = null, selEnd = null;
+  let pickingEnd = false;
+  let activePreset = 'all';
+
+  function fmtDisplay(s, e) {
+    if (!s || !e) return 'All Time';
+    const fmt = d => (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
+    return fmt(s) + ' \u2013 ' + fmt(e);
+  }
+
+  function buildCalendar() {
+    const months = [];
+    let cur = new Date(2025, 0, 1);
+    const end = new Date(2026, 2, 31);
+    while (cur <= end) {
+      months.push(new Date(cur));
+      cur = new Date(cur.getFullYear(), cur.getMonth()+1, 1);
+    }
+    const dows = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+    calScroll.innerHTML = months.map(m => {
+      const y = m.getFullYear(), mo = m.getMonth();
+      const label = m.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      const firstDow = new Date(y, mo, 1).getDay();
+      const daysInMonth = new Date(y, mo+1, 0).getDate();
+      let cells = dows.map(d => '<div class="drp-cal-dow">'+d+'</div>').join('');
+      for (let i=0; i<firstDow; i++) cells += '<div class="drp-cal-day outside"></div>';
+      for (let d=1; d<=daysInMonth; d++) {
+        const dt = new Date(y, mo, d);
+        const iso = toISO(dt);
+        let cls = 'drp-cal-day';
+        if (iso < DATA_MIN_ISO || iso > DATA_MAX_ISO) cls += ' outside';
+        else {
+          const today = new Date(); today.setHours(0,0,0,0);
+          if (dt.getTime() === today.getTime()) cls += ' today';
+          if (selStart && selEnd) {
+            const sISO = toISO(selStart), eISO = toISO(selEnd);
+            if (iso === sISO) cls += ' range-start';
+            if (iso === eISO) cls += ' range-end';
+            if (iso > sISO && iso < eISO) cls += ' in-range';
+          } else if (selStart && iso === toISO(selStart)) {
+            cls += ' range-start range-end';
+          }
+        }
+        cells += '<div class="'+cls+'" data-date="'+iso+'">'+d+'</div>';
+      }
+      return '<div class="drp-cal-month"><div class="drp-cal-month-label">'+label+'</div><div class="drp-cal-grid">'+cells+'</div></div>';
+    }).join('');
+
+    calScroll.querySelectorAll('.drp-cal-day:not(.outside)').forEach(el => {
+      el.addEventListener('click', () => {
+        const dt = new Date(el.dataset.date + 'T00:00:00');
+        if (!pickingEnd || !selStart) { selStart = dt; selEnd = null; pickingEnd = true; }
+        else {
+          if (dt < selStart) { selEnd = selStart; selStart = dt; }
+          else selEnd = dt;
+          pickingEnd = false;
+        }
+        updateInputs();
+        buildCalendar();
+      });
+    });
+  }
+
+  function updateInputs() {
+    const fmt = d => d ? (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear() : '';
+    startInput.value = fmt(selStart);
+    endInput.value = fmt(selEnd);
+  }
+
+  function applyRange(s, e, preset) {
+    selStart = s; selEnd = e; activePreset = preset;
+    currentRange = s && e ? [toISO(s), toISO(e)] : [null, null];
+    textEl.textContent = s && e ? fmtDisplay(s, e) : 'All Time';
+    dropdown.classList.remove('open');
+
+    // Highlight active preset
+    document.querySelectorAll('.drp-preset-item').forEach(p => {
+      p.classList.toggle('active', p.dataset.preset === preset);
+    });
+
+    // Re-render campaigns tab
+    initCampaignsTab();
+    updateChart();
+  }
+
+  trigger.addEventListener('click', () => {
+    dropdown.classList.toggle('open');
+    if (dropdown.classList.contains('open')) buildCalendar();
+  });
+
+  document.getElementById('drpCancel').addEventListener('click', () => dropdown.classList.remove('open'));
+  document.getElementById('drpApply').addEventListener('click', () => {
+    if (selStart && selEnd) applyRange(selStart, selEnd, 'custom');
+    else applyRange(null, null, 'all');
+  });
+
+  // Presets
+  document.querySelectorAll('.drp-preset-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const p = item.dataset.preset;
+      const ref = new Date(DATA_END);
+      let s = null, e = null;
+      if (p === 'all') { applyRange(null, null, 'all'); return; }
+      if (p === 'custom') { activePreset = 'custom'; document.querySelectorAll('.drp-preset-item').forEach(x=>x.classList.remove('active')); item.classList.add('active'); return; }
+      const days = parseInt(p);
+      if (!isNaN(days)) {
+        e = new Date(ref);
+        s = new Date(ref); s.setDate(s.getDate() - days + 1);
+      } else if (p === 'thismonth') {
+        s = new Date(ref.getFullYear(), ref.getMonth(), 1);
+        e = new Date(ref);
+      } else if (p === 'lastmonth') {
+        s = new Date(ref.getFullYear(), ref.getMonth()-1, 1);
+        e = new Date(ref.getFullYear(), ref.getMonth(), 0);
+      } else if (p === 'thisquarter') {
+        const qm = Math.floor(ref.getMonth()/3)*3;
+        s = new Date(ref.getFullYear(), qm, 1);
+        e = new Date(ref);
+      } else if (p === 'lastquarter') {
+        const qm = Math.floor(ref.getMonth()/3)*3;
+        s = new Date(ref.getFullYear(), qm-3, 1);
+        e = new Date(ref.getFullYear(), qm, 0);
+      }
+      if (s && e) {
+        selStart = s; selEnd = e;
+        updateInputs();
+        buildCalendar();
+        applyRange(s, e, p);
+      }
+    });
+  });
+
+  // Step buttons
+  document.getElementById('drpStepBack').addEventListener('click', () => {
+    if (!currentRange[0] || !currentRange[1]) return;
+    const s = new Date(currentRange[0]+'T00:00:00'), e = new Date(currentRange[1]+'T00:00:00');
+    const span = Math.round((e-s)/86400000)+1;
+    const newE = new Date(s); newE.setDate(newE.getDate()-1);
+    const newS = new Date(newE); newS.setDate(newS.getDate()-span+1);
+    if (toISO(newS) >= DATA_MIN_ISO) applyRange(newS, newE, 'custom');
+  });
+
+  document.getElementById('drpStepFwd').addEventListener('click', () => {
+    if (!currentRange[0] || !currentRange[1]) return;
+    const s = new Date(currentRange[0]+'T00:00:00'), e = new Date(currentRange[1]+'T00:00:00');
+    const span = Math.round((e-s)/86400000)+1;
+    const newS = new Date(e); newS.setDate(newS.getDate()+1);
+    const newE = new Date(newS); newE.setDate(newE.getDate()+span-1);
+    if (toISO(newE) <= DATA_MAX_ISO) applyRange(newS, newE, 'custom');
+  });
+
+  // Close on outside click
+  document.addEventListener('click', (e) => {
+    if (!wrap.contains(e.target)) dropdown.classList.remove('open');
+  });
+})();
+
+// ==================== INIT ALL TABS ====================
+initCampaignsTab();
+initAdSetsTab();
+initAdsTab();
+initPlacementsTab();
+</script>
+</body>
+</html>
