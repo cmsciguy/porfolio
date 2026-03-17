@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verdant Wellness — Attribution & Media Mix</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --indigo-dark: #3730a3;
+  --indigo-main: #4f46e5;
+  --indigo-light: #eef2ff;
+  --indigo-pale: #f5f7ff;
+  --bg: #eef2ff;
+  --card-bg: #ffffff;
+  --text-main: #1a1a2e;
+  --text-mid: #888fb3;
+  --text-light: #b0b7d1;
+  --border: #e2e8f0;
+  --shadow: 0 1px 4px rgba(0,0,0,0.06), 0 2px 12px rgba(0,0,0,0.04);
+  --shadow-hover: 0 2px 8px rgba(0,0,0,0.10), 0 4px 16px rgba(0,0,0,0.06);
+  --radius: 16px;
+  --radius-sm: 8px;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text-main);
+  line-height: 1.5;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Header */
+.header {
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-left { display: flex; align-items: center; gap: 16px; }
+.back-link {
+  color: var(--text-mid);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--indigo-main); }
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+.header-dot {
+  width: 12px; height: 12px;
+  background: var(--indigo-main);
+  border-radius: 50%;
+  display: inline-block;
+}
+.header-meta {
+  font-size: 12px;
+  color: var(--text-mid);
+  font-weight: 500;
+}
+
+/* Demo Banner */
+.demo-banner {
+  padding: 10px 32px;
+  font-size: 13px;
+  color: #5a6577;
+  background: var(--indigo-light);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Tab Bar */
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  padding: 12px 32px 0;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+}
+.tab-btn {
+  padding: 10px 24px;
+  border: none;
+  background: transparent;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-mid);
+  cursor: pointer;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  transition: all 0.2s;
+}
+.tab-btn:hover { background: var(--indigo-light); color: var(--indigo-dark); }
+.tab-btn.active { background: var(--indigo-main); color: #fff; }
+.tab-content { display: none; padding: 24px 32px; max-width: 1280px; margin: 0 auto; }
+.tab-content.active { display: block; }
+
+/* Metric Cards */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.metric-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.2s;
+}
+.metric-card:hover { box-shadow: var(--shadow-hover); }
+.metric-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.metric-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+/* Section headers */
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 16px;
+  margin-top: 8px;
+}
+
+/* Chart Container */
+.chart-section {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+}
+.chart-canvas-wrap { position: relative; height: 340px; }
+.chart-canvas-wrap canvas { width: 100% !important; }
+
+/* Tables */
+.table-section {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.table-header h3 {
+  font-size: 15px;
+  font-weight: 700;
+}
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+thead th {
+  text-align: left;
+  padding: 12px 14px;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-mid);
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s;
+}
+thead th:hover { color: var(--indigo-main); }
+thead th .sort-indicator { margin-left: 4px; font-size: 10px; }
+tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+tbody tr:hover { background: var(--indigo-light); }
+tfoot td {
+  padding: 12px 14px;
+  font-weight: 700;
+  border-top: 2px solid var(--border);
+  background: var(--bg);
+  white-space: nowrap;
+}
+
+/* Sticky first column */
+thead th:first-child,
+tbody td:first-child,
+tfoot td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: var(--card-bg);
+}
+thead th:first-child { background: var(--card-bg); z-index: 3; }
+tfoot td:first-child { background: var(--bg); }
+tbody tr:hover td:first-child { background: var(--indigo-light); }
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.badge-green { background: #e8f5e9; color: #2e7d32; }
+.badge-yellow { background: #fff3e0; color: #e65100; }
+.badge-red { background: #fef2f2; color: #c62828; }
+.badge-blue { background: #e3f2fd; color: #1565c0; }
+.badge-indigo { background: var(--indigo-light); color: var(--indigo-main); }
+
+/* ROAS color coding */
+.roas-green { color: #2e7d32; font-weight: 700; }
+.roas-yellow { color: #e65100; font-weight: 700; }
+.roas-red { color: #c62828; font-weight: 700; }
+
+/* Shift color coding */
+.shift-pos { color: #2e7d32; font-weight: 600; }
+.shift-neg { color: #c62828; font-weight: 600; }
+
+/* Model Selector Cards */
+.model-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.model-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+}
+.model-card:hover { box-shadow: var(--shadow-hover); border-color: var(--indigo-light); }
+.model-card.active { border-color: var(--indigo-main); background: var(--indigo-light); }
+.model-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.model-card p { font-size: 12px; color: var(--text-mid); line-height: 1.4; }
+
+/* Insight Cards */
+.insight-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.insight-card {
+  background: var(--indigo-pale);
+  border-radius: var(--radius);
+  padding: 20px;
+  border-left: 4px solid var(--indigo-main);
+}
+.insight-card p {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-main);
+  line-height: 1.5;
+}
+
+/* Channel Role Bars */
+.role-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.role-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+.role-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+.role-bar-wrap { margin-bottom: 8px; }
+.role-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-mid);
+  margin-bottom: 4px;
+}
+.role-bar {
+  display: flex;
+  height: 24px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.role-bar-intro { background: #818cf8; }
+.role-bar-influ { background: #a78bfa; }
+.role-bar-close { background: #4f46e5; }
+.role-legend {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-mid);
+}
+.role-legend-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+/* What-If Simulator */
+.simulator-grid {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+.simulator-inputs {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+.simulator-results {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 80px;
+  align-self: start;
+}
+.sim-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.sim-row label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+  min-width: 130px;
+}
+.sim-row input[type="range"] {
+  flex: 1;
+  min-width: 120px;
+  accent-color: var(--indigo-main);
+}
+.sim-row .sim-val {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--indigo-main);
+  min-width: 70px;
+  text-align: right;
+}
+.sim-result-item {
+  margin-bottom: 16px;
+}
+.sim-result-item .sim-result-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.sim-result-item .sim-result-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+.sim-result-item .sim-result-change {
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+/* CSV Export Button */
+.btn-export {
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  background: #fff;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s;
+}
+.btn-export:hover { border-color: var(--indigo-main); color: var(--indigo-main); }
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .metrics-grid { grid-template-columns: repeat(3, 1fr); }
+  .model-cards-grid { grid-template-columns: repeat(2, 1fr); }
+  .simulator-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .header { padding: 12px 16px; flex-direction: column; align-items: flex-start; gap: 8px; }
+  body { overflow-x: hidden; }
+  .tab-bar { padding: 8px 16px 0; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+  .tab-btn { font-size: 12px; padding: 8px 12px; }
+  .tab-content { padding: 16px; }
+  .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .metric-value { font-size: 18px; }
+  .model-cards-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .role-cards-grid { grid-template-columns: 1fr; }
+  .simulator-grid { grid-template-columns: 1fr; }
+  .simulator-results { position: static; }
+  .metric-label { font-size: 11px; }
+  .insight-cards-grid { grid-template-columns: 1fr; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <a href="../work.html" class="back-link">&larr; Back to Work</a>
+    <div class="header-title">
+      <span class="header-dot"></span>
+      Verdant Wellness &mdash; Attribution &amp; Media Mix
+    </div>
+  </div>
+  <div class="header-meta">Reporting Period: Jan 1 &ndash; Mar 31, 2026 (90 Days)</div>
+</div>
+
+<!-- Demo Banner -->
+<div class="demo-banner">
+  <strong>Demo Dashboard</strong> &mdash; Simulated data for a fictional DTC liver health brand. In production, this dashboard is built on GA4 multi-touch path data joined with platform spend APIs (Google, Meta, TikTok) and Shopify order data as ground truth revenue.
+</div>
+<div style="max-width:1280px;margin:0 auto;padding:0 20px;">
+  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 20px;margin-bottom:20px;font-size:13px;color:#64748b;line-height:1.7;">
+    <div style="font-weight:700;color:#4f46e5;margin-bottom:6px;font-size:14px;">Data Sources & Methodology</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;">
+      <div><strong style="color:#334155;">Attribution paths:</strong> GA4 cross-channel touchpoint sequences via UTM parameters, using a 30-day lookback window</div>
+      <div><strong style="color:#334155;">Spend data:</strong> Platform APIs (Google Ads, Meta Business Manager, TikTok Ads Manager)</div>
+      <div><strong style="color:#334155;">Revenue source:</strong> Shopify orders as single source of truth, deduplicated against platform self-reported conversions</div>
+      <div><strong style="color:#334155;">Model calculations:</strong> Attribution models computed from raw touchpoint sequences, not platform-reported attribution</div>
+    </div>
+    <div style="margin-top:10px;padding-top:10px;border-top:1px solid #eef2ff;font-size:12px;color:#94a3b8;">
+      Note: Platform-reported conversions typically over-count due to overlapping attribution windows. This dashboard uses GA4 as the cross-channel source of truth and deduplicates against actual orders. iOS 14.5+ privacy changes may reduce visibility of some cross-device paths.
+    </div>
+  </div>
+</div>
+
+<!-- Tab Bar -->
+<div class="tab-bar">
+  <button class="tab-btn active" data-tab="overview">Overview</button>
+  <button class="tab-btn" data-tab="attribution">Attribution Models</button>
+  <button class="tab-btn" data-tab="mediamix">Media Mix</button>
+  <button class="tab-btn" data-tab="journey">Customer Journey</button>
+</div>
+
+<!-- ===================== TAB 1: OVERVIEW ===================== -->
+<div class="tab-content active" id="tab-overview">
+  <!-- Scorecards -->
+  <div class="metrics-grid" id="overview-scorecards"></div>
+
+  <!-- Channel Performance Table -->
+  <div class="section-title">Channel Performance Summary</div>
+  <div class="table-section">
+    <div class="table-header">
+      <h3>All Channels</h3>
+      <button class="btn-export" onclick="exportCSV('channel-perf-table','channel_performance.csv')">Export CSV</button>
+    </div>
+    <div class="table-wrap">
+      <table id="channel-perf-table"></table>
+    </div>
+  </div>
+
+  <!-- Spend vs Revenue Chart -->
+  <div class="section-title">Spend vs Revenue by Channel</div>
+  <div class="chart-section">
+    <div class="chart-canvas-wrap"><canvas id="spendRevenueChart"></canvas></div>
+  </div>
+
+  <!-- ROAS by Channel Chart -->
+  <div class="section-title">ROAS by Channel</div>
+  <div class="chart-section">
+    <div class="chart-canvas-wrap"><canvas id="roasChart"></canvas></div>
+  </div>
+</div>
+
+<!-- ===================== TAB 2: ATTRIBUTION MODELS ===================== -->
+<div class="tab-content" id="tab-attribution">
+  <!-- Model Selector Cards -->
+  <div class="section-title">Select Attribution Model</div>
+  <div class="model-cards-grid" id="model-selector"></div>
+
+  <!-- Dynamic Revenue Distribution Chart -->
+  <div class="section-title">Revenue Distribution by Channel</div>
+  <div class="chart-section">
+    <div class="chart-canvas-wrap"><canvas id="attrDistChart"></canvas></div>
+  </div>
+
+  <!-- Attribution Model Comparison Table -->
+  <div class="section-title">Attribution Model Comparison</div>
+  <div class="table-section">
+    <div class="table-header">
+      <h3>Revenue &amp; ROAS by Model</h3>
+      <button class="btn-export" onclick="exportCSV('attr-compare-table','attribution_comparison.csv')">Export CSV</button>
+    </div>
+    <div class="table-wrap">
+      <table id="attr-compare-table"></table>
+    </div>
+  </div>
+
+  <!-- Attribution Shift Table -->
+  <div class="section-title">Attribution Shift: Last Click vs <span id="shift-model-name">Linear</span></div>
+  <div class="table-section">
+    <div class="table-header">
+      <h3>Credit Reallocation</h3>
+      <button class="btn-export" onclick="exportCSV('attr-shift-table','attribution_shift.csv')">Export CSV</button>
+    </div>
+    <div class="table-wrap">
+      <table id="attr-shift-table"></table>
+    </div>
+  </div>
+
+  <!-- Key Insight Cards -->
+  <div class="section-title">Key Insights</div>
+  <div class="insight-cards-grid" id="insight-cards"></div>
+</div>
+
+<!-- ===================== TAB 3: MEDIA MIX ===================== -->
+<div class="tab-content" id="tab-mediamix">
+  <!-- Budget Allocation Donut -->
+  <div class="section-title">Current Budget Allocation</div>
+  <div class="chart-section">
+    <div class="chart-canvas-wrap" style="height:380px;"><canvas id="budgetDonut"></canvas></div>
+  </div>
+
+  <!-- Efficiency Frontier Scatter -->
+  <div class="section-title">Efficiency Frontier</div>
+  <div class="chart-section">
+    <div class="chart-canvas-wrap" style="height:380px;"><canvas id="efficiencyScatter"></canvas></div>
+  </div>
+
+  <!-- Marginal ROAS Table -->
+  <div class="section-title">Marginal ROAS Analysis</div>
+  <div class="table-section">
+    <div class="table-header">
+      <h3>Diminishing Returns Estimates</h3>
+      <button class="btn-export" onclick="exportCSV('marginal-roas-table','marginal_roas.csv')">Export CSV</button>
+    </div>
+    <div class="table-wrap">
+      <table id="marginal-roas-table"></table>
+    </div>
+  </div>
+
+  <!-- What-If Budget Simulator -->
+  <div class="section-title">What-If Budget Simulator</div>
+  <div class="simulator-grid">
+    <div class="simulator-inputs" id="sim-inputs"></div>
+    <div class="simulator-results" id="sim-results"></div>
+  </div>
+</div>
+
+<!-- ===================== TAB 4: CUSTOMER JOURNEY ===================== -->
+<div class="tab-content" id="tab-journey">
+  <!-- Journey Scorecards -->
+  <div class="metrics-grid" id="journey-scorecards" style="grid-template-columns: repeat(3,1fr);"></div>
+
+  <!-- Top Conversion Paths Table -->
+  <div class="section-title">Top Conversion Paths</div>
+  <div class="table-section">
+    <div class="table-header">
+      <h3>Most Common Purchase Journeys</h3>
+      <button class="btn-export" onclick="exportCSV('paths-table','conversion_paths.csv')">Export CSV</button>
+    </div>
+    <div class="table-wrap">
+      <table id="paths-table"></table>
+    </div>
+  </div>
+
+  <!-- Channel Role Analysis -->
+  <div class="section-title">Channel Role Analysis</div>
+  <div class="role-cards-grid" id="role-cards"></div>
+
+  <!-- Assisted Conversions Table -->
+  <div class="section-title">Assisted Conversions</div>
+  <div class="table-section">
+    <div class="table-header">
+      <h3>Direct vs Assisted</h3>
+      <button class="btn-export" onclick="exportCSV('assisted-table','assisted_conversions.csv')">Export CSV</button>
+    </div>
+    <div class="table-wrap">
+      <table id="assisted-table"></table>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ========== SEEDED PRNG ========== */
+function seededRandom(seed) {
+  let s = seed;
+  return function() {
+    s = (s * 16807 + 0) % 2147483647;
+    return (s - 1) / 2147483646;
+  };
+}
+const rand = seededRandom(42);
+
+/* ========== HELPERS ========== */
+const fmt = (n, prefix='', suffix='', dec=0) => {
+  if (n === null || n === undefined) return '—';
+  const abs = Math.abs(n);
+  let str;
+  if (abs >= 1000000) str = (n/1000000).toFixed(1) + 'M';
+  else if (abs >= 1000) str = (n/1000).toFixed(1) + 'K';
+  else str = n.toFixed(dec);
+  return prefix + str + suffix;
+};
+const fmtDollar = (n,dec=0) => '$' + n.toLocaleString('en-US', {minimumFractionDigits:dec, maximumFractionDigits:dec});
+const fmtPct = (n,dec=0) => n.toFixed(dec) + '%';
+const fmtROAS = (n) => n.toFixed(2) + 'x';
+const roasClass = (r) => r >= 2 ? 'roas-green' : r >= 1 ? 'roas-yellow' : 'roas-red';
+
+function exportCSV(tableId, filename) {
+  const table = document.getElementById(tableId);
+  if (!table) return;
+  const rows = [];
+  table.querySelectorAll('tr').forEach(tr => {
+    const cells = [];
+    tr.querySelectorAll('th, td').forEach(c => cells.push('"' + c.innerText.replace(/"/g,'""') + '"'));
+    rows.push(cells.join(','));
+  });
+  const blob = new Blob([rows.join('\n')], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+}
+
+function makeSortable(table) {
+  const ths = table.querySelectorAll('thead th');
+  ths.forEach((th, i) => {
+    th.innerHTML += ' <span class="sort-indicator"></span>';
+    th.addEventListener('click', () => {
+      const tbody = table.querySelector('tbody');
+      if (!tbody) return;
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      const asc = th.dataset.sort !== 'asc';
+      ths.forEach(h => { h.dataset.sort = ''; h.querySelector('.sort-indicator').textContent = ''; });
+      th.dataset.sort = asc ? 'asc' : 'desc';
+      th.querySelector('.sort-indicator').textContent = asc ? '▲' : '▼';
+      rows.sort((a, b) => {
+        let va = a.cells[i]?.innerText.replace(/[$,%x+K]/g,'') || '';
+        let vb = b.cells[i]?.innerText.replace(/[$,%x+K]/g,'') || '';
+        const na = parseFloat(va), nb = parseFloat(vb);
+        if (!isNaN(na) && !isNaN(nb)) return asc ? na - nb : nb - na;
+        return asc ? va.localeCompare(vb) : vb.localeCompare(va);
+      });
+      rows.forEach(r => tbody.appendChild(r));
+    });
+  });
+}
+
+/* ========== CHANNEL DATA ========== */
+const channels = [
+  { name: 'Google Search',  spend: 26200, lastClickRev: 78400,  purchases: 980,  newCustRate: 0.55 },
+  { name: 'Google Display', spend: 8800,  lastClickRev: 6560,   purchases: 164,  newCustRate: 0.72 },
+  { name: 'Google PMax',    spend: 13600, lastClickRev: 26880,  purchases: 448,  newCustRate: 0.60 },
+  { name: 'Meta (FB/IG)',   spend: 28400, lastClickRev: 51120,  purchases: 852,  newCustRate: 0.68 },
+  { name: 'TikTok',         spend: 7200,  lastClickRev: 5850,   purchases: 130,  newCustRate: 0.78 },
+  { name: 'Email/SMS',      spend: 3200,  lastClickRev: 17850,  purchases: 510,  newCustRate: 0.18 },
+  { name: 'Organic Search', spend: 0,     lastClickRev: 18200,  purchases: 390,  newCustRate: 0.58 },
+  { name: 'Direct',         spend: 0,     lastClickRev: 12340,  purchases: 268,  newCustRate: 0.42 },
+  { name: 'Referral',       spend: 0,     lastClickRev: 5200,   purchases: 100,  newCustRate: 0.65 },
+];
+
+// Adjust totals to match specs
+const totalSpend = channels.reduce((s,c) => s+c.spend, 0); // 82500
+const totalRevLC = channels.reduce((s,c) => s+c.lastClickRev, 0);
+// Scale revenue so total ~198200
+const revScale = 198200 / totalRevLC;
+channels.forEach(c => {
+  c.lastClickRev = Math.round(c.lastClickRev * revScale);
+  c.purchases = Math.round(c.purchases * (3842 / channels.reduce((s,x)=>s+x.purchases,0) || 1));
+});
+// Recalculate after scaling
+const totalPurchases = 3842;
+const totalRev = 198200;
+const blendedROAS = totalRev / totalSpend;
+const blendedCPA = totalSpend / totalPurchases;
+
+channels.forEach(c => {
+  c.roas = c.spend > 0 ? c.lastClickRev / c.spend : null;
+  c.cpa = c.spend > 0 ? c.spend / c.purchases : null;
+  c.newCust = Math.round(c.purchases * c.newCustRate);
+  c.pctSpend = c.spend / totalSpend;
+  c.pctRev = c.lastClickRev / totalRev;
+});
+
+/* ========== ATTRIBUTION MODELS ========== */
+// Multipliers vs last click for each model
+const attrMultipliers = {
+  firstClick: {
+    'Google Search': 0.72, 'Google Display': 1.85, 'Google PMax': 1.12,
+    'Meta (FB/IG)': 1.42, 'TikTok': 2.10, 'Email/SMS': 0.25,
+    'Organic Search': 1.31, 'Direct': 0.78, 'Referral': 1.15,
+  },
+  linear: {
+    'Google Search': 0.85, 'Google Display': 1.52, 'Google PMax': 1.08,
+    'Meta (FB/IG)': 1.23, 'TikTok': 1.65, 'Email/SMS': 0.45,
+    'Organic Search': 1.18, 'Direct': 0.88, 'Referral': 1.10,
+  },
+  timeDecay: {
+    'Google Search': 0.92, 'Google Display': 1.28, 'Google PMax': 1.18,
+    'Meta (FB/IG)': 1.10, 'TikTok': 1.35, 'Email/SMS': 0.68,
+    'Organic Search': 1.08, 'Direct': 0.94, 'Referral': 1.05,
+  },
+};
+
+function getModelRevenue(modelKey) {
+  if (modelKey === 'lastClick') return channels.map(c => c.lastClickRev);
+  const mult = attrMultipliers[modelKey];
+  const raw = channels.map(c => c.lastClickRev * (mult[c.name] || 1));
+  // Normalize so total = totalRev
+  const rawSum = raw.reduce((s,v)=>s+v,0);
+  return raw.map(v => Math.round(v * totalRev / rawSum));
+}
+
+const modelKeys = ['lastClick', 'firstClick', 'linear', 'timeDecay'];
+const modelNames = { lastClick: 'Last Click', firstClick: 'First Click', linear: 'Linear', timeDecay: 'Time Decay' };
+const modelDescs = {
+  lastClick: '100% credit to the last touchpoint before purchase',
+  firstClick: '100% credit to the first touchpoint in the journey',
+  linear: 'Equal credit to every touchpoint in the journey',
+  timeDecay: 'More credit to touchpoints closer to the purchase',
+};
+
+let selectedModel = 'linear';
+
+/* ========== CUSTOMER JOURNEY DATA ========== */
+const journeyPaths = [
+  { path: ['Google Search'], conv: 408, avgDays: 0, avgRev: 52.10 },
+  { path: ['Meta (FB/IG)', 'Google Search'], conv: 285, avgDays: 4, avgRev: 54.80 },
+  { path: ['Direct'], conv: 252, avgDays: 0, avgRev: 48.20 },
+  { path: ['Meta (FB/IG)', 'Direct'], conv: 184, avgDays: 5, avgRev: 50.60 },
+  { path: ['Organic Search', 'Direct'], conv: 162, avgDays: 6, avgRev: 49.30 },
+  { path: ['Meta (FB/IG)', 'Google Search', 'Direct'], conv: 124, avgDays: 9, avgRev: 56.40 },
+  { path: ['TikTok', 'Meta (FB/IG)', 'Google Search'], conv: 92, avgDays: 12, avgRev: 58.70 },
+  { path: ['Google PMax', 'Google Search'], conv: 88, avgDays: 5, avgRev: 53.20 },
+  { path: ['Organic Search'], conv: 180, avgDays: 0, avgRev: 46.80 },
+  { path: ['Email/SMS'], conv: 320, avgDays: 1, avgRev: 35.50 },
+  { path: ['Google Display', 'Meta (FB/IG)', 'Google Search'], conv: 78, avgDays: 14, avgRev: 61.20 },
+  { path: ['Referral', 'Direct'], conv: 65, avgDays: 3, avgRev: 52.00 },
+  { path: ['TikTok', 'Google Search'], conv: 58, avgDays: 7, avgRev: 55.40 },
+  { path: ['Meta (FB/IG)', 'Email/SMS'], conv: 145, avgDays: 6, avgRev: 42.80 },
+  { path: ['Google Display', 'Meta (FB/IG)', 'Google Search', 'Direct'], conv: 42, avgDays: 18, avgRev: 64.50 },
+];
+journeyPaths.sort((a,b) => b.conv - a.conv);
+const totalPathConv = journeyPaths.reduce((s,p)=>s+p.conv,0);
+
+// Channel roles
+const channelRoles = {
+  'Google Search':  { intro: 18, influ: 28, close: 54 },
+  'Google Display': { intro: 62, influ: 30, close: 8 },
+  'Google PMax':    { intro: 35, influ: 40, close: 25 },
+  'Meta (FB/IG)':   { intro: 52, influ: 32, close: 16 },
+  'TikTok':         { intro: 68, influ: 25, close: 7 },
+  'Email/SMS':      { intro: 5,  influ: 22, close: 73 },
+  'Organic Search': { intro: 42, influ: 35, close: 23 },
+  'Direct':         { intro: 12, influ: 18, close: 70 },
+  'Referral':       { intro: 48, influ: 32, close: 20 },
+};
+
+// Assisted conversions
+const assistedData = [
+  { name: 'Google Search',  direct: 980,  assisted: 620 },
+  { name: 'Google Display', direct: 164,  assisted: 480 },
+  { name: 'Google PMax',    direct: 448,  assisted: 310 },
+  { name: 'Meta (FB/IG)',   direct: 852,  assisted: 1150 },
+  { name: 'TikTok',         direct: 130,  assisted: 390 },
+  { name: 'Email/SMS',      direct: 510,  assisted: 180 },
+  { name: 'Organic Search', direct: 390,  assisted: 520 },
+  { name: 'Direct',         direct: 268,  assisted: 140 },
+  { name: 'Referral',       direct: 100,  assisted: 175 },
+];
+
+/* ========== TAB NAVIGATION ========== */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ========== CHART COLORS ========== */
+const chartColors = ['#4f46e5','#818cf8','#6366f1','#a78bfa','#7c3aed','#c084fc','#4338ca','#6d28d9','#8b5cf6'];
+const channelColors = {};
+channels.forEach((c,i) => channelColors[c.name] = chartColors[i % chartColors.length]);
+
+/* ========== TAB 1: OVERVIEW ========== */
+(function buildOverview() {
+  // Scorecards
+  const sc = document.getElementById('overview-scorecards');
+  const cards = [
+    { label: 'Total Ad Spend', value: fmtDollar(totalSpend) },
+    { label: 'Total Revenue', value: fmtDollar(totalRev) },
+    { label: 'Blended ROAS', value: fmtROAS(blendedROAS) },
+    { label: 'Total Purchases', value: totalPurchases.toLocaleString() },
+    { label: 'Blended CPA', value: fmtDollar(blendedCPA, 2) },
+    { label: 'New Customer Rate', value: '62%' },
+  ];
+  sc.innerHTML = cards.map(c => `
+    <div class="metric-card">
+      <div class="metric-label">${c.label}</div>
+      <div class="metric-value">${c.value}</div>
+    </div>`).join('');
+
+  // Channel Performance Table
+  const table = document.getElementById('channel-perf-table');
+  const paidChannels = channels.filter(c => c.spend > 0);
+  const allChannels = channels;
+  const totalNewCust = allChannels.reduce((s,c)=>s+c.newCust,0);
+
+  table.innerHTML = `
+    <thead><tr>
+      <th>Channel</th><th>Spend</th><th>Revenue</th><th>ROAS</th><th>Purchases</th>
+      <th>CPA</th><th>New Customers</th><th>% of Spend</th><th>% of Revenue</th>
+    </tr></thead>
+    <tbody>${allChannels.map(c => `<tr>
+      <td><strong>${c.name}</strong></td>
+      <td>${c.spend > 0 ? fmtDollar(c.spend) : '—'}</td>
+      <td>${fmtDollar(c.lastClickRev)}</td>
+      <td class="${c.roas !== null ? roasClass(c.roas) : ''}">${c.roas !== null ? fmtROAS(c.roas) : '—'}</td>
+      <td>${c.purchases.toLocaleString()}</td>
+      <td>${c.cpa !== null ? fmtDollar(c.cpa, 2) : '—'}</td>
+      <td>${c.newCust.toLocaleString()}</td>
+      <td>${c.spend > 0 ? fmtPct(c.pctSpend*100, 1) : '—'}</td>
+      <td>${fmtPct(c.pctRev*100, 1)}</td>
+    </tr>`).join('')}</tbody>
+    <tfoot><tr>
+      <td><strong>Total</strong></td>
+      <td>${fmtDollar(totalSpend)}</td>
+      <td>${fmtDollar(totalRev)}</td>
+      <td class="${roasClass(blendedROAS)}">${fmtROAS(blendedROAS)}</td>
+      <td>${totalPurchases.toLocaleString()}</td>
+      <td>${fmtDollar(blendedCPA, 2)}</td>
+      <td>${totalNewCust.toLocaleString()}</td>
+      <td>100.0%</td>
+      <td>100.0%</td>
+    </tr></tfoot>`;
+  makeSortable(table);
+
+  // Spend vs Revenue Chart
+  const paidSorted = [...allChannels].sort((a,b) => b.spend - a.spend).filter(c => c.spend > 0 || c.lastClickRev > 5000);
+  new Chart(document.getElementById('spendRevenueChart'), {
+    type: 'bar',
+    data: {
+      labels: paidSorted.map(c => c.name),
+      datasets: [
+        { label: 'Spend', data: paidSorted.map(c => c.spend), backgroundColor: '#818cf8', borderRadius: 6 },
+        { label: 'Revenue', data: paidSorted.map(c => c.lastClickRev), backgroundColor: '#4f46e5', borderRadius: 6 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'top' } },
+      scales: {
+        y: { ticks: { callback: v => '$' + (v/1000).toFixed(0) + 'K' } },
+        x: { ticks: { font: { size: 11 } } }
+      }
+    }
+  });
+
+  // ROAS by Channel Chart
+  const roasSorted = [...allChannels].filter(c => c.roas !== null).sort((a,b) => b.roas - a.roas);
+  new Chart(document.getElementById('roasChart'), {
+    type: 'bar',
+    data: {
+      labels: roasSorted.map(c => c.name),
+      datasets: [{
+        label: 'ROAS',
+        data: roasSorted.map(c => c.roas),
+        backgroundColor: roasSorted.map(c => c.roas >= blendedROAS ? '#4f46e5' : '#c62828'),
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        annotation: undefined,
+      },
+      scales: {
+        x: {
+          ticks: { callback: v => v.toFixed(1) + 'x' },
+          grid: { drawOnChartArea: true },
+        },
+        y: { ticks: { font: { size: 12 } } }
+      }
+    },
+    plugins: [{
+      id: 'blendedLine',
+      afterDraw(chart) {
+        const xScale = chart.scales.x;
+        const yScale = chart.scales.y;
+        const x = xScale.getPixelForValue(blendedROAS);
+        const ctx = chart.ctx;
+        ctx.save();
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+        ctx.moveTo(x, yScale.top);
+        ctx.lineTo(x, yScale.bottom);
+        ctx.stroke();
+        ctx.fillStyle = '#f59e0b';
+        ctx.font = '11px Inter, sans-serif';
+        ctx.fillText('Blended ' + fmtROAS(blendedROAS), x + 4, yScale.top + 12);
+        ctx.restore();
+      }
+    }]
+  });
+})();
+
+/* ========== TAB 2: ATTRIBUTION MODELS ========== */
+let attrDistChart;
+(function buildAttribution() {
+  // Model selector cards
+  const container = document.getElementById('model-selector');
+  container.innerHTML = modelKeys.map(k => `
+    <div class="model-card ${k === selectedModel ? 'active' : ''}" data-model="${k}">
+      <h4>${modelNames[k]}</h4>
+      <p>${modelDescs[k]}</p>
+    </div>`).join('');
+
+  container.querySelectorAll('.model-card').forEach(card => {
+    card.addEventListener('click', () => {
+      selectedModel = card.dataset.model;
+      container.querySelectorAll('.model-card').forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+      updateAttrChart();
+      updateShiftTable();
+      document.getElementById('shift-model-name').textContent = modelNames[selectedModel];
+    });
+  });
+
+  // Attribution Comparison Table
+  const table = document.getElementById('attr-compare-table');
+  const allModelRevs = {};
+  modelKeys.forEach(k => allModelRevs[k] = getModelRevenue(k));
+
+  let headerHTML = '<thead><tr><th>Channel</th>';
+  modelKeys.forEach(k => {
+    headerHTML += `<th>${modelNames[k]} Rev</th><th>${modelNames[k]} ROAS</th>`;
+  });
+  headerHTML += '</tr></thead>';
+
+  let bodyHTML = '<tbody>';
+  channels.forEach((c, i) => {
+    bodyHTML += '<tr>';
+    bodyHTML += `<td><strong>${c.name}</strong></td>`;
+    modelKeys.forEach(k => {
+      const rev = allModelRevs[k][i];
+      const roas = c.spend > 0 ? rev / c.spend : null;
+      bodyHTML += `<td>${fmtDollar(rev)}</td>`;
+      bodyHTML += `<td class="${roas !== null ? roasClass(roas) : ''}">${roas !== null ? fmtROAS(roas) : '—'}</td>`;
+    });
+    bodyHTML += '</tr>';
+  });
+  bodyHTML += '</tbody>';
+  table.innerHTML = headerHTML + bodyHTML;
+  makeSortable(table);
+
+  // Distribution chart
+  updateAttrChart();
+  updateShiftTable();
+  buildInsightCards();
+})();
+
+function updateAttrChart() {
+  const revs = getModelRevenue(selectedModel);
+  const ctx = document.getElementById('attrDistChart');
+  if (attrDistChart) attrDistChart.destroy();
+  attrDistChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: channels.map(c => c.name),
+      datasets: [{
+        data: revs,
+        backgroundColor: chartColors,
+        borderWidth: 2,
+        borderColor: '#fff',
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'right', labels: { font: { size: 12 }, padding: 12 } },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const v = ctx.raw;
+              const pct = (v / totalRev * 100).toFixed(1);
+              return ctx.label + ': ' + fmtDollar(v) + ' (' + pct + '%)';
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+function updateShiftTable() {
+  const table = document.getElementById('attr-shift-table');
+  const lcRevs = getModelRevenue('lastClick');
+  const selRevs = getModelRevenue(selectedModel);
+
+  let html = `<thead><tr>
+    <th>Channel</th><th>Last Click Revenue</th><th>${modelNames[selectedModel]} Revenue</th>
+    <th>Shift ($)</th><th>Shift (%)</th>
+  </tr></thead><tbody>`;
+
+  channels.forEach((c, i) => {
+    const shift = selRevs[i] - lcRevs[i];
+    const shiftPct = lcRevs[i] > 0 ? (shift / lcRevs[i] * 100) : 0;
+    const cls = shift >= 0 ? 'shift-pos' : 'shift-neg';
+    const sign = shift >= 0 ? '+' : '';
+    html += `<tr>
+      <td><strong>${c.name}</strong></td>
+      <td>${fmtDollar(lcRevs[i])}</td>
+      <td>${fmtDollar(selRevs[i])}</td>
+      <td class="${cls}">${sign}${fmtDollar(shift)}</td>
+      <td class="${cls}">${sign}${shiftPct.toFixed(1)}%</td>
+    </tr>`;
+  });
+  html += '</tbody>';
+  table.innerHTML = html;
+  makeSortable(table);
+}
+
+function buildInsightCards() {
+  const container = document.getElementById('insight-cards');
+  const lcRevs = getModelRevenue('lastClick');
+  const linearRevs = getModelRevenue('linear');
+  const fcRevs = getModelRevenue('firstClick');
+  const tdRevs = getModelRevenue('timeDecay');
+
+  // Meta under-credited by last click vs linear
+  const metaIdx = channels.findIndex(c => c.name === 'Meta (FB/IG)');
+  const metaShift = ((linearRevs[metaIdx] - lcRevs[metaIdx]) / lcRevs[metaIdx] * 100).toFixed(0);
+
+  // Organic first click share vs last click share
+  const orgIdx = channels.findIndex(c => c.name === 'Organic Search');
+  const orgFCPct = (fcRevs[orgIdx] / totalRev * 100).toFixed(0);
+  const orgLCPct = (lcRevs[orgIdx] / totalRev * 100).toFixed(0);
+
+  // PMax time decay vs last click
+  const pmaxIdx = channels.findIndex(c => c.name === 'Google PMax');
+  const pmaxShift = ((tdRevs[pmaxIdx] - lcRevs[pmaxIdx]) / lcRevs[pmaxIdx] * 100).toFixed(0);
+
+  // TikTok first click lift
+  const ttIdx = channels.findIndex(c => c.name === 'TikTok');
+  const ttShift = ((fcRevs[ttIdx] - lcRevs[ttIdx]) / lcRevs[ttIdx] * 100).toFixed(0);
+
+  const insights = [
+    `Meta (FB/IG) is <strong>${Math.abs(metaShift)}% under-credited</strong> by Last Click vs Linear attribution, suggesting significant upper-funnel contribution.`,
+    `Organic Search drives <strong>${orgFCPct}% of first touches</strong> but only <strong>${orgLCPct}% of last clicks</strong>, indicating a key discovery channel.`,
+    `Google PMax captures <strong>${pmaxShift}% more revenue</strong> under Time Decay vs Last Click, reflecting its role across the full funnel.`,
+    `TikTok revenue attribution increases by <strong>${ttShift}%</strong> under First Click, confirming its role as an awareness driver.`,
+  ];
+  container.innerHTML = insights.map(i => `<div class="insight-card"><p>${i}</p></div>`).join('');
+}
+
+/* ========== TAB 3: MEDIA MIX ========== */
+(function buildMediaMix() {
+  // Budget Donut
+  const paidChannels = channels.filter(c => c.spend > 0);
+  new Chart(document.getElementById('budgetDonut'), {
+    type: 'doughnut',
+    data: {
+      labels: paidChannels.map(c => c.name),
+      datasets: [{
+        data: paidChannels.map(c => c.spend),
+        backgroundColor: paidChannels.map(c => channelColors[c.name]),
+        borderWidth: 2,
+        borderColor: '#fff',
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'right', labels: { font: { size: 12 }, padding: 12 } },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const v = ctx.raw;
+              const pct = (v / totalSpend * 100).toFixed(1);
+              return ctx.label + ': ' + fmtDollar(v) + ' (' + pct + '%)';
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // Efficiency Frontier Scatter
+  const scatterData = paidChannels.map(c => ({
+    x: c.spend,
+    y: c.roas,
+    r: Math.sqrt(c.lastClickRev) / 8,
+    label: c.name,
+  }));
+  new Chart(document.getElementById('efficiencyScatter'), {
+    type: 'bubble',
+    data: {
+      datasets: paidChannels.map((c, i) => ({
+        label: c.name,
+        data: [{ x: c.spend, y: c.roas, r: Math.max(8, Math.sqrt(c.lastClickRev) / 6) }],
+        backgroundColor: channelColors[c.name] + 'AA',
+        borderColor: channelColors[c.name],
+        borderWidth: 2,
+      }))
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', labels: { font: { size: 11 } } },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const c = paidChannels[ctx.datasetIndex];
+              return c.name + ': Spend ' + fmtDollar(c.spend) + ', ROAS ' + fmtROAS(c.roas) + ', Rev ' + fmtDollar(c.lastClickRev);
+            }
+          }
+        }
+      },
+      scales: {
+        x: { title: { display: true, text: 'Spend ($)' }, ticks: { callback: v => '$' + (v/1000).toFixed(0) + 'K' } },
+        y: { title: { display: true, text: 'ROAS' }, ticks: { callback: v => v.toFixed(1) + 'x' } }
+      }
+    }
+  });
+
+  // Marginal ROAS Table
+  const marginalData = paidChannels.map(c => {
+    // Diminishing returns: marginal ROAS = currentROAS * (1 - spendShare * 0.4)
+    const spendShare = c.spend / totalSpend;
+    const margROAS = c.roas * (1 - spendShare * 0.45 - 0.05);
+    let action, actionClass;
+    if (margROAS > blendedROAS * 1.15) { action = 'Increase Budget'; actionClass = 'badge-green'; }
+    else if (margROAS > blendedROAS * 0.85) { action = 'Maintain'; actionClass = 'badge-yellow'; }
+    else if (margROAS > blendedROAS * 0.6) { action = 'Test Scale'; actionClass = 'badge-blue'; }
+    else { action = 'Reduce Budget'; actionClass = 'badge-red'; }
+    return { ...c, margROAS, action, actionClass };
+  });
+
+  const mTable = document.getElementById('marginal-roas-table');
+  mTable.innerHTML = `
+    <thead><tr>
+      <th>Channel</th><th>Current Spend</th><th>Current ROAS</th>
+      <th>Marginal ROAS (est.)</th><th>Recommended Action</th>
+    </tr></thead>
+    <tbody>${marginalData.map(c => `<tr>
+      <td><strong>${c.name}</strong></td>
+      <td>${fmtDollar(c.spend)}</td>
+      <td class="${roasClass(c.roas)}">${fmtROAS(c.roas)}</td>
+      <td class="${roasClass(c.margROAS)}">${fmtROAS(c.margROAS)}</td>
+      <td><span class="badge ${c.actionClass}">${c.action}</span></td>
+    </tr>`).join('')}</tbody>`;
+  makeSortable(mTable);
+
+  // What-If Budget Simulator
+  buildSimulator(paidChannels);
+})();
+
+function buildSimulator(paidChannels) {
+  const inputsContainer = document.getElementById('sim-inputs');
+  const resultsContainer = document.getElementById('sim-results');
+
+  inputsContainer.innerHTML = '<h3 style="font-size:15px;font-weight:700;margin-bottom:16px;">Adjust Channel Budgets</h3>' +
+    paidChannels.map(c => {
+      const min = 0;
+      const max = Math.round(c.spend * 3);
+      return `<div class="sim-row">
+        <label>${c.name}</label>
+        <input type="range" min="${min}" max="${max}" value="${c.spend}" step="100" data-channel="${c.name}" class="sim-slider">
+        <span class="sim-val" data-channel-val="${c.name}">${fmtDollar(c.spend)}</span>
+      </div>`;
+    }).join('');
+
+  resultsContainer.innerHTML = `
+    <h3 style="font-size:15px;font-weight:700;margin-bottom:16px;">Projected Results</h3>
+    <div class="sim-result-item">
+      <div class="sim-result-label">Projected Revenue</div>
+      <div class="sim-result-value" id="sim-proj-rev">${fmtDollar(totalRev)}</div>
+      <div class="sim-result-change" id="sim-rev-change" style="color:var(--text-mid);">No change</div>
+    </div>
+    <div class="sim-result-item">
+      <div class="sim-result-label">Projected ROAS</div>
+      <div class="sim-result-value" id="sim-proj-roas">${fmtROAS(blendedROAS)}</div>
+      <div class="sim-result-change" id="sim-roas-change" style="color:var(--text-mid);">No change</div>
+    </div>
+    <div class="sim-result-item">
+      <div class="sim-result-label">Projected Purchases</div>
+      <div class="sim-result-value" id="sim-proj-purch">${totalPurchases.toLocaleString()}</div>
+      <div class="sim-result-change" id="sim-purch-change" style="color:var(--text-mid);">No change</div>
+    </div>
+    <div class="sim-result-item">
+      <div class="sim-result-label">Total Spend</div>
+      <div class="sim-result-value" id="sim-total-spend">${fmtDollar(totalSpend)}</div>
+    </div>`;
+
+  document.querySelectorAll('.sim-slider').forEach(slider => {
+    slider.addEventListener('input', recalcSimulator);
+  });
+}
+
+function recalcSimulator() {
+  const paidChannels = channels.filter(c => c.spend > 0);
+  let projRev = 0;
+  let projSpend = 0;
+  let projPurch = 0;
+
+  paidChannels.forEach(c => {
+    const slider = document.querySelector(`.sim-slider[data-channel="${c.name}"]`);
+    const newSpend = parseFloat(slider.value);
+    const ratio = newSpend / c.spend;
+    // Diminishing returns: revenue scales as spend^0.7 (concave)
+    const revMultiplier = Math.pow(ratio, 0.7);
+    const chRev = c.lastClickRev * revMultiplier;
+    const chPurch = c.purchases * revMultiplier;
+    projRev += chRev;
+    projSpend += newSpend;
+    projPurch += chPurch;
+
+    document.querySelector(`[data-channel-val="${c.name}"]`).textContent = fmtDollar(newSpend);
+  });
+
+  // Add non-paid revenue
+  channels.filter(c => c.spend === 0).forEach(c => {
+    projRev += c.lastClickRev;
+    projPurch += c.purchases;
+  });
+
+  const projROAS = projSpend > 0 ? projRev / projSpend : 0;
+  projPurch = Math.round(projPurch);
+
+  document.getElementById('sim-proj-rev').textContent = fmtDollar(Math.round(projRev));
+  document.getElementById('sim-proj-roas').textContent = fmtROAS(projROAS);
+  document.getElementById('sim-proj-purch').textContent = projPurch.toLocaleString();
+  document.getElementById('sim-total-spend').textContent = fmtDollar(Math.round(projSpend));
+
+  const revDiff = projRev - totalRev;
+  const revPct = (revDiff / totalRev * 100).toFixed(1);
+  const revEl = document.getElementById('sim-rev-change');
+  if (Math.abs(revDiff) < 10) { revEl.textContent = 'No change'; revEl.style.color = 'var(--text-mid)'; }
+  else { revEl.textContent = (revDiff>0?'+':'') + fmtDollar(Math.round(revDiff)) + ' (' + (revDiff>0?'+':'') + revPct + '%)'; revEl.style.color = revDiff>0?'#2e7d32':'#c62828'; }
+
+  const roasDiff = projROAS - blendedROAS;
+  const roasEl = document.getElementById('sim-roas-change');
+  if (Math.abs(roasDiff) < 0.01) { roasEl.textContent = 'No change'; roasEl.style.color = 'var(--text-mid)'; }
+  else { roasEl.textContent = (roasDiff>0?'+':'') + roasDiff.toFixed(2) + 'x'; roasEl.style.color = roasDiff>0?'#2e7d32':'#c62828'; }
+
+  const purchDiff = projPurch - totalPurchases;
+  const purchEl = document.getElementById('sim-purch-change');
+  if (Math.abs(purchDiff) < 2) { purchEl.textContent = 'No change'; purchEl.style.color = 'var(--text-mid)'; }
+  else { purchEl.textContent = (purchDiff>0?'+':'') + purchDiff.toLocaleString() + ' orders'; purchEl.style.color = purchDiff>0?'#2e7d32':'#c62828'; }
+}
+
+/* ========== TAB 4: CUSTOMER JOURNEY ========== */
+(function buildJourney() {
+  // Scorecards
+  const sc = document.getElementById('journey-scorecards');
+  sc.innerHTML = [
+    { label: 'Avg Touchpoints', value: '3.2' },
+    { label: 'Median Days to Purchase', value: '8 days' },
+    { label: 'Total Purchases', value: totalPurchases.toLocaleString() },
+  ].map(c => `<div class="metric-card"><div class="metric-label">${c.label}</div><div class="metric-value">${c.value}</div></div>`).join('');
+
+  // Top Conversion Paths Table
+  const pTable = document.getElementById('paths-table');
+  pTable.innerHTML = `
+    <thead><tr>
+      <th>#</th><th>Path</th><th>Conversions</th><th>% of Total</th><th>Avg Days</th><th>Avg Revenue</th>
+    </tr></thead>
+    <tbody>${journeyPaths.slice(0, 15).map((p, i) => `<tr>
+      <td>${i+1}</td>
+      <td>${p.path.map(ch => '<span class="badge badge-indigo">' + ch + '</span>').join(' <span style="color:var(--text-light);">&rarr;</span> ')}</td>
+      <td>${p.conv.toLocaleString()}</td>
+      <td>${(p.conv / totalPathConv * 100).toFixed(1)}%</td>
+      <td>${p.avgDays === 0 ? 'Same day' : p.avgDays + ' days'}</td>
+      <td>${fmtDollar(p.avgRev, 2)}</td>
+    </tr>`).join('')}</tbody>`;
+  makeSortable(pTable);
+
+  // Channel Role Cards
+  const roleContainer = document.getElementById('role-cards');
+  roleContainer.innerHTML = channels.map(c => {
+    const r = channelRoles[c.name];
+    return `<div class="role-card">
+      <h4>${c.name}</h4>
+      <div class="role-bar">
+        <div class="role-bar-intro" style="width:${r.intro}%;" title="Introducer ${r.intro}%"></div>
+        <div class="role-bar-influ" style="width:${r.influ}%;" title="Influencer ${r.influ}%"></div>
+        <div class="role-bar-close" style="width:${r.close}%;" title="Closer ${r.close}%"></div>
+      </div>
+      <div class="role-legend">
+        <span><span class="role-legend-dot" style="background:#818cf8;"></span>Introducer ${r.intro}%</span>
+        <span><span class="role-legend-dot" style="background:#a78bfa;"></span>Influencer ${r.influ}%</span>
+        <span><span class="role-legend-dot" style="background:#4f46e5;"></span>Closer ${r.close}%</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Assisted Conversions Table
+  const aTable = document.getElementById('assisted-table');
+  aTable.innerHTML = `
+    <thead><tr>
+      <th>Channel</th><th>Direct Conversions</th><th>Assisted Conversions</th>
+      <th>Total Conversions</th><th>Assist Ratio</th>
+    </tr></thead>
+    <tbody>${assistedData.map(c => {
+      const total = c.direct + c.assisted;
+      const ratio = c.assisted / c.direct;
+      const ratioColor = ratio >= 1.5 ? '#1565c0' : ratio >= 0.8 ? '#4f46e5' : '#2e7d32';
+      const ratioLabel = ratio >= 1.5 ? 'Strong Assister' : ratio >= 0.8 ? 'Balanced' : 'Strong Closer';
+      return `<tr>
+        <td><strong>${c.name}</strong></td>
+        <td>${c.direct.toLocaleString()}</td>
+        <td>${c.assisted.toLocaleString()}</td>
+        <td>${total.toLocaleString()}</td>
+        <td><span style="color:${ratioColor};font-weight:700;">${ratio.toFixed(2)}x</span> <span class="badge" style="background:${ratioColor}15;color:${ratioColor};">${ratioLabel}</span></td>
+      </tr>`;
+    }).join('')}</tbody>`;
+  makeSortable(aTable);
+})();
+</script>
+</body>
+</html>
