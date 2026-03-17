@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verdant Wellness — Product Mix Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/luxon@3/build/global/luxon.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>body{font-family:'Inter',Arial,sans-serif;background:#f7faff;margin:0;padding:0;color:#222}
+.dashboard-container{max-width:1280px;margin:40px auto;padding:20px}
+.dashboard-header{display:none}
+.demo-banner{background:linear-gradient(90deg,#f0f5ff,#f6faf6);border:1px solid #d2e3ea;border-radius:10px;padding:12px 18px;margin-bottom:20px;font-size:.88rem;color:#5a6577;display:flex;align-items:center;gap:10px}
+.spinner-overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,.85);z-index:100;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.spinner-overlay.visible{display:flex}
+.spinner-overlay .spinner{width:48px;height:48px;border:4px solid #c8e6c9;border-top-color:#2b7b31;border-radius:50%;animation:spin .8s linear infinite}
+.spinner-label{font-size:.9rem;font-weight:600;color:#888fb3}
+@keyframes spin{to{transform:rotate(360deg)}}
+.data-info-bar{display:flex;align-items:center;gap:20px;flex-wrap:wrap;background:#eef8ef;border:1px solid #c4e8c8;border-radius:10px;padding:12px 18px;margin-bottom:20px;font-size:.95rem;color:#225b3a;font-weight:500}
+.drp-wrap{position:relative;display:flex;align-items:center;gap:6px}
+.drp-step-btn{background:none;border:1.5px solid #a8d5b0;border-radius:6px;font-size:1.05rem;cursor:pointer;color:#2b7b31;padding:5px 9px;font-family:inherit;transition:all .15s;line-height:1}
+.drp-step-btn:hover{background:#e8f5e9;border-color:#2b7b31}
+.drp-trigger{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border:1.5px solid #a8d5b0;border-radius:8px;background:#fff;color:#333;font-size:.88rem;font-weight:500;cursor:pointer;font-family:inherit;transition:border-color .15s}
+.drp-trigger:hover{border-color:#2b7b31}
+.drp-arrow{color:#888fb3;font-size:.75rem;margin-left:4px}
+.drp-dropdown{position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:1px solid #d2e3ea;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.14);z-index:9999;min-width:540px}
+.drp-body{display:flex}
+.drp-presets{width:210px;border-right:1px solid #eef1fa;padding:10px 0;overflow-y:auto;max-height:370px}
+.drp-preset-item{padding:7px 16px;font-size:.84rem;color:#444;cursor:pointer;transition:background .12s}
+.drp-preset-item:hover{background:#e8f5e9}
+.drp-preset-item.active{background:#2b7b31;color:#fff}
+.drp-divider{border:none;border-top:1px solid #eef1fa;margin:4px 0}
+.drp-preset-input-row{display:flex;align-items:center;gap:6px;padding:6px 16px;font-size:.82rem;color:#556}
+.drp-preset-input-row input{width:52px;padding:3px 6px;border:1.5px solid #d2e3d8;border-radius:5px;font-size:.82rem;text-align:center;font-family:inherit;color:#333}
+.drp-calendar-side{flex:1;padding:14px 16px 10px;min-width:300px}
+.drp-date-inputs{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.drp-date-inputs input{flex:1;padding:5px 8px;border:1.5px solid #d2e3d8;border-radius:6px;font-size:.82rem;font-family:inherit;color:#333;text-align:center}
+.drp-date-inputs input:focus{outline:none;border-color:#2b7b31}
+.drp-date-sep{color:#888fb3;font-size:.85rem}
+.drp-cal-scroll{max-height:350px;overflow-y:auto;overscroll-behavior:contain}
+.drp-cal-month{margin-bottom:6px}
+.drp-cal-month-label{font-weight:600;font-size:.88rem;color:#225b3a;padding:6px 0 4px;position:sticky;top:0;background:#fff;z-index:1}
+.drp-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
+.drp-cal-dow{text-align:center;font-size:.72rem;font-weight:600;color:#888fb3;padding:4px 0}
+.drp-cal-day{text-align:center;padding:6px 0;font-size:.82rem;cursor:pointer;border-radius:6px;transition:background .1s;color:#333}
+.drp-cal-day:hover{background:#e8f5e9}
+.drp-cal-day.outside{color:#ccc}
+.drp-cal-day.in-range{background:#e8f5e9;border-radius:0}
+.drp-cal-day.range-start{background:#2b7b31;color:#fff;border-radius:6px 0 0 6px}
+.drp-cal-day.range-end{background:#2b7b31;color:#fff;border-radius:0 6px 6px 0}
+.drp-cal-day.range-start.range-end{border-radius:6px}
+.drp-cal-day.today{font-weight:700}
+.drp-actions{display:flex;justify-content:flex-end;gap:8px;padding:10px 16px;border-top:1px solid #eef1fa}
+.drp-btn-cancel{padding:6px 16px;border:1.5px solid #d2e3d8;border-radius:6px;background:#fff;color:#556;font-size:.82rem;font-weight:500;cursor:pointer;font-family:inherit}
+.drp-btn-cancel:hover{border-color:#999}
+.drp-btn-apply{padding:6px 16px;border:none;border-radius:6px;background:#2b7b31;color:#fff;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit}
+.drp-btn-apply:hover{background:#225b3a}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;margin-bottom:26px}
+.metric-card{background:#fff;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,.06),0 1.5px 6px rgba(0,0,0,.03);padding:24px 22px 18px;display:flex;flex-direction:column;align-items:flex-start;transition:box-shadow .16s}
+.metric-card:hover{box-shadow:0 6px 24px rgba(43,123,49,.11)}
+.metric-label{font-size:1rem;color:#888fb3;font-weight:600;margin-bottom:6px;line-height:1.2}
+.metric-value{font-weight:700;color:#225b3a;font-size:1.6rem;line-height:1.15;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;width:100%}
+.metric-sub{font-size:.85rem;color:#888fb3;font-weight:600;margin-top:3px}
+.section-card{background:#fff;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,.06),0 1.5px 6px rgba(0,0,0,.03);padding:24px 28px;margin-bottom:26px}
+.section-title{display:flex;align-items:center;justify-content:space-between;font-size:1.22em;font-weight:700;color:#225b3a;margin-bottom:16px;letter-spacing:-.01em;border-bottom:2px solid #eef1fa;padding-bottom:10px}
+.sort-arrow{opacity:.4;font-size:.82em;margin-left:3px}
+.filter-wrap{position:relative;flex-shrink:0;margin-left:12px}
+.filter-btn{background:#e3efea;color:#2b7b31;border:none;border-radius:6px;padding:4px 10px;font-size:.82rem;font-weight:600;cursor:pointer;white-space:nowrap}
+.filter-btn:hover{background:#2b7b31;color:#fff}
+.filter-panel{display:none;position:absolute;right:0;top:110%;background:#fff;border:1px solid #d2e3ea;border-radius:10px;padding:10px 14px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:200;min-width:180px;max-height:280px;overflow-y:auto}
+.filter-panel.open{display:block}
+.filter-panel label{display:flex;align-items:center;gap:7px;padding:3px 0;font-size:.88rem;cursor:pointer;color:#333;white-space:nowrap}
+.filter-panel input[type="checkbox"]{accent-color:#2b7b31;cursor:pointer}
+.category-layout{display:grid;grid-template-columns:260px 1fr;gap:32px;align-items:center}
+@media(max-width:800px){.category-layout{grid-template-columns:1fr}}
+.cat-badge{display:inline-block;padding:3px 10px;border-radius:99px;font-size:.8rem;font-weight:700;color:#fff;white-space:nowrap}
+.data-table{width:100%;border-collapse:collapse;font-size:.94rem}
+.data-table th{text-align:left;color:#888fb3;font-weight:600;font-size:.87rem;padding:8px 12px;border-bottom:2px solid #e5efe9;white-space:nowrap;cursor:pointer;user-select:none}
+.data-table th:hover{color:#2b7b31}
+.data-table td{padding:9px 12px;color:#333;font-weight:500;border-bottom:1px solid #f0f4f2}
+.data-table tr:nth-child(even) td{background:#f7faf8}
+.data-table tr:hover td{background:#eef8ef}
+.data-table td:first-child{font-weight:600;color:#225b3a}
+.data-table .num{text-align:right}
+.data-table .pct-col{color:#888fb3;text-align:right}
+.chart-section{background:#fff;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,.05);padding:22px 28px 16px;margin-bottom:26px}
+.chart-controls{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.chart-controls label{font-size:.97em;color:#225b3a;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px}
+.chart-controls input[type="checkbox"]{accent-color:#2b7b31}
+.bucket-btn{padding:4px 14px;border-radius:14px;border:1.5px solid #a8d5b0;background:#fff;color:#556;font-size:.78rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
+.bucket-btn:hover{border-color:#2b7b31;color:#2b7b31}
+.bucket-btn.active{background:#2b7b31;color:#fff;border-color:#2b7b31}
+.date-btn{padding:5px 13px;border-radius:6px;border:1.5px solid #a8d5b0;background:white;color:#556;font-size:.82rem;font-weight:500;cursor:pointer;transition:all .15s;font-family:inherit}
+.date-btn:hover{border-color:#2b7b31;color:#2b7b31}
+.stat-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px}
+.stat-tile{background:#eef8ef;border-radius:10px;padding:16px 18px;border:1px solid #d6edda}
+.stat-tile-label{font-size:.87rem;color:#888fb3;font-weight:600;margin-bottom:5px}
+.stat-tile-value{font-size:1.75rem;font-weight:700;color:#225b3a;line-height:1.2}
+.stat-tile-sub{font-size:.81rem;color:#888fb3;margin-top:3px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-bottom:26px}
+@media(max-width:900px){.two-col{grid-template-columns:1fr}}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media(max-width:768px){
+.pm-header{padding:12px 16px;flex-direction:column;align-items:flex-start;gap:8px}
+.pm-header-title{font-size:14px}
+.dashboard-container{padding:12px;margin:16px auto}
+.dashboard-header{gap:10px;margin-bottom:16px}
+.demo-banner{font-size:.8rem;padding:10px 14px}
+.data-info-bar{font-size:.82rem;padding:10px 14px;gap:10px}
+.drp-dropdown{min-width:calc(100vw - 32px);left:0;right:0;max-width:100vw}
+.drp-body{flex-direction:column}
+.drp-presets{width:100%;border-right:none;border-bottom:1px solid #eef1fa;max-height:160px;display:flex;flex-wrap:wrap;gap:2px;padding:8px}
+.drp-preset-item{padding:5px 10px;font-size:.78rem}
+.drp-calendar-side{min-width:unset;padding:10px 12px 8px}
+.metrics-row{grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px}
+.metric-card{padding:16px 14px 12px}
+.metric-label{font-size:.82rem}
+.metric-value{font-size:1.2rem}
+.metric-sub{font-size:.75rem}
+.section-card{padding:16px;margin-bottom:18px}
+.section-title{font-size:1.05em;flex-wrap:wrap;gap:8px}
+.chart-section{padding:16px 14px 12px;margin-bottom:18px}
+.chart-controls{gap:8px}
+.chart-controls label{font-size:.82em}
+.stat-tiles{grid-template-columns:repeat(2,1fr);gap:10px}
+.stat-tile{padding:12px 14px}
+.stat-tile-value{font-size:1.3rem}
+.data-table{font-size:.82rem}
+.data-table th{padding:6px 8px;font-size:.76rem}
+.data-table td{padding:7px 8px}
+.category-layout{gap:18px}
+.inv-grid{grid-template-columns:1fr}
+.filter-panel{min-width:160px;right:-10px}
+}
+.table-pager{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:12px;font-size:.92rem;color:#888fb3;font-weight:500}
+.table-pager button{background:#e3efea;color:#2b7b31;border:none;border-radius:6px;padding:5px 12px;font-size:.92rem;font-weight:600;cursor:pointer;transition:background .13s}
+.table-pager button:hover{background:#2b7b31;color:#fff}
+.table-pager button:disabled{background:#eef1fa;color:#bbb;cursor:default}
+.freq-bar-bg{height:8px;border-radius:4px;background:#e5efe9;display:inline-block;width:100%;min-width:80px;vertical-align:middle}
+.freq-bar-fill{height:8px;border-radius:4px;background:#2b7b31;display:block}
+.inv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px}
+.inv-card{border-radius:12px;padding:18px 18px 14px;border:2px solid #d6edda;background:#f8fdf9}
+.inv-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:8px}
+.inv-name{font-size:.97rem;font-weight:700;color:#225b3a;line-height:1.3}
+.inv-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:700;color:#fff;white-space:nowrap;flex-shrink:0}
+.inv-burn-row{display:flex;margin-bottom:14px;border-bottom:1px solid #eef1fa;padding-bottom:14px}
+.inv-stat{flex:1;text-align:center}
+.inv-stat-val{font-size:1.35rem;font-weight:700;color:#225b3a;line-height:1.1}
+.inv-stat-lbl{font-size:.72rem;color:#888fb3;font-weight:600;margin-top:2px}
+.inv-fields{display:flex;flex-direction:column;gap:8px;margin-bottom:4px}
+.inv-lbl{display:block;font-size:.78rem;color:#888fb3;font-weight:600;margin-bottom:3px}
+.inv-input{width:100%;box-sizing:border-box;border:1.5px solid #d2e3d8;border-radius:7px;padding:6px 10px;font-size:.92rem;color:#225b3a;background:#fff}
+.inv-input:focus{outline:none;border-color:#2b7b31}
+.inv-proj{margin-top:12px;border-top:1px solid #eef1fa;padding-top:10px;display:flex;flex-direction:column;gap:4px}
+.inv-proj-row{display:flex;justify-content:space-between;align-items:baseline;font-size:.85rem}
+.inv-proj-lbl{color:#888fb3}
+.inv-proj-val{font-weight:600;color:#225b3a;text-align:right}
+.inv-proj-dim{font-size:.78em;color:#888fb3;font-weight:400}
+.inv-period-note{font-size:.77rem;color:#888fb3;margin-top:4px}
+.pm-header{background:#fff;border-bottom:1px solid #e2e8f0;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.pm-header-left{display:flex;align-items:center;gap:16px}
+.back-link{color:#888fb3;text-decoration:none;font-size:13px;font-weight:500;transition:color .2s}
+.back-link:hover{color:#2b7b31}
+.pm-header-title{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;color:#1a1a2e}
+.pm-header-dot{width:12px;height:12px;background:#2b7b31;border-radius:50%;display:inline-block}
+.pm-header-meta{font-size:12px;color:#888fb3;font-weight:500}</style>
+</head>
+<body>
+<div class="spinner-overlay visible" id="spinnerOverlay">
+  <div class="spinner"></div>
+  <div class="spinner-label">Generating mock data...</div>
+</div>
+<!-- Header -->
+<div class="pm-header">
+  <div class="pm-header-left">
+    <a href="../work.html" class="back-link">&larr; Back to Work</a>
+    <div class="pm-header-title">
+      <span class="pm-header-dot"></span>
+      Verdant Wellness &mdash; Customer &amp; Transaction Intelligence
+    </div>
+  </div>
+  <div class="drp-wrap" id="drpWrap">
+    <button class="drp-step-btn" id="drpStepBack" type="button">&#8249;</button>
+    <button class="drp-trigger" id="drpTrigger" type="button"><span id="drpTriggerText">All Time</span><span class="drp-arrow">&#9662;</span></button>
+    <button class="drp-step-btn" id="drpStepFwd" type="button">&#8250;</button>
+      <div class="drp-dropdown" id="drpDropdown" style="display:none;">
+        <div class="drp-body">
+          <div class="drp-presets" id="drpPresets">
+            <div class="drp-preset-item" data-preset="custom">Custom</div><hr class="drp-divider"/>
+            <div class="drp-preset-item" data-preset="today">Today</div>
+            <div class="drp-preset-item" data-preset="yesterday">Yesterday</div>
+            <div class="drp-preset-item" data-preset="thisweek">This week</div>
+            <div class="drp-preset-item" data-preset="last7">Last 7 days</div>
+            <div class="drp-preset-item" data-preset="lastweek">Last week</div>
+            <div class="drp-preset-item" data-preset="last14">Last 14 days</div>
+            <div class="drp-preset-item" data-preset="thismonth">This month</div>
+            <div class="drp-preset-item" data-preset="last30">Last 30 days</div>
+            <div class="drp-preset-item" data-preset="lastmonth">Last month</div>
+            <div class="drp-preset-item" data-preset="last12m">Last 12 months</div>
+            <div class="drp-preset-item" data-preset="all">All time</div>
+            <hr class="drp-divider"/>
+            <div class="drp-preset-input-row"><input type="number" id="drpDaysToday" value="30" min="1"> days up to today</div>
+            <div class="drp-preset-input-row"><input type="number" id="drpDaysYesterday" value="30" min="1"> days up to yesterday</div>
+          </div>
+          <div class="drp-calendar-side">
+            <div class="drp-date-inputs"><input type="text" id="drpStartInput" placeholder="MM/DD/YYYY"><span class="drp-date-sep">&ndash;</span><input type="text" id="drpEndInput" placeholder="MM/DD/YYYY"></div>
+            <div class="drp-cal-scroll" id="drpCalScroll"></div>
+          </div>
+        </div>
+        <div class="drp-actions"><button class="drp-btn-cancel" id="drpCancel" type="button">Cancel</button><button class="drp-btn-apply" id="drpApply" type="button">Apply</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Main Dashboard -->
+<div class="dashboard-container">
+  <div class="demo-banner"><strong>Demo Mode</strong> &mdash; This dashboard uses programmatically generated mock data for Verdant Wellness, a DTC liver-health supplement brand. All figures are illustrative.</div>
+  <div id="mainContent">
+    <div class="data-info-bar" id="dataInfoBar" style="display:none"><span id="infoRows"></span><span id="infoDateSpan"></span></div>
+    <!-- Metric Cards -->
+    <div class="metrics-row">
+      <div class="metric-card"><div class="metric-label">Gross Revenue</div><div class="metric-value" id="mRevenue">&ndash;</div></div>
+      <div class="metric-card"><div class="metric-label">Refunds</div><div class="metric-value" id="mRefunds" style="color:#c0392b">&ndash;</div><div class="metric-sub" id="mRefundsSub"></div></div>
+      <div class="metric-card"><div class="metric-label">Net Revenue</div><div class="metric-value" id="mNetRev">&ndash;</div></div>
+      <div class="metric-card"><div class="metric-label">Transactions</div><div class="metric-value" id="mTransactions">&ndash;</div><div class="metric-sub" id="mTransactionsSub"></div></div>
+      <div class="metric-card"><div class="metric-label">Unique Customers</div><div class="metric-value" id="mCustomers">&ndash;</div><div class="metric-sub" id="mCustomersSub"></div></div>
+      <div class="metric-card"><div class="metric-label">Avg Order Value</div><div class="metric-value" id="mAov">&ndash;</div><div class="metric-sub" id="mAovSub"></div></div>
+      <div class="metric-card"><div class="metric-label">AutoShip Rebill Rev</div><div class="metric-value" id="mRebillRev">&ndash;</div><div class="metric-sub" id="mRebillSub"></div></div>
+      <div class="metric-card"><div class="metric-label">Avg LTV</div><div class="metric-value" id="mAvgCustVal">&ndash;</div><div class="metric-sub" id="mAvgCustValSub"></div></div>
+      <div class="metric-card"><div class="metric-label">Avg Funnel Value</div><div class="metric-value" id="mAvgFunnel">&ndash;</div><div class="metric-sub" id="mAvgFunnelSub"></div></div>
+      <div class="metric-card"><div class="metric-label">AutoShip Attach Rate</div><div class="metric-value" id="mAttachRate">&ndash;</div><div class="metric-sub" id="mAttachRateSub"></div></div>
+    </div>
+    <!-- Revenue by Category -->
+    <div class="section-card">
+      <div class="section-title">Revenue by Category<div style="display:flex;align-items:center;gap:8px;"><button class="date-btn" style="font-size:.79rem;" onclick="exportTableCSV('categoryTableBody','revenue-by-category.csv')">&#8595; CSV</button><div class="filter-wrap"><button class="filter-btn" onclick="toggleFilterPanel('fp_cat')">Filter &#9663;</button><div class="filter-panel" id="fp_cat"></div></div></div></div>
+      <div class="category-layout"><div style="width:240px;height:240px;position:relative;margin:0 auto;"><canvas id="categoryDonut"></canvas></div><div><table class="data-table"><thead><tr><th data-col="cat" data-tbl="cat">Category <span class="sort-arrow">&#8597;</span></th><th data-col="orders" data-tbl="cat" class="num">Orders <span class="sort-arrow">&#8597;</span></th><th data-col="revenue" data-tbl="cat" class="num">Revenue <span class="sort-arrow">&#8597;</span></th><th data-col="pct" data-tbl="cat" class="pct-col">% of Total <span class="sort-arrow">&#8597;</span></th><th data-col="avg" data-tbl="cat" class="num">Avg Order <span class="sort-arrow">&#8597;</span></th></tr></thead><tbody id="categoryTableBody"></tbody></table></div></div>
+    </div>
+    <!-- Revenue Trend -->
+    <div class="chart-section"><div class="section-title" style="border-bottom:2px solid #eef1fa;padding-bottom:10px;margin-bottom:14px;">Revenue Trend</div><div class="chart-controls" id="trendControls"></div><div style="width:100%;height:300px;position:relative;"><canvas id="trendChart"></canvas></div></div>
+    <!-- New Customers Acquisition -->
+    <div class="chart-section"><div class="section-title" style="border-bottom:2px solid #eef1fa;padding-bottom:10px;margin-bottom:14px;">New Customers Acquisition</div><div id="acquisitionControls" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;"></div><div style="width:100%;height:300px;position:relative;"><canvas id="acquisitionChart"></canvas></div></div>
+    <!-- New Customer Funnel Analysis -->
+    <div class="section-card"><div class="section-title">New Customer Funnel Analysis</div><div class="stat-tiles" id="upsellStats"></div></div>
+    <!-- Top Upsells -->
+    <div class="section-card"><div class="section-title">Top Upsells<div style="display:flex;align-items:center;gap:8px;"><button class="date-btn" style="font-size:.79rem;" onclick="exportTableCSV('upsellLeaderBody','top-upsells.csv')">&#8595; CSV</button><div class="filter-wrap"><button class="filter-btn" onclick="toggleFilterPanel('fp_upsell')">Filter &#9663;</button><div class="filter-panel" id="fp_upsell"></div></div></div></div><table class="data-table"><thead><tr><th data-col="name" data-tbl="upsell">Product <span class="sort-arrow">&#8597;</span></th><th data-col="count" data-tbl="upsell" class="num">Times Taken <span class="sort-arrow">&#8597;</span></th><th data-col="revenue" data-tbl="upsell" class="num">Revenue <span class="sort-arrow">&#8597;</span></th><th data-col="avg" data-tbl="upsell" class="num">Avg Price <span class="sort-arrow">&#8597;</span></th><th data-col="takeRate" data-tbl="upsell" class="pct-col">Take Rate <span class="sort-arrow">&#8597;</span></th></tr></thead><tbody id="upsellLeaderBody"></tbody></table></div>
+    <!-- Liver Restore Store Funnel -->
+    <div class="section-card"><div class="section-title">Liver Restore Store Funnel</div><div class="stat-tiles" id="storeFunnelStats"></div></div>
+    <!-- AOV by Funnel Entry Point -->
+    <div class="section-card"><div class="section-title">AOV by Funnel Entry Point<button class="date-btn" style="font-size:.79rem;" onclick="exportTableCSV('aovFunnelBody','aov-by-funnel.csv')">&#8595; CSV</button></div><table class="data-table"><thead><tr><th data-col="label" data-tbl="aovFunnel">Product / Funnel <span class="sort-arrow">&#8597;</span></th><th data-col="sessions" data-tbl="aovFunnel" class="num">Orders <span class="sort-arrow">&#8597;</span></th><th data-col="avgEntry" data-tbl="aovFunnel" class="num">Avg Entry Price <span class="sort-arrow">&#8597;</span></th><th data-col="upsellRate" data-tbl="aovFunnel" class="pct-col">Upsell Take Rate <span class="sort-arrow">&#8597;</span></th><th data-col="grossAOV" data-tbl="aovFunnel" class="num">Gross AOV <span class="sort-arrow">&#8597;</span></th><th data-col="refunds" data-tbl="aovFunnel" class="num">Refunds <span class="sort-arrow">&#8597;</span></th><th data-col="netAOV" data-tbl="aovFunnel" class="num">Net AOV <span class="sort-arrow">&#8597;</span></th><th data-col="totalRev" data-tbl="aovFunnel" class="num">Total Net Rev <span class="sort-arrow">&#8597;</span></th></tr></thead><tbody id="aovFunnelBody"></tbody></table><p style="margin:12px 0 0;font-size:.82rem;color:#aab;font-style:italic;">Gross AOV = entry product + same-session upsells. Net AOV = Gross AOV minus refunds.</p></div>
+    <!-- AutoShip Attach Rate -->
+    <div class="section-card"><div class="section-title">AutoShip Attach Rate<button class="date-btn" style="font-size:.79rem;" onclick="exportTableCSV('attachRateProductBody','autoship-attach-rate.csv')">&#8595; CSV</button></div><div class="stat-tiles" id="attachRateTiles"></div><div style="margin-top:22px;"><div style="font-size:1em;font-weight:700;color:#225b3a;margin-bottom:10px;">Signups by Product</div><table class="data-table" style="max-width:620px;"><thead><tr><th>Product</th><th class="num">Signups</th><th class="num">Revenue</th><th class="pct-col">% of Signups</th><th class="num">Avg Price</th></tr></thead><tbody id="attachRateProductBody"></tbody></table></div></div>
+    <!-- AutoShip Retention -->
+    <div class="section-card"><div class="section-title">AutoShip Retention<button class="date-btn" style="font-size:.79rem;" onclick="exportTableCSV('autoshipFamilyBody','autoship-retention.csv')">&#8595; CSV</button></div><div class="stat-tiles" id="churnStats"></div><div style="margin-top:22px;"><div style="font-size:1em;font-weight:700;color:#225b3a;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">Subscribers by Product<div class="filter-wrap"><button class="filter-btn" onclick="toggleFilterPanel('fp_family')">Filter &#9663;</button><div class="filter-panel" id="fp_family"></div></div></div><table class="data-table"><thead><tr><th data-col="label" data-tbl="family">Product <span class="sort-arrow">&#8597;</span></th><th data-col="active" data-tbl="family" class="num">Active <span class="sort-arrow">&#8597;</span></th><th data-col="churned" data-tbl="family" class="num">Churned <span class="sort-arrow">&#8597;</span></th><th data-col="churnRate" data-tbl="family" class="pct-col">Churn Rate <span class="sort-arrow">&#8597;</span></th><th data-col="rev" data-tbl="family" class="num">Period Rebill Rev <span class="sort-arrow">&#8597;</span></th><th data-col="avgRebill" data-tbl="family" class="num">Avg Rebill <span class="sort-arrow">&#8597;</span></th><th data-col="avgSubLen" data-tbl="family" class="num">Avg Sub Length <span class="sort-arrow">&#8597;</span></th></tr></thead><tbody id="autoshipFamilyBody"></tbody></table></div><p style="margin:12px 0 0;font-size:.82rem;color:#aab;font-style:italic;">Churn estimated from full data history. Subscriber is churned when overdue 1.5x their typical interval.</p></div>
+    <!-- Current Subscriber Breakdown -->
+    <div class="section-card"><div class="section-title">Current Subscriber Breakdown<div style="display:flex;align-items:center;gap:8px;"><button class="date-btn" style="font-size:.79rem;" onclick="exportTableCSV('subBreakBody','subscriber-breakdown.csv')">&#8595; CSV</button><div class="filter-wrap"><button class="filter-btn" onclick="toggleFilterPanel('fp_subBreak')">Filter &#9663;</button><div class="filter-panel" id="fp_subBreak"></div></div></div></div><div class="stat-tiles" id="subBreakTiles"></div><div style="margin-top:22px;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div style="font-size:1em;font-weight:700;color:#225b3a;">Active Subscribers by Product Variant</div><input type="text" id="subBreakSearch" placeholder="Search product variants..." style="font-size:.85rem;padding:5px 10px;border:1px solid #d6edda;border-radius:6px;width:220px;outline:none;"></div><table class="data-table"><thead><tr><th data-col="variant" data-tbl="subBreak">Product Variant <span class="sort-arrow">&#8597;</span></th><th data-col="family" data-tbl="subBreak">Family <span class="sort-arrow">&#8597;</span></th><th data-col="qty" data-tbl="subBreak" class="num">Qty <span class="sort-arrow">&#8597;</span></th><th data-col="freqLabel" data-tbl="subBreak">Frequency <span class="sort-arrow">&#8597;</span></th><th data-col="subscribers" data-tbl="subBreak" class="num">Subscribers <span class="sort-arrow">&#8597;</span></th><th data-col="pctTotal" data-tbl="subBreak" class="pct-col">% of Total <span class="sort-arrow">&#8597;</span></th><th data-col="avgPrice" data-tbl="subBreak" class="num">Avg Price <span class="sort-arrow">&#8597;</span></th><th data-col="estMonthlyRev" data-tbl="subBreak" class="num">Est. Monthly Rev <span class="sort-arrow">&#8597;</span></th></tr></thead><tbody id="subBreakBody"></tbody></table></div><div style="margin-top:28px;"><div style="font-size:1em;font-weight:700;color:#225b3a;margin-bottom:10px;">Quantity Distribution by Family</div><div id="subBreakQtyBars"></div></div></div>
+    <!-- Product Mix Table -->
+    <div class="section-card"><div class="section-title">Product Mix<div style="display:flex;align-items:center;gap:8px;"><button class="date-btn" style="font-size:.79rem;" onclick="exportProductTable()">&#8595; CSV</button><div class="filter-wrap"><button class="filter-btn" onclick="toggleFilterPanel('fp_product')">Filter &#9663;</button><div class="filter-panel" id="fp_product"></div></div></div></div><input type="text" id="productSearch" placeholder="Search products..." style="width:100%;max-width:360px;padding:7px 12px;margin-bottom:12px;border:1.5px solid #c8d6e5;border-radius:8px;font-size:.88rem;font-family:inherit;"><table class="data-table" id="productTable"><thead><tr><th data-col="name">Product <span class="sort-arrow">&#8597;</span></th><th data-col="category">Category <span class="sort-arrow">&#8597;</span></th><th data-col="orders" class="num">Orders <span class="sort-arrow">&#8597;</span></th><th data-col="revenue" class="num">Revenue <span class="sort-arrow">&#8597;</span></th><th data-col="avg" class="num">Avg Price <span class="sort-arrow">&#8597;</span></th><th data-col="pct" class="pct-col">% of Rev <span class="sort-arrow">&#8597;</span></th></tr></thead><tbody id="productTableBody"></tbody></table><div class="table-pager" id="productPager"></div></div>
+    <!-- Promo Performance -->
+    <div class="section-card"><div class="section-title">Promo Performance<div style="display:flex;align-items:center;gap:8px;"><button class="date-btn" style="font-size:.79rem;" onclick="exportTableCSV('promoBody','promo-performance.csv')">&#8595; CSV</button><div class="filter-wrap"><button class="filter-btn" onclick="toggleFilterPanel('fp_promo')">Filter &#9663;</button><div class="filter-panel" id="fp_promo"></div></div></div></div><table class="data-table"><thead><tr><th data-col="ev" data-tbl="promo">Event <span class="sort-arrow">&#8597;</span></th><th data-col="orders" data-tbl="promo" class="num">Orders <span class="sort-arrow">&#8597;</span></th><th data-col="revenue" data-tbl="promo" class="num">Revenue <span class="sort-arrow">&#8597;</span></th><th data-col="avg" data-tbl="promo" class="num">Avg Order <span class="sort-arrow">&#8597;</span></th><th data-col="pct" data-tbl="promo" class="pct-col">% of Total Rev <span class="sort-arrow">&#8597;</span></th></tr></thead><tbody id="promoBody"></tbody></table></div>
+    <!-- LTV Cohorts -->
+    <div class="section-card"><div class="section-title">Revenue LTV by Cohort Age<span style="font-size:.75rem;font-weight:500;color:#888fb3;margin-left:8px;">all data &middot; net of refunds</span></div><div class="stat-tiles" id="ltvCohortTiles"></div></div>
+    <div class="section-card"><div class="section-title">Gross Profit LTV by Cohort Age<span style="font-size:.75rem;font-weight:500;color:#888fb3;margin-left:8px;">revenue minus COGS &middot; net of refunds</span></div><div class="stat-tiles" id="gpLtvCohortTiles"></div></div>
+    <!-- Top Customers -->
+    <div class="section-card"><div class="section-title">Top Customers by LTV<button class="date-btn" style="font-size:.79rem;" onclick="exportTableCSV('topCustomersBody','top-customers.csv')">&#8595; CSV</button></div><table class="data-table"><thead><tr><th>Customer</th><th class="num">Orders</th><th class="num">Total Spent</th><th>Last Purchase</th></tr></thead><tbody id="topCustomersBody"></tbody></table></div>
+    <!-- Frequency + Cancellation -->
+    <div class="two-col">
+      <div class="section-card" style="margin-bottom:0;"><div class="section-title">Customer Purchase Frequency<button class="date-btn" style="font-size:.79rem;" onclick="exportTableCSV('freqBody','purchase-frequency.csv')">&#8595; CSV</button></div><table class="data-table"><thead><tr><th>Purchase Sessions</th><th class="num">Customers</th><th class="num">% of All</th><th class="num">Revenue</th><th class="pct-col">% of Rev</th><th style="min-width:100px;"></th></tr></thead><tbody id="freqBody"></tbody></table></div>
+      <div class="section-card" style="margin-bottom:0;"><div class="section-title">Order Cancellation Rate<button class="date-btn" style="font-size:.79rem;" onclick="exportTableCSV('cancelBody','cancellation-rate.csv')">&#8595; CSV</button></div><div class="stat-tiles" id="cancelTiles" style="margin-bottom:18px;"></div><table class="data-table"><thead><tr><th>Product</th><th class="num">Successful</th><th class="num">Cancelled</th><th class="pct-col">Cancel Rate</th></tr></thead><tbody id="cancelBody"></tbody></table></div>
+    </div>
+    <!-- Inventory -->
+    <div class="section-card"><div class="section-title">Inventory &amp; Burn Rate <span id="invPeriodNote" class="inv-period-note"></span></div><div class="inv-grid" id="invGrid"></div></div>
+  </div>
+</div>
+<script>
+
+// ============================================================
+// Seeded PRNG
+// ============================================================
+function seededRandom(seed){let s=seed;return function(){s=(s*16807+0)%2147483647;return(s-1)/2147483646;};}
+const rand=seededRandom(42);
+function randInt(min,max){return Math.floor(rand()*(max-min+1))+min;}
+function pick(arr){return arr[Math.floor(rand()*arr.length)];}
+function weightedPick(arr,weights){let r=rand()*weights.reduce((a,b)=>a+b,0),cum=0;for(let i=0;i<arr.length;i++){cum+=weights[i];if(r<=cum)return arr[i];}return arr[arr.length-1];}
+
+// ============================================================
+// Constants
+// ============================================================
+const DateTime=luxon.DateTime;
+const SESSION_WINDOW_MS=60*60*1000;
+const CATEGORIES=['core-offer','upsell','promo','autoship-signup','autoship-rebill','returning'];
+const CAT_LABELS={'core-offer':'New Customer','upsell':'Upsell','promo':'Promo / Seasonal','autoship-signup':'AutoShip Signup','autoship-rebill':'AutoShip Rebill','returning':'Returning Purchase'};
+const CAT_COLORS={'core-offer':'#2b7b31','upsell':'#1f78b4','promo':'#e07b00','autoship-signup':'#008080','autoship-rebill':'#4ebaaa','returning':'#8e44ad'};
+const COGS_PER_UNIT={'liver-restore':7.15,'turmeric-complex':10.20,'omega-3-pure':8.84,'daily-greens':6.50};
+const COGS_BLENDED=7.60;
+const FAMILY_LABELS={'liver-restore':'Liver Restore','turmeric-complex':'Turmeric Complex','omega-3-pure':'Omega-3 Pure','daily-greens':'Daily Greens Complex'};
+
+function calcTxnCOGS(t){if(t.isRefund)return 0;const qty=parseProductQty(t.productName);const pu=t._productFamily?(COGS_PER_UNIT[t._productFamily]||COGS_BLENDED):COGS_BLENDED;return qty*pu;}
+
+// ============================================================
+// State
+// ============================================================
+let allTxns=[],dataDateRange=[null,null],currentRange=[null,null];
+let chartInstances={},trendToggles={},trendBucket='week',acquisitionBucket='week';
+let productSortCol='revenue',productSortAsc=false,productPage=0;const PRODUCT_PAGE_SIZE=15;let productRows=[];
+let catSortCol='revenue',catSortAsc=false;
+let upsellSortCol='count',upsellSortAsc=false;
+let familySortCol='active',familySortAsc=false;
+let promoSortCol='revenue',promoSortAsc=false;
+let aovFunnelSortCol='sessions',aovFunnelSortAsc=false;
+let subBreakSortCol='subscribers',subBreakSortAsc=false;
+const tableFiltersExcluded={};const filterCallbacks={};
+let invUnits={},invLeadDays={},invBurnCache={};
+const INV_PRODUCTS=[
+  {key:'liver-restore',label:'Liver Restore Ultimate',leadDefault:70},
+  {key:'turmeric-complex',label:'Turmeric Curcumin Complex',leadDefault:14},
+  {key:'omega-3-pure',label:'Omega-3 Pure',leadDefault:14},
+  {key:'daily-greens',label:'Daily Greens Complex',leadDefault:14},
+];
+INV_PRODUCTS.forEach(p=>{invLeadDays[p.key]=p.leadDefault;});
+
+// ============================================================
+// Data Generation
+// ============================================================
+function generateMockData(){
+  const FIRST_NAMES=['James','Mary','Robert','Patricia','John','Jennifer','Michael','Linda','David','Elizabeth','William','Barbara','Richard','Susan','Joseph','Jessica','Thomas','Sarah','Christopher','Karen','Charles','Lisa','Daniel','Nancy','Matthew','Betty','Anthony','Margaret','Mark','Sandra','Donald','Ashley','Steven','Dorothy','Paul','Kimberly','Andrew','Emily','Joshua','Donna','Kenneth','Michelle','Kevin','Carol','Brian','Amanda','George','Melissa','Timothy','Deborah','Ronald','Stephanie','Edward','Rebecca','Jason','Sharon','Jeffrey','Laura','Ryan','Cynthia','Jacob','Kathleen','Gary','Amy','Nicholas','Angela','Eric','Shirley','Jonathan','Anna','Stephen','Brenda','Larry','Pamela','Justin','Emma','Scott','Nicole','Brandon','Helen','Benjamin','Samantha','Samuel','Katherine','Raymond','Christine','Gregory','Debra','Frank','Rachel','Alexander','Carolyn','Patrick','Janet','Jack','Catherine','Dennis','Maria','Jerry','Heather','Tyler','Diane'];
+  const LAST_NAMES=['Smith','Johnson','Williams','Brown','Jones','Garcia','Miller','Davis','Rodriguez','Martinez','Hernandez','Lopez','Gonzalez','Wilson','Anderson','Thomas','Taylor','Moore','Jackson','Martin','Lee','Perez','Thompson','White','Harris','Sanchez','Clark','Ramirez','Lewis','Robinson','Walker','Young','Allen','King','Wright','Scott','Torres','Nguyen','Hill','Flores','Green','Adams','Nelson','Baker','Hall','Rivera','Campbell','Mitchell','Carter','Roberts'];
+
+  const startDate=DateTime.fromISO('2024-03-01',{zone:'America/New_York'});
+  const endDate=DateTime.fromISO('2026-03-15',{zone:'America/New_York'});
+  const totalDays=Math.floor(endDate.diff(startDate,'days').days);
+
+  // Generate ~2700 customers spread over time with growth
+  const NUM_CUSTOMERS=2700;
+  const customers=[];
+  for(let i=0;i<NUM_CUSTOMERS;i++){
+    const email='customer_'+String(i+1).padStart(4,'0')+'@example.com';
+    const fn=pick(FIRST_NAMES);
+    const ln=pick(LAST_NAMES);
+    // Acquisition weighted toward later months (growth)
+    const r=rand();
+    const dayOffset=Math.floor(Math.pow(r,0.7)*totalDays);
+    const acqDate=startDate.plus({days:dayOffset});
+    // Purchase pattern: 65% single, 25% 2-3x, 10% high-value
+    const rp=rand();
+    const purchaseType=rp<0.65?'single':rp<0.90?'medium':'high';
+    customers.push({email,firstName:fn,lastName:ln,acqDate,purchaseType});
+  }
+
+  const txns=[];
+  let txnId=1000;
+
+  // Seasonal multiplier
+  function seasonalMult(dt){
+    const m=dt.month,d=dt.day;
+    if(m===11&&d>=24&&d<=30)return 2.8; // Black Friday week
+    if(m===12&&d>=1&&d<=5)return 2.2; // Cyber Monday week
+    if(m===12&&d>=15&&d<=28)return 1.8; // Christmas
+    if(m===1&&d<=15)return 1.5; // New Year resolution
+    if(m===5&&d>=25&&d<=31)return 1.4; // Memorial Day
+    if(m===7&&d>=1&&d<=7)return 1.3; // Independence Day
+    if(m===9)return 1.2; // September pickup
+    if(m===10)return 1.1; // Fall
+    if(m>=6&&m<=8)return 0.75; // Summer slow
+    return 1.0;
+  }
+
+  // Promo events
+  function getPromoInfo(dt){
+    const m=dt.month,d=dt.day,y=dt.year;
+    if(m===11&&d>=24&&d<=28)return{event:'Black Friday',disc:0.25};
+    if(m===12&&d>=1&&d<=3)return{event:'Cyber Monday',disc:0.20};
+    if(m===12&&d>=18&&d<=25)return{event:'Christmas Sale',disc:0.15};
+    if(m===5&&d>=25&&d<=28)return{event:'Memorial Day',disc:0.15};
+    if(m===7&&d>=1&&d<=4)return{event:'Independence Day',disc:0.12};
+    if(m===10&&d>=10&&d<=17)return{event:'Fall Discount',disc:0.10};
+    return null;
+  }
+
+  // Core offer products (new customer discount)
+  const CORE_OFFERS=[
+    {name:'1 Bottle Liver Restore (New Customer Discount)',price:61.12,family:'liver-restore',qty:1,weight:50},
+    {name:'3 Bottles Liver Restore (New Customer Discount)',price:129.00,family:'liver-restore',qty:3,weight:35},
+    {name:'6 Bottles Liver Restore (New Customer Discount)',price:203.33,family:'liver-restore',qty:6,weight:15},
+  ];
+
+  // Non-LR core offers (for 30% of customers not entering via LR)
+  const ALT_CORE_OFFERS=[
+    {name:'1 Bottle Turmeric Complex (New Customer Discount)',price:34.95,family:'turmeric-complex',qty:1,weight:40},
+    {name:'3 Bottles Turmeric Complex (New Customer Discount)',price:89.95,family:'turmeric-complex',qty:3,weight:20},
+    {name:'1 Bottle Omega-3 Pure (New Customer Discount)',price:29.95,family:'omega-3-pure',qty:1,weight:25},
+    {name:'1 Bottle Daily Greens Complex (New Customer Discount)',price:24.95,family:'daily-greens',qty:1,weight:15},
+  ];
+
+  // Upsell products
+  const UPSELLS=[
+    {name:'Liver Restore - 1 More Bottle',price:29.00,family:'liver-restore',qty:1,weight:25},
+    {name:'Liver Restore - 3 More Bottles',price:82.74,family:'liver-restore',qty:3,weight:15},
+    {name:'Liver Restore - 6 More Bottles',price:160.20,family:'liver-restore',qty:6,weight:5},
+    {name:'Turmeric Complex - Add 3 Bottles',price:79.00,family:'turmeric-complex',qty:3,weight:15},
+    {name:'Turmeric Complex - Add 1 Tub (Exclusive Discount!)',price:36.00,family:'turmeric-complex',qty:1,weight:12},
+    {name:'Omega-3 Pure - Add 1 Bottle (Exclusive Discount!)',price:24.83,family:'omega-3-pure',qty:1,weight:15},
+    {name:'Omega-3 Pure - Add 3 Bottles',price:74.50,family:'omega-3-pure',qty:3,weight:5},
+    {name:'Daily Greens Complex - 3 More Bottles',price:53.10,family:'daily-greens',qty:3,weight:5},
+    {name:'Daily Greens Complex - Add 1 Bottle (Exclusive Discount!)',price:24.83,family:'daily-greens',qty:1,weight:8},
+  ];
+
+  // AutoShip variants
+  const AUTOSHIP_VARIANTS=[
+    {name:'Liver Restore AutoShip (1 Bottle Monthly)',price:46.90,family:'liver-restore',qty:1,weight:40},
+    {name:'Liver Restore AutoShip (2 Bottles Monthly)',price:85.60,family:'liver-restore',qty:2,weight:20},
+    {name:'Liver Restore AutoShip (3 Bottles Monthly)',price:102.28,family:'liver-restore',qty:3,weight:10},
+    {name:'Turmeric Complex AutoShip (1 Bottle Monthly)',price:34.00,family:'turmeric-complex',qty:1,weight:12},
+    {name:'Omega-3 Pure AutoShip (1 Bottle Monthly)',price:29.00,family:'omega-3-pure',qty:1,weight:10},
+    {name:'Daily Greens Complex AutoShip (1 Bottle Monthly)',price:24.95,family:'daily-greens',qty:1,weight:8},
+  ];
+
+  // Store products (returning purchases)
+  const STORE_PRODUCTS=[
+    {name:'Liver Restore Ultimate - 1 Bottle',price:59.95,family:'liver-restore',qty:1,weight:30},
+    {name:'Liver Restore Ultimate - 3 Bottles',price:149.95,family:'liver-restore',qty:3,weight:20},
+    {name:'Liver Restore Ultimate - 6 Bottles',price:269.95,family:'liver-restore',qty:6,weight:5},
+    {name:'Turmeric Curcumin Complex - 1 Bottle',price:39.95,family:'turmeric-complex',qty:1,weight:15},
+    {name:'Turmeric Curcumin Complex - 3 Bottles',price:99.95,family:'turmeric-complex',qty:3,weight:8},
+    {name:'Omega-3 Pure - 1 Bottle',price:34.95,family:'omega-3-pure',qty:1,weight:10},
+    {name:'Omega-3 Pure - 3 Bottles',price:89.95,family:'omega-3-pure',qty:3,weight:5},
+    {name:'Daily Greens Complex - 1 Bottle',price:29.95,family:'daily-greens',qty:1,weight:8},
+    {name:'Daily Greens Complex - 3 Bottles',price:79.95,family:'daily-greens',qty:3,weight:4},
+  ];
+
+  function addTxn(dt,email,fn,ln,productName,amount,cat,isRebill,isCancelled,family,qty){
+    const isRefund=amount<0;
+    txns.push({
+      id:String(txnId++),dt,_ts:dt.toMillis(),_dateISO:dt.toISODate(),
+      email,firstName:fn,lastName:ln,productName,amount,
+      isSuccess:true,isDecline:false,isRefund,isCancelled:!!isCancelled,
+      isRebill:!!isRebill,isAutoShipSignup:cat==='autoship-signup',
+      _isCoreOfferName:cat==='core-offer',
+      _isUpsellName:cat==='upsell',
+      _isPromoName:cat==='promo',
+      _productFamily:family,_category:cat,_sessionIdx:null,
+    });
+  }
+
+  function pickWeighted(items){return weightedPick(items,items.map(i=>i.weight));}
+
+  // Process each customer
+  customers.forEach(cust=>{
+    const{email,firstName:fn,lastName:ln,acqDate,purchaseType}=cust;
+    const sm=seasonalMult(acqDate);
+    // Skip some customers in slow seasons
+    if(sm<1&&rand()>sm+0.2)return;
+
+    // 1. Core offer (new customer purchase)
+    const isLR=rand()<0.70;
+    const coreOffer=isLR?pickWeighted(CORE_OFFERS):pickWeighted(ALT_CORE_OFFERS);
+    const coreTime=acqDate.plus({hours:randInt(8,20),minutes:randInt(0,59)});
+    addTxn(coreTime,email,fn,ln,coreOffer.name,coreOffer.price,'core-offer',false,false,coreOffer.family,coreOffer.qty);
+
+    // 2. Upsells (~35% take rate, can have 1-2 upsells)
+    if(rand()<0.35){
+      const u1=pickWeighted(UPSELLS);
+      addTxn(coreTime.plus({minutes:randInt(2,8)}),email,fn,ln,u1.name,u1.price,'upsell',false,false,u1.family,u1.qty);
+      if(rand()<0.25){
+        const u2=pickWeighted(UPSELLS.filter(u=>u.family!==u1.family));
+        if(u2)addTxn(coreTime.plus({minutes:randInt(9,15)}),email,fn,ln,u2.name,u2.price,'upsell',false,false,u2.family,u2.qty);
+      }
+    }
+
+    // 3. AutoShip signup (~9-10% of new customers)
+    if(rand()<0.095){
+      const asv=pickWeighted(AUTOSHIP_VARIANTS);
+      addTxn(coreTime.plus({minutes:randInt(16,25)}),email,fn,ln,asv.name,asv.price,'autoship-signup',false,false,asv.family,asv.qty);
+
+      // Generate rebills with churn (~70-75% churn over full period)
+      const monthlyChurnRate=0.08; // ~8% monthly churn
+      let rebillDate=acqDate.plus({days:randInt(28,35)});
+      while(rebillDate<endDate){
+        if(rand()<monthlyChurnRate)break; // churned
+        addTxn(rebillDate.plus({hours:randInt(6,14)}),email,fn,ln,asv.name,asv.price,'autoship-rebill',true,false,asv.family,asv.qty);
+        rebillDate=rebillDate.plus({days:randInt(28,35)});
+      }
+    }
+
+    // 4. Returning purchases (medium: 1-2 returns, high: 3-8 returns)
+    let returnCount=0;
+    if(purchaseType==='medium')returnCount=randInt(1,2);
+    else if(purchaseType==='high')returnCount=randInt(3,8);
+
+    let returnDate=acqDate;
+    for(let r=0;r<returnCount;r++){
+      returnDate=returnDate.plus({days:randInt(20,90)});
+      if(returnDate>=endDate)break;
+      const rsm=seasonalMult(returnDate);
+
+      // Check for promo
+      const promo=getPromoInfo(returnDate);
+      if(promo&&rand()<0.5){
+        const sp=pickWeighted(STORE_PRODUCTS);
+        const discPrice=Math.round(sp.price*(1-promo.disc)*100)/100;
+        addTxn(returnDate.plus({hours:randInt(8,22)}),email,fn,ln,sp.name+' ('+promo.event+')',discPrice,'promo',false,false,sp.family,sp.qty);
+      }else{
+        const sp=pickWeighted(STORE_PRODUCTS);
+        addTxn(returnDate.plus({hours:randInt(8,22)}),email,fn,ln,sp.name,sp.price,'returning',false,false,sp.family,sp.qty);
+
+        // Upsell on return visit (~20%)
+        if(rand()<0.20){
+          const u=pickWeighted(UPSELLS);
+          addTxn(returnDate.plus({hours:randInt(8,22),minutes:randInt(3,10)}),email,fn,ln,u.name,u.price,'upsell',false,false,u.family,u.qty);
+        }
+      }
+    }
+
+    // 5. Refunds (~4% of this customer's transactions)
+    const custTxns=txns.filter(t=>t.email===email&&!t.isRefund&&t.amount>0);
+    custTxns.forEach(t=>{
+      if(rand()<0.04){
+        const refundDate=t.dt.plus({days:randInt(3,21)});
+        if(refundDate<endDate){
+          addTxn(refundDate,email,fn,ln,t.productName,-t.amount,t._category,false,false,t._productFamily,0);
+        }
+      }
+    });
+
+    // 6. Some cancellations (~2%)
+    if(rand()<0.02){
+      const sp=pickWeighted(STORE_PRODUCTS);
+      addTxn(acqDate.plus({days:randInt(5,60),hours:randInt(8,20)}),email,fn,ln,sp.name,sp.price,null,false,true,sp.family,sp.qty);
+    }
+  });
+
+  // Add additional promo-only transactions for seasonal spikes
+  for(let y=2024;y<=2025;y++){
+    const promoWindows=[
+      {start:DateTime.fromISO(y+'-11-24'),end:DateTime.fromISO(y+'-11-28'),event:'Black Friday',disc:0.25,count:randInt(80,140)},
+      {start:DateTime.fromISO(y+'-12-01'),end:DateTime.fromISO(y+'-12-03'),event:'Cyber Monday',disc:0.20,count:randInt(50,90)},
+      {start:DateTime.fromISO(y+'-12-18'),end:DateTime.fromISO(y+'-12-25'),event:'Christmas Sale',disc:0.15,count:randInt(60,100)},
+      {start:DateTime.fromISO(y+'-05-25'),end:DateTime.fromISO(y+'-05-28'),event:'Memorial Day',disc:0.15,count:randInt(30,50)},
+      {start:DateTime.fromISO(y+'-07-01'),end:DateTime.fromISO(y+'-07-04'),event:'Independence Day',disc:0.12,count:randInt(25,40)},
+      {start:DateTime.fromISO(y+'-10-10'),end:DateTime.fromISO(y+'-10-17'),event:'Fall Discount',disc:0.10,count:randInt(35,55)},
+    ];
+    promoWindows.forEach(pw=>{
+      if(pw.start<startDate||pw.start>endDate)return;
+      for(let i=0;i<pw.count;i++){
+        const dayOff=randInt(0,Math.floor(pw.end.diff(pw.start,'days').days));
+        const dt=pw.start.plus({days:dayOff,hours:randInt(7,23),minutes:randInt(0,59)});
+        const ci=randInt(0,customers.length-1);
+        const c=customers[ci];
+        const sp=pickWeighted(STORE_PRODUCTS);
+        const discPrice=Math.round(sp.price*(1-pw.disc)*100)/100;
+        addTxn(dt,c.email,c.firstName,c.lastName,sp.name+' ('+pw.event+')',discPrice,'promo',false,false,sp.family,sp.qty);
+      }
+    });
+  }
+
+  // Sort by timestamp
+  txns.sort((a,b)=>a._ts-b._ts);
+
+  // Assign session indices
+  const byEmail={};
+  txns.forEach(t=>{
+    if(!t.isRefund&&!t.isCancelled&&!t.isRebill){
+      if(!byEmail[t.email])byEmail[t.email]=[];
+      byEmail[t.email].push(t);
+    }
+  });
+  Object.values(byEmail).forEach(etxns=>{
+    etxns.sort((a,b)=>a._ts-b._ts);
+    let si=0,ss=etxns[0]._ts;
+    etxns[0]._sessionIdx=0;
+    for(let i=1;i<etxns.length;i++){
+      if(etxns[i]._ts-ss>SESSION_WINDOW_MS){si++;ss=etxns[i]._ts;}
+      etxns[i]._sessionIdx=si;
+    }
+  });
+
+  return txns;
+}
+
+// ============================================================
+// Utilities
+// ============================================================
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmt2(v){return v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmt0(v){return v.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0});}
+function setMetricText(id,val){const el=document.getElementById(id);if(!el)return;el.textContent=val;el.style.fontSize='';const sizes=['1.35rem','1.15rem','0.95rem','0.82rem'];for(const s of sizes){if(el.scrollWidth<=el.offsetWidth)break;el.style.fontSize=s;}}
+function destroyChart(id){if(chartInstances[id]&&typeof chartInstances[id].destroy==='function'){chartInstances[id].destroy();delete chartInstances[id];}}
+function updateSortArrows(tbl,activeCol,asc){document.querySelectorAll('th[data-tbl="'+tbl+'"]').forEach(th=>{const a=th.querySelector('.sort-arrow');if(!a)return;a.innerHTML=th.dataset.col===activeCol?(asc?'&#8593;':'&#8595;'):'&#8597;';});}
+function toggleFilterPanel(pid){const panel=document.getElementById(pid);if(!panel)return;const w=panel.classList.contains('open');document.querySelectorAll('.filter-panel.open').forEach(p=>p.classList.remove('open'));if(!w)panel.classList.add('open');}
+function initTableFilter(panelId,filterKey,options,callback){if(!tableFiltersExcluded[filterKey])tableFiltersExcluded[filterKey]=new Set();filterCallbacks[filterKey]=callback;const panel=document.getElementById(panelId);if(!panel)return;panel.innerHTML=options.map(o=>{const v=String(o.value);return '<label><input type="checkbox" data-fk="'+esc(filterKey)+'" data-fv="'+esc(v)+'" '+(tableFiltersExcluded[filterKey].has(v)?'':'checked')+'> '+esc(o.label)+'</label>';}).join('');panel.querySelectorAll('input[type="checkbox"]').forEach(cb=>{cb.addEventListener('change',e=>{const k=e.target.dataset.fk,v=e.target.dataset.fv;if(e.target.checked)tableFiltersExcluded[k].delete(v);else tableFiltersExcluded[k].add(v);if(filterCallbacks[k])filterCallbacks[k]();});});}
+function passesFilter(fk,val){const e=tableFiltersExcluded[fk];if(!e||e.size===0)return true;return!e.has(String(val));}
+document.addEventListener('click',e=>{if(!e.target.closest('.filter-wrap'))document.querySelectorAll('.filter-panel.open').forEach(p=>p.classList.remove('open'));});
+
+function parseProductQty(name){if(!name)return 1;const m=name.match(/\b(\d+)\s+(?:\w+\s+){0,2}(?:bottles?|tubs?|packs?)\b/i);if(m)return Math.max(1,parseInt(m[1]));return 1;}
+function parseSubscriptionFrequency(name){if(!name)return{label:'Monthly',days:30};const m=name.match(/every\s+(\d+)\s+days?/i);if(m)return{label:'Every '+m[1]+' Days',days:parseInt(m[1])};if(/monthly/i.test(name))return{label:'Monthly',days:30};return{label:'Monthly',days:30};}
+
+function getProductFamily(name){const l=name.toLowerCase();if(l.includes('liver restore'))return'liver-restore';if(l.includes('turmeric'))return'turmeric-complex';if(l.includes('omega'))return'omega-3-pure';if(l.includes('daily greens'))return'daily-greens';return null;}
+function getPromoEvent(name){const l=name.toLowerCase();if(l.includes('black friday'))return'Black Friday';if(l.includes('christmas sale'))return'Christmas Sale';if(l.includes('cyber monday'))return'Cyber Monday';if(l.includes('memorial day'))return'Memorial Day';if(l.includes('independence day'))return'Independence Day';if(l.includes('fall discount'))return'Fall Discount';return null;}
+
+// ============================================================
+// CSV Export
+// ============================================================
+function exportTableCSV(tbodyId,filename){const tbody=document.getElementById(tbodyId);if(!tbody)return;const table=tbody.closest('table');const hc=[...table.querySelectorAll('thead th')];const headers=hc.map(th=>{const c=th.cloneNode(true);c.querySelectorAll('.sort-arrow').forEach(el=>el.remove());return c.textContent.trim();});const csvEsc=v=>{const s=String(v).trim().replace(/\s+/g,' ');return s.includes(',')||s.includes('"')||s.includes('\n')?'"'+s.replace(/"/g,'""')+'"':s;};const rows=[...tbody.querySelectorAll('tr')].map(tr=>[...tr.querySelectorAll('td')].map((td,i)=>headers[i]!==''?csvEsc(td.textContent):null).filter(v=>v!==null).join(','));const csv=[headers.filter(h=>h!=='').map(csvEsc).join(','),...rows].join('\n');triggerCSVDownload(csv,filename);}
+function exportProductTable(){const filtered=productRows.filter(r=>passesFilter('product',r.category));const h=['Product','Category','Orders','Revenue','Avg Price','% of Rev'];const rows=filtered.map(r=>['"'+r.name.replace(/"/g,'""')+'"',CAT_LABELS[r.category]||r.category,r.orders,r.revenue.toFixed(2),r.avg.toFixed(2),r.pct.toFixed(1)+'%'].join(','));triggerCSVDownload([h.join(','),...rows].join('\n'),'product-mix.csv');}
+function triggerCSVDownload(csv,filename){const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;a.click();URL.revokeObjectURL(url);}
+
+// ============================================================
+// Date Range Picker
+// ============================================================
+let _drpStartISO=null,_drpEndISO=null,_drpPickState='start',_drpActivePreset='all';
+function initDateControls(minISO,maxISO){_drpStartISO=minISO;_drpEndISO=maxISO;_drpActivePreset='all';updateDateDisplay(minISO,maxISO);}
+function updateDateDisplay(s,e){const sd=DateTime.fromISO(s),ed=DateTime.fromISO(e);document.getElementById('drpTriggerText').textContent=s===e?ed.toLocaleString(DateTime.DATE_MED):sd.toLocaleString(DateTime.DATE_MED)+' \u2013 '+ed.toLocaleString(DateTime.DATE_MED);}
+function getRangeForDays(days,endOff){const now=DateTime.now().setZone('America/New_York');const end=endOff?now.minus({days:endOff}):now;const start=end.minus({days:days-1}).toISODate();const c=start<dataDateRange[0]?dataDateRange[0]:start;const ec=end.toISODate()>dataDateRange[1]?dataDateRange[1]:end.toISODate();return[c,ec];}
+function drpPresetDates(key){const now=DateTime.now().setZone('America/New_York');switch(key){case'today':return[now.toISODate(),now.toISODate()];case'yesterday':{const y=now.minus({days:1});return[y.toISODate(),y.toISODate()];}case'thisweek':{const dow=now.weekday%7;const sun=now.minus({days:dow});return[sun.toISODate(),now.toISODate()];}case'last7':return getRangeForDays(7);case'lastweek':{const dow=now.weekday%7;const ts=now.minus({days:dow});return[ts.minus({days:7}).toISODate(),ts.minus({days:1}).toISODate()];}case'last14':return getRangeForDays(14);case'thismonth':return[now.startOf('month').toISODate(),now.toISODate()];case'last30':return getRangeForDays(30);case'lastmonth':{const pm=now.minus({months:1});return[pm.startOf('month').toISODate(),pm.endOf('month').toISODate()];}case'last12m':return getRangeForDays(365);case'all':return[dataDateRange[0],dataDateRange[1]];default:return[dataDateRange[0],dataDateRange[1]];}}
+function drpOpen(){const dd=document.getElementById('drpDropdown');if(dd.style.display!=='none'){drpClose();return;}_drpStartISO=currentRange[0];_drpEndISO=currentRange[1];_drpPickState='start';dd.style.display='';drpSyncInputs();drpRenderCal();drpUpdatePresetHighlight();}
+function drpClose(){document.getElementById('drpDropdown').style.display='none';}
+function drpSelectPreset(key){if(key==='custom'){drpHighlightPreset('custom');return;}const dates=drpPresetDates(key);_drpStartISO=dates[0];_drpEndISO=dates[1];_drpActivePreset=key;_drpPickState='start';render(dates[0],dates[1]);drpClose();}
+function drpApply(){if(_drpStartISO&&_drpEndISO)render(_drpStartISO,_drpEndISO);drpClose();}
+function drpRenderCal(){const scroll=document.getElementById('drpCalScroll');scroll.innerHTML='';const todayISO=DateTime.now().setZone('America/New_York').toISODate();const startMonth=DateTime.fromISO(dataDateRange[0]).startOf('month');let endMonth=DateTime.fromISO(dataDateRange[1]).startOf('month');const todayMonth=DateTime.fromISO(todayISO).startOf('month');if(todayMonth>endMonth)endMonth=todayMonth;let cur=startMonth,scrollTarget=null;while(cur<=endMonth){const mb=document.createElement('div');mb.className='drp-cal-month';const label=document.createElement('div');label.className='drp-cal-month-label';label.textContent=cur.toFormat('MMMM yyyy');mb.appendChild(label);const grid=document.createElement('div');grid.className='drp-cal-grid';['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d=>{const el=document.createElement('div');el.className='drp-cal-dow';el.textContent=d;grid.appendChild(el);});const fd=cur.weekday%7;for(let i=0;i<fd;i++){const b=document.createElement('div');b.className='drp-cal-day outside';grid.appendChild(b);}for(let d=1;d<=cur.daysInMonth;d++){const iso=cur.set({day:d}).toISODate();const el=document.createElement('div');el.className='drp-cal-day';el.textContent=d;el.dataset.iso=iso;if(iso===todayISO)el.classList.add('today');if(_drpStartISO&&iso===_drpStartISO)el.classList.add('range-start');if(_drpEndISO&&iso===_drpEndISO)el.classList.add('range-end');if(_drpStartISO&&_drpEndISO&&iso>_drpStartISO&&iso<_drpEndISO)el.classList.add('in-range');grid.appendChild(el);}mb.appendChild(grid);scroll.appendChild(mb);if(_drpEndISO&&cur.toFormat('yyyy-MM')===DateTime.fromISO(_drpEndISO).toFormat('yyyy-MM'))scrollTarget=mb;cur=cur.plus({months:1});}if(scrollTarget)scrollTarget.scrollIntoView({block:'end'});else scroll.scrollTop=scroll.scrollHeight;}
+function drpOnDayClick(iso){if(_drpPickState==='start'){_drpStartISO=iso;_drpEndISO=null;_drpPickState='end';}else{if(iso>=_drpStartISO){_drpEndISO=iso;}else{_drpStartISO=iso;_drpEndISO=null;_drpPickState='end';drpSyncInputs();drpRenderCal();drpHighlightPreset('custom');return;}_drpPickState='start';}drpSyncInputs();drpRenderCal();drpHighlightPreset('custom');}
+function drpSyncInputs(){document.getElementById('drpStartInput').value=_drpStartISO?DateTime.fromISO(_drpStartISO).toFormat('MM/dd/yyyy'):'';document.getElementById('drpEndInput').value=_drpEndISO?DateTime.fromISO(_drpEndISO).toFormat('MM/dd/yyyy'):'';}
+function drpParseInputs(){const sv=document.getElementById('drpStartInput').value.trim(),ev=document.getElementById('drpEndInput').value.trim();const s=DateTime.fromFormat(sv,'MM/dd/yyyy'),e=DateTime.fromFormat(ev,'MM/dd/yyyy');if(s.isValid)_drpStartISO=s.toISODate();if(e.isValid)_drpEndISO=e.toISODate();if(_drpStartISO&&_drpEndISO&&_drpStartISO>_drpEndISO){const t=_drpStartISO;_drpStartISO=_drpEndISO;_drpEndISO=t;}_drpPickState='start';drpSyncInputs();drpRenderCal();drpUpdatePresetHighlight();}
+function drpHighlightPreset(key){document.querySelectorAll('#drpPresets .drp-preset-item').forEach(el=>{el.classList.toggle('active',el.dataset.preset===key);});_drpActivePreset=key;}
+function drpUpdatePresetHighlight(){const ps=['today','yesterday','thisweek','last7','lastweek','last14','thismonth','last30','lastmonth','all'];for(const k of ps){const[s,e]=drpPresetDates(k);if(s===_drpStartISO&&e===_drpEndISO){drpHighlightPreset(k);return;}}drpHighlightPreset('custom');}
+function drpStepRange(dir){if(!currentRange[0]||!currentRange[1])return;const s=DateTime.fromISO(currentRange[0]),e=DateTime.fromISO(currentRange[1]);const span=Math.max(1,Math.round(e.diff(s,'days').days)+1);let ns=s.plus({days:dir*span}).toISODate(),ne=e.plus({days:dir*span}).toISODate();if(ns<dataDateRange[0])ns=dataDateRange[0];if(ne>dataDateRange[1])ne=dataDateRange[1];if(ns>ne)return;render(ns,ne);}
+
+// Wire DRP events
+document.getElementById('drpTrigger').addEventListener('click',drpOpen);
+document.getElementById('drpWrap').addEventListener('click',e=>e.stopPropagation());
+document.addEventListener('click',()=>drpClose());
+document.getElementById('drpApply').addEventListener('click',drpApply);
+document.getElementById('drpCancel').addEventListener('click',drpClose);
+document.getElementById('drpCalScroll').addEventListener('click',e=>{const day=e.target.closest('.drp-cal-day');if(day&&day.dataset.iso)drpOnDayClick(day.dataset.iso);});
+document.getElementById('drpPresets').addEventListener('click',e=>{const item=e.target.closest('.drp-preset-item');if(item&&item.dataset.preset)drpSelectPreset(item.dataset.preset);});
+document.getElementById('drpDaysToday').addEventListener('keydown',e=>{if(e.key==='Enter'){const d=parseInt(e.target.value,10);if(d>0){const[s,end]=getRangeForDays(d);render(s,end);drpClose();}}});
+document.getElementById('drpDaysYesterday').addEventListener('keydown',e=>{if(e.key==='Enter'){const d=parseInt(e.target.value,10);if(d>0){const[s,end]=getRangeForDays(d,1);render(s,end);drpClose();}}});
+document.getElementById('drpStartInput').addEventListener('blur',drpParseInputs);
+document.getElementById('drpEndInput').addEventListener('blur',drpParseInputs);
+document.getElementById('drpStepBack').addEventListener('click',()=>drpStepRange(-1));
+document.getElementById('drpStepFwd').addEventListener('click',()=>drpStepRange(1));
+
+// ============================================================
+// Main Render
+// ============================================================
+function render(startDate,endDate){
+  currentRange=[startDate,endDate];updateDateDisplay(startDate,endDate);
+  const startMs=DateTime.fromISO(startDate).startOf('day').toMillis();
+  const endMs=DateTime.fromISO(endDate).endOf('day').toMillis();
+  const filtered=allTxns.filter(t=>t._ts>=startMs&&t._ts<=endMs);
+  const successful=filtered.filter(t=>t.isSuccess&&!t.isCancelled);
+  const salesOnly=successful.filter(t=>!t.isRefund);
+  renderMetrics(filtered,successful);
+  renderCategoryBreakdown(successful);
+  renderTrendChart(successful,startDate,endDate);
+  renderAcquisitionChart(salesOnly,startDate,endDate);
+  renderLTVCohorts();renderGrossProfitLTVCohorts();
+  renderUpsellAnalysis(salesOnly);renderUpsellLeaderboard(salesOnly);
+  renderStoreFunnel(salesOnly);renderAOVFunnels(salesOnly,filtered);
+  renderChurnMetrics(endDate);renderAutoShipByFamily(successful,endDate);
+  renderSubscriberBreakdown(successful,endDate);renderAttachRate(salesOnly);
+  renderPromoPerformance(successful);renderProductMix(successful);
+  renderInventoryBurnRate(salesOnly,startDate,endDate);
+  renderTopCustomers(successful);renderCustomerFrequency(salesOnly);
+  renderCancellationRate(filtered.filter(t=>t.isCancelled),salesOnly);
+}
+
+// ============================================================
+// Metric Cards
+// ============================================================
+function renderMetrics(all,successful){
+  const refundTxns=successful.filter(t=>t.isRefund);
+  const salesTxns=successful.filter(t=>!t.isRefund);
+  const grossRevenue=salesTxns.reduce((s,t)=>s+t.amount,0);
+  const refundTotal=refundTxns.reduce((s,t)=>s+t.amount,0);
+  const netRevenue=grossRevenue+refundTotal;
+  const rebills=salesTxns.filter(t=>t.isRebill);
+  const nonRebills=salesTxns.filter(t=>!t.isRebill);
+  const aov=nonRebills.length>0?nonRebills.reduce((s,t)=>s+t.amount,0)/nonRebills.length:0;
+  const rebillNetRev=successful.filter(t=>t.isRebill).reduce((s,t)=>s+t.amount,0);
+  const custNetMap={};
+  successful.forEach(t=>{if(!t.email)return;if(!custNetMap[t.email])custNetMap[t.email]={total:0,coreNet:0};custNetMap[t.email].total+=t.amount;if(t._category==='core-offer')custNetMap[t.email].coreNet+=t.amount;});
+  const emails=new Set(Object.entries(custNetMap).filter(([,d])=>d.total>0).map(([e])=>e));
+  const newCustEmails=new Set(Object.entries(custNetMap).filter(([,d])=>d.coreNet>0).map(([e])=>e));
+  const uniqueCustomers=emails.size;
+  const allCustCount=Object.keys(custNetMap).length;
+  const avgCustVal=allCustCount>0?netRevenue/allCustCount:0;
+  const coreBasketMap={};
+  salesTxns.forEach(t=>{if(t._sessionIdx===null||!t.email)return;if(t._category!=='core-offer'&&t._category!=='upsell')return;const key=t.email+'|'+t._sessionIdx;if(!coreBasketMap[key])coreBasketMap[key]={hasCore:false,total:0};if(t._category==='core-offer')coreBasketMap[key].hasCore=true;coreBasketMap[key].total+=t.amount;});
+  const coreBaskets=Object.values(coreBasketMap).filter(s=>s.hasCore);
+  const avgCoreBasket=coreBaskets.length>0?coreBaskets.reduce((s,v)=>s+v.total,0)/coreBaskets.length:0;
+  setMetricText('mRevenue','$'+fmt2(grossRevenue));
+  setMetricText('mRefunds',refundTxns.length>0?'-$'+fmt2(Math.abs(refundTotal)):'$0.00');
+  document.getElementById('mRefundsSub').textContent=refundTxns.length>0?refundTxns.length+' refund'+(refundTxns.length!==1?'s':''):'no refunds';
+  setMetricText('mNetRev','$'+fmt2(netRevenue));
+  setMetricText('mTransactions',salesTxns.length.toLocaleString('en-US'));
+  document.getElementById('mTransactionsSub').textContent=nonRebills.length+' new \u00B7 '+rebills.length+' rebills';
+  setMetricText('mCustomers',uniqueCustomers.toLocaleString('en-US'));
+  document.getElementById('mCustomersSub').textContent=newCustEmails.size+' new \u00B7 '+(uniqueCustomers-newCustEmails.size)+' returning';
+  setMetricText('mAov',aov>0?'$'+aov.toFixed(2):'\u2013');
+  document.getElementById('mAovSub').textContent='excl. rebills & refunds';
+  setMetricText('mRebillRev','$'+fmt2(rebillNetRev));
+  document.getElementById('mRebillSub').textContent=rebills.length+' rebill'+(rebills.length!==1?'s':'');
+  setMetricText('mAvgCustVal',avgCustVal>0?'$'+fmt2(avgCustVal):'\u2013');
+  document.getElementById('mAvgCustValSub').textContent=allCustCount.toLocaleString('en-US')+' customers \u00B7 net';
+  setMetricText('mAvgFunnel',avgCoreBasket>0?'$'+fmt2(avgCoreBasket):'\u2013');
+  document.getElementById('mAvgFunnelSub').textContent=coreBaskets.length+' sessions \u00B7 entry + upsells';
+}
+
+// ============================================================
+// Category Breakdown
+// ============================================================
+function renderCategoryBreakdown(successful){
+  const catData={};CATEGORIES.forEach(c=>{catData[c]={orders:0,revenue:0};});
+  successful.forEach(t=>{const cat=t._category||'other';if(!catData[cat])catData[cat]={orders:0,revenue:0};if(!t.isRefund)catData[cat].orders++;catData[cat].revenue+=t.amount;});
+  const active=CATEGORIES.filter(c=>catData[c].orders>0);
+  const totalRevenue=successful.reduce((s,t)=>s+t.amount,0);
+  destroyChart('categoryDonut');
+  const ctx=document.getElementById('categoryDonut').getContext('2d');
+  chartInstances['categoryDonut']=new Chart(ctx,{type:'doughnut',data:{labels:active.map(c=>CAT_LABELS[c]),datasets:[{data:active.map(c=>Math.max(0,Math.round(catData[c].revenue*100)/100)),backgroundColor:active.map(c=>CAT_COLORS[c]),borderWidth:2,borderColor:'#fff'}]},options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx2=>{const val=ctx2.parsed;const pct=totalRevenue>0?(val/totalRevenue*100).toFixed(1):0;return ' $'+val.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' ('+pct+'%)';}}}},cutout:'60%'}});
+  const catRows=active.map(cat=>({cat,orders:catData[cat].orders,revenue:catData[cat].revenue,pct:totalRevenue>0?catData[cat].revenue/totalRevenue*100:0,avg:catData[cat].orders>0?catData[cat].revenue/catData[cat].orders:0}));
+  const catOptions=active.map(c=>({value:c,label:CAT_LABELS[c]||c}));
+  initTableFilter('fp_cat','cat',catOptions,drawCatTable);
+  document.querySelectorAll('th[data-tbl="cat"]').forEach(th=>{th.onclick=()=>{const col=th.dataset.col;catSortAsc=catSortCol===col?!catSortAsc:col==='cat';catSortCol=col;updateSortArrows('cat',catSortCol,catSortAsc);drawCatTable();};});
+  updateSortArrows('cat',catSortCol,catSortAsc);drawCatTable();
+  function drawCatTable(){const vis=catRows.filter(r=>passesFilter('cat',r.cat));vis.sort((a,b)=>{let va=a[catSortCol]??0,vb=b[catSortCol]??0;if(catSortCol==='cat'){va=(CAT_LABELS[a.cat]||a.cat).toLowerCase();vb=(CAT_LABELS[b.cat]||b.cat).toLowerCase();}return catSortAsc?(va>vb?1:-1):(va<vb?1:-1);});let html='';vis.forEach(r=>{html+='<tr><td><span class="cat-badge" style="background:'+CAT_COLORS[r.cat]+'">'+(CAT_LABELS[r.cat]||r.cat)+'</span></td><td class="num">'+r.orders.toLocaleString('en-US')+'</td><td class="num">$'+fmt2(r.revenue)+'</td><td class="pct-col">'+r.pct.toFixed(1)+'%</td><td class="num">$'+r.avg.toFixed(2)+'</td></tr>';});document.getElementById('categoryTableBody').innerHTML=html||'<tr><td colspan="5">No data.</td></tr>';}
+}
+
+// ============================================================
+// Revenue Trend Chart
+// ============================================================
+let _tS,_tSt,_tE;
+function renderTrendChart(successful,startDate,endDate){
+  _tS=successful;_tSt=startDate;_tE=endDate;const bucket=trendBucket;
+  const bm={};successful.forEach(t=>{let k;if(bucket==='day')k=t._dateISO;else if(bucket==='week')k=t.dt.startOf('week').toISODate();else k=t.dt.toFormat('yyyy-MM');if(!bm[k])bm[k]={};if(t.isRefund){bm[k]['__refunds__']=(bm[k]['__refunds__']||0)+t.amount;}else{const cat=t._category||'other';bm[k][cat]=(bm[k][cat]||0)+t.amount;}});
+  const buckets=Object.keys(bm).sort();const labelFmt=bucket==='month'?{month:'short',year:'2-digit'}:{month:'numeric',day:'numeric'};
+  const labels=buckets.map(b=>{const iso=bucket==='month'?b+'-01':b;const d=DateTime.fromISO(iso);return d.isValid?d.toLocaleString(labelFmt):b;});
+  const activeCats=CATEGORIES.filter(cat=>successful.some(t=>!t.isRefund&&(t._category||'other')===cat));
+  const hasRefunds=successful.some(t=>t.isRefund);
+  activeCats.forEach(cat=>{if(trendToggles[cat]===undefined)trendToggles[cat]=false;});
+  if(hasRefunds&&trendToggles['__refunds__']===undefined)trendToggles['__refunds__']=false;
+  if(trendToggles['__total__']===undefined)trendToggles['__total__']=true;
+  const tc=cat=>cat==='core-offer'?'#222':CAT_COLORS[cat];
+  const controls=document.getElementById('trendControls');
+  const bb=['day','week','month'].map(b=>'<button class="bucket-btn'+(trendBucket===b?' active':'')+'" data-bucket="'+b+'">'+{day:'Daily',week:'Weekly',month:'Monthly'}[b]+'</button>').join('');
+  controls.innerHTML=bb+'<span style="margin-left:8px;"></span><label><input type="checkbox" data-cat="__total__" '+(trendToggles['__total__']?'checked':'')+' style="accent-color:#2b7b31"><span style="color:#2b7b31;font-weight:700;">Total (Net)</span></label>'+activeCats.map(cat=>'<label><input type="checkbox" data-cat="'+cat+'" '+(trendToggles[cat]?'checked':'')+' style="accent-color:'+tc(cat)+'"><span style="color:'+tc(cat)+';font-weight:700;">'+CAT_LABELS[cat]+'</span></label>').join('');
+  controls.querySelectorAll('.bucket-btn').forEach(btn=>{btn.addEventListener('click',()=>{trendBucket=btn.dataset.bucket;renderTrendChart(_tS,_tSt,_tE);});});
+  controls.querySelectorAll('input[type="checkbox"]').forEach(cb=>{cb.addEventListener('change',e=>{trendToggles[e.target.dataset.cat]=e.target.checked;drawTrend(labels,buckets,bm,activeCats,hasRefunds);});});
+  drawTrend(labels,buckets,bm,activeCats,hasRefunds);
+}
+function drawTrend(labels,buckets,bm,activeCats,hasRefunds){
+  const tc=cat=>cat==='core-offer'?'#222':CAT_COLORS[cat];
+  const ds=activeCats.filter(cat=>trendToggles[cat]).map(cat=>({label:CAT_LABELS[cat],data:buckets.map(b=>Math.round((bm[b]?.[cat]||0)*100)/100),borderColor:tc(cat),backgroundColor:tc(cat)+'18',borderWidth:2.5,pointRadius:buckets.length>60?0:3,fill:false,tension:0.2}));
+  if(trendToggles['__total__']){ds.unshift({label:'Total (Net)',data:buckets.map(b=>{const bk=bm[b]||{};let sum=0;activeCats.forEach(cat=>{sum+=(bk[cat]||0);});sum+=(bk['__refunds__']||0);return Math.round(sum*100)/100;}),borderColor:'#2b7b31',backgroundColor:'#2b7b3118',borderWidth:3,pointRadius:buckets.length>60?0:3,fill:false,tension:0.2,borderDash:[6,3]});}
+  if(hasRefunds&&trendToggles['__refunds__']){ds.push({label:'Refunds',data:buckets.map(b=>Math.round((bm[b]?.['__refunds__']||0)*100)/100),borderColor:'#e74c3c',backgroundColor:'#e74c3c18',borderWidth:2,pointRadius:buckets.length>60?0:3,fill:false,tension:0.2});}
+  destroyChart('trendChart');const ctx=document.getElementById('trendChart').getContext('2d');
+  chartInstances['trendChart']=new Chart(ctx,{type:'line',data:{labels,datasets:ds},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': $'+c.parsed.y.toLocaleString('en-US',{minimumFractionDigits:2})}}},scales:{x:{ticks:{color:'#888fb3',maxTicksLimit:20},grid:{display:false}},y:{beginAtZero:true,ticks:{color:'#888fb3',callback:v=>'$'+Number(v).toLocaleString('en-US')},grid:{color:'#e5efe9',borderDash:[4,2]}}}}});
+}
+
+// ============================================================
+// Acquisition Chart
+// ============================================================
+let _aS,_aSt,_aE;
+function renderAcquisitionChart(salesOnly,startDate,endDate){
+  _aS=salesOnly;_aSt=startDate;_aE=endDate;
+  const custFirstDate={};allTxns.forEach(t=>{if(!t.isSuccess||t.isRefund||!t.email)return;if(!custFirstDate[t.email]||t._dateISO<custFirstDate[t.email])custFirstDate[t.email]=t._dateISO;});
+  const bucket=acquisitionBucket;const bm={};
+  salesOnly.forEach(t=>{if(!t.email)return;let k;if(bucket==='day')k=t._dateISO;else if(bucket==='week')k=t.dt.startOf('week').toISODate();else k=t.dt.toFormat('yyyy-MM');if(!bm[k])bm[k]={newE:new Set(),retE:new Set(),newR:0};const fd=custFirstDate[t.email];let fk;if(bucket==='day')fk=fd;else if(bucket==='week')fk=DateTime.fromISO(fd).startOf('week').toISODate();else fk=fd.slice(0,7);if(fk===k&&fd>=startDate&&fd<=endDate){bm[k].newE.add(t.email);bm[k].newR+=t.amount;}else{bm[k].retE.add(t.email);}});
+  const buckets=Object.keys(bm).sort();const labelFmt=bucket==='month'?{month:'short',year:'2-digit'}:{month:'numeric',day:'numeric'};
+  const labels=buckets.map(b=>{const iso=bucket==='month'?b+'-01':b;const d=DateTime.fromISO(iso);return d.isValid?d.toLocaleString(labelFmt):b;});
+  const data=buckets.map(b=>({nc:bm[b].newE.size,rc:bm[b].retE.size,nr:Math.round(bm[b].newR*100)/100}));
+  const controls=document.getElementById('acquisitionControls');
+  controls.innerHTML='<span style="font-size:.82rem;font-weight:600;color:#556;">Group by:</span>'+['day','week','month'].map(b=>'<button class="bucket-btn'+(acquisitionBucket===b?' active':'')+'" data-bucket="'+b+'">'+{day:'Daily',week:'Weekly',month:'Monthly'}[b]+'</button>').join('')+'<span style="margin-left:14px;display:inline-flex;align-items:center;gap:4px;"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#62B450;"></span><span style="font-size:.78rem;color:#556;font-weight:600;">New</span></span><span style="display:inline-flex;align-items:center;gap:4px;"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#193A65;"></span><span style="font-size:.78rem;color:#556;font-weight:600;">Returning</span></span>';
+  controls.querySelectorAll('.bucket-btn').forEach(btn=>{btn.addEventListener('click',()=>{acquisitionBucket=btn.dataset.bucket;renderAcquisitionChart(_aS,_aSt,_aE);});});
+  destroyChart('acquisitionChart');const ctx=document.getElementById('acquisitionChart').getContext('2d');
+  chartInstances['acquisitionChart']=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'New Customers',data:data.map(d=>d.nc),backgroundColor:'#62B450',borderRadius:3,yAxisID:'y',stack:'c',order:2},{label:'Returning',data:data.map(d=>d.rc),backgroundColor:'#193A65',borderRadius:3,yAxisID:'y',stack:'c',order:2},{type:'line',label:'New Customer Revenue',data:data.map(d=>d.nr),borderColor:'#e07b00',backgroundColor:'transparent',borderWidth:2.5,borderDash:[6,3],pointRadius:labels.length>60?0:3,fill:false,tension:0.2,yAxisID:'y1',order:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label(c){if(c.dataset.yAxisID==='y1')return c.dataset.label+': $'+c.parsed.y.toLocaleString('en-US',{minimumFractionDigits:2});return c.dataset.label+': '+c.parsed.y.toLocaleString();}}}},scales:{x:{stacked:true,ticks:{color:'#888fb3',maxTicksLimit:20},grid:{display:false}},y:{stacked:true,beginAtZero:true,title:{display:true,text:'Customers',color:'#888fb3',font:{size:11,weight:600}},ticks:{color:'#888fb3',precision:0},grid:{color:'#e5efe9',borderDash:[4,2]}},y1:{beginAtZero:true,position:'right',title:{display:true,text:'Revenue',color:'#e07b00',font:{size:11,weight:600}},ticks:{color:'#e07b00',callback:v=>'$'+Number(v).toLocaleString('en-US')},grid:{drawOnChartArea:false}}}}});
+}
+
+// ============================================================
+// LTV Cohorts
+// ============================================================
+function renderLTVCohorts(){
+  const container=document.getElementById('ltvCohortTiles');if(!container)return;
+  const MS=[{days:30,label:'After 1 Month'},{days:90,label:'After 3 Months'},{days:180,label:'After 6 Months'},{days:270,label:'After 9 Months'},{days:365,label:'After 12 Months'},{days:null,label:'12+ Months'}];
+  const nowMs=Date.now();const allS=allTxns.filter(t=>t.isSuccess&&!t.isCancelled);
+  const cm={};allS.forEach(t=>{if(!t.email)return;if(!cm[t.email])cm[t.email]={txns:[],firstTs:Infinity};cm[t.email].txns.push(t);if(t._ts<cm[t.email].firstTs)cm[t.email].firstTs=t._ts;});
+  const ce=Object.values(cm);
+  const tiles=MS.map(m=>{const minAge=m.days??365;let sum=0,count=0;ce.forEach(c=>{const age=(nowMs-c.firstTs)/86400000;if(age<minAge)return;const cut=m.days?c.firstTs+m.days*86400000:Infinity;const ltv=c.txns.filter(t=>t._ts<=cut).reduce((s,t)=>s+t.amount,0);sum+=ltv;count++;});return{label:m.label,avg:count>0?sum/count:0,count};});
+  const maxL=Math.max(...tiles.map(t=>t.avg),1);
+  container.innerHTML=tiles.map(tile=>{const i=tile.avg/maxL;const r=Math.round(238+(26-238)*i),g=Math.round(248+(92-248)*i),b=Math.round(239+(42-239)*i);const tc=i>0.55?'#fff':'#225b3a',sc=i>0.55?'rgba(255,255,255,0.75)':'#888fb3';return '<div class="stat-tile" style="background:rgb('+r+','+g+','+b+');border-color:transparent;"><div class="stat-tile-label" style="color:'+sc+'">'+tile.label+'</div><div class="stat-tile-value" style="color:'+tc+'">$'+fmt2(tile.avg)+'</div><div class="stat-tile-sub" style="color:'+sc+'">'+tile.count.toLocaleString('en-US')+' customers</div></div>';}).join('');
+}
+function renderGrossProfitLTVCohorts(){
+  const container=document.getElementById('gpLtvCohortTiles');if(!container)return;
+  const MS=[{days:30,label:'After 1 Month'},{days:90,label:'After 3 Months'},{days:180,label:'After 6 Months'},{days:270,label:'After 9 Months'},{days:365,label:'After 12 Months'},{days:null,label:'12+ Months'}];
+  const nowMs=Date.now();const allS=allTxns.filter(t=>t.isSuccess&&!t.isCancelled);
+  const cm={};allS.forEach(t=>{if(!t.email)return;if(!cm[t.email])cm[t.email]={txns:[],firstTs:Infinity};cm[t.email].txns.push(t);if(t._ts<cm[t.email].firstTs)cm[t.email].firstTs=t._ts;});
+  const ce=Object.values(cm);
+  const tiles=MS.map(m=>{const minAge=m.days??365;let sum=0,count=0;ce.forEach(c=>{const age=(nowMs-c.firstTs)/86400000;if(age<minAge)return;const cut=m.days?c.firstTs+m.days*86400000:Infinity;const gp=c.txns.filter(t=>t._ts<=cut).reduce((s,t)=>s+(t.amount-calcTxnCOGS(t)),0);sum+=gp;count++;});return{label:m.label,avg:count>0?sum/count:0,count};});
+  const maxL=Math.max(...tiles.map(t=>t.avg),1);
+  container.innerHTML=tiles.map(tile=>{const i=tile.avg/maxL;const r=Math.round(238+(75-238)*i),g=Math.round(240+(60-240)*i),b=Math.round(252+(180-252)*i);const tc=i>0.55?'#fff':'#3b3580',sc=i>0.55?'rgba(255,255,255,0.75)':'#888fb3';return '<div class="stat-tile" style="background:rgb('+r+','+g+','+b+');border-color:transparent;"><div class="stat-tile-label" style="color:'+sc+'">'+tile.label+'</div><div class="stat-tile-value" style="color:'+tc+'">$'+fmt2(tile.avg)+'</div><div class="stat-tile-sub" style="color:'+sc+'">'+tile.count.toLocaleString('en-US')+' customers</div></div>';}).join('');
+}
+
+// ============================================================
+// Upsell Analysis + Leaderboard
+// ============================================================
+function renderUpsellAnalysis(salesOnly){
+  const coreKeys=new Set();salesOnly.filter(t=>t._category==='core-offer'&&t._sessionIdx!==null).forEach(t=>{coreKeys.add(t.email+'|'+t._sessionIdx);});
+  const upsellKeys=new Set();salesOnly.filter(t=>t._category==='upsell'&&t._sessionIdx!==null).forEach(t=>{upsellKeys.add(t.email+'|'+t._sessionIdx);});
+  const totalCore=coreKeys.size;const withUpsell=[...upsellKeys].filter(k=>coreKeys.has(k)).length;
+  const upsellTxns=salesOnly.filter(t=>t._category==='upsell');const upsellRev=upsellTxns.reduce((s,t)=>s+t.amount,0);
+  const upsellTR=totalCore>0?(withUpsell/totalCore*100).toFixed(1):'\u2013';
+  const totalRev=salesOnly.reduce((s,t)=>s+t.amount,0);const upsellRevPct=totalRev>0?(upsellRev/totalRev*100).toFixed(1):0;
+  const FAMS=[{key:'liver-restore',label:'Liver Restore Upsell'},{key:'turmeric-complex',label:'Turmeric Upsell'},{key:'omega-3-pure',label:'Omega-3 Upsell'}];
+  const famHTML=FAMS.map(fam=>{const fk=new Set();salesOnly.filter(t=>t._category==='upsell'&&t._productFamily===fam.key&&t._sessionIdx!==null).forEach(t=>{fk.add(t.email+'|'+t._sessionIdx);});const ov=[...fk].filter(k=>coreKeys.has(k)).length;const rate=totalCore>0?(ov/totalCore*100).toFixed(1):'\u2013';return '<div class="stat-tile"><div class="stat-tile-label">'+fam.label+' Take Rate</div><div class="stat-tile-value">'+rate+'%</div><div class="stat-tile-sub">'+ov+' of '+totalCore+' sessions</div></div>';}).join('');
+  document.getElementById('upsellStats').innerHTML='<div class="stat-tile"><div class="stat-tile-label">New Customer Sessions</div><div class="stat-tile-value">'+totalCore.toLocaleString('en-US')+'</div></div><div class="stat-tile"><div class="stat-tile-label">Overall Upsell Take Rate</div><div class="stat-tile-value">'+upsellTR+'%</div><div class="stat-tile-sub">'+withUpsell+' of '+totalCore+' sessions</div></div><div class="stat-tile"><div class="stat-tile-label">Upsell Revenue</div><div class="stat-tile-value">$'+fmt0(upsellRev)+'</div><div class="stat-tile-sub">'+upsellRevPct+'% of total</div></div>'+famHTML;
+}
+function renderUpsellLeaderboard(salesOnly){
+  const coreKeys=new Set();salesOnly.filter(t=>t._category==='core-offer'&&t._sessionIdx!==null).forEach(t=>{coreKeys.add(t.email+'|'+t._sessionIdx);});const totalCore=coreKeys.size;
+  const pm={};salesOnly.filter(t=>t._category==='upsell').forEach(t=>{if(!pm[t.productName])pm[t.productName]={count:0,revenue:0,family:t._productFamily||'other'};pm[t.productName].count++;pm[t.productName].revenue+=t.amount;});
+  const rows=Object.entries(pm).map(([name,d])=>({name,count:d.count,revenue:d.revenue,avg:d.revenue/d.count,takeRate:totalCore>0?d.count/totalCore*100:0,family:d.family}));
+  const FLB={'liver-restore':'Liver Restore','turmeric-complex':'Turmeric Complex','omega-3-pure':'Omega-3 Pure','daily-greens':'Daily Greens','other':'Other'};
+  const opts=[...new Set(rows.map(r=>r.family))].map(f=>({value:f,label:FLB[f]||f}));
+  initTableFilter('fp_upsell','upsell',opts,draw);
+  document.querySelectorAll('th[data-tbl="upsell"]').forEach(th=>{th.onclick=()=>{const col=th.dataset.col;upsellSortAsc=upsellSortCol===col?!upsellSortAsc:col==='name';upsellSortCol=col;updateSortArrows('upsell',upsellSortCol,upsellSortAsc);draw();};});
+  updateSortArrows('upsell',upsellSortCol,upsellSortAsc);draw();
+  function draw(){const vis=rows.filter(r=>passesFilter('upsell',r.family));vis.sort((a,b)=>{let va=a[upsellSortCol]??0,vb=b[upsellSortCol]??0;if(upsellSortCol==='name'){va=va.toLowerCase();vb=vb.toLowerCase();}return upsellSortAsc?(va>vb?1:-1):(va<vb?1:-1);});let html='';vis.slice(0,20).forEach(r=>{html+='<tr><td>'+esc(r.name)+'</td><td class="num">'+r.count.toLocaleString('en-US')+'</td><td class="num">$'+fmt2(r.revenue)+'</td><td class="num">$'+r.avg.toFixed(2)+'</td><td class="pct-col">'+r.takeRate.toFixed(1)+'%</td></tr>';});document.getElementById('upsellLeaderBody').innerHTML=html||'<tr><td colspan="5">No upsells.</td></tr>';}
+}
+
+// ============================================================
+// Liver Restore Store Funnel
+// ============================================================
+function renderStoreFunnel(salesOnly){
+  const sm={};salesOnly.forEach(t=>{if(t._productFamily!=='liver-restore'||t.isRebill||t.isAutoShipSignup||t._isCoreOfferName||t._isUpsellName||t._sessionIdx===null)return;const k=t.email+'|'+t._sessionIdx;if(!sm[k])sm[k]={entryAmt:0,totalAmt:0,hasUpsell:false};sm[k].entryAmt+=t.amount;sm[k].totalAmt+=t.amount;});
+  salesOnly.forEach(t=>{if(t._category!=='upsell'||t._sessionIdx===null)return;const k=t.email+'|'+t._sessionIdx;if(!sm[k])return;sm[k].totalAmt+=t.amount;sm[k].hasUpsell=true;});
+  const sessions=Object.values(sm);const sc=sessions.length;const wu=sessions.filter(s=>s.hasUpsell).length;
+  const totalR=sessions.reduce((s,v)=>s+v.totalAmt,0);const avgEntry=sc>0?sessions.reduce((s,v)=>s+v.entryAmt,0)/sc:0;const avgFV=sc>0?totalR/sc:0;const utr=sc>0?(wu/sc*100).toFixed(1):'\u2013';
+  const er=sessions.reduce((s,v)=>s+v.entryAmt,0);const ur=totalR-er;
+  document.getElementById('storeFunnelStats').innerHTML=sc===0?'<p style="color:#aab;font-style:italic;">No Liver Restore store purchases in this period.</p>':'<div class="stat-tile"><div class="stat-tile-label">Store Sessions</div><div class="stat-tile-value">'+sc.toLocaleString('en-US')+'</div><div class="stat-tile-sub">unique Liver Restore store purchases</div></div><div class="stat-tile"><div class="stat-tile-label">Avg Entry Price</div><div class="stat-tile-value">$'+fmt2(avgEntry)+'</div></div><div class="stat-tile"><div class="stat-tile-label">Upsell Take Rate</div><div class="stat-tile-value">'+utr+'%</div><div class="stat-tile-sub">'+wu+' of '+sc+' sessions</div></div><div class="stat-tile"><div class="stat-tile-label">Avg Funnel Value</div><div class="stat-tile-value">$'+fmt2(avgFV)+'</div></div><div class="stat-tile"><div class="stat-tile-label">Total Store Revenue</div><div class="stat-tile-value">$'+fmt0(totalR)+'</div><div class="stat-tile-sub">$'+fmt0(er)+' entry \u00B7 $'+fmt0(ur)+' upsells</div></div>';
+}
+
+// ============================================================
+// AOV by Funnel Entry Point
+// ============================================================
+function renderAOVFunnels(salesOnly,filtered){
+  const refunds=filtered.filter(t=>t.isRefund&&t.isSuccess);
+  const sessionMap={};salesOnly.forEach(t=>{if(t._sessionIdx===null)return;const k=t.email+'|'+t._sessionIdx;if(!sessionMap[k])sessionMap[k]=[];sessionMap[k].push(t);});
+  const FUNNELS=[
+    {key:'vsl-lr',label:'VSL Liver Restore',match:t=>t._productFamily==='liver-restore'&&t._isCoreOfferName},
+    {key:'store-lr',label:'Liver Restore Store',match:t=>t._productFamily==='liver-restore'&&!t.isRebill&&!t._isCoreOfferName&&!t._isUpsellName&&!t._isPromoName},
+    {key:'store-tc',label:'Turmeric Complex Store',match:t=>t._productFamily==='turmeric-complex'&&!t.isRebill&&!t._isCoreOfferName&&!t._isUpsellName&&!t._isPromoName},
+    {key:'store-o3',label:'Omega-3 Pure Store',match:t=>t._productFamily==='omega-3-pure'&&!t.isRebill&&!t._isCoreOfferName&&!t._isUpsellName&&!t._isPromoName},
+    {key:'store-mv',label:'Daily Greens Store',match:t=>t._productFamily==='daily-greens'&&!t.isRebill&&!t._isCoreOfferName&&!t._isUpsellName&&!t._isPromoName},
+    {key:'seasonal',label:'Seasonal / Promo',match:t=>t._isPromoName},
+  ];
+  const rows=FUNNELS.map(funnel=>{const ms={};Object.entries(sessionMap).forEach(([sk,txns])=>{const et=txns.filter(funnel.match);if(et.length===0)return;const ea=et.reduce((s,t)=>s+t.amount,0);const ua=txns.filter(t=>t._category==='upsell'&&!funnel.match(t)).reduce((s,t)=>s+t.amount,0);ms[sk]={entryAmt:ea,upsellAmt:ua,totalAmt:ea+ua,hasUpsell:ua>0};});const ss=Object.values(ms);const sc=ss.length;if(sc===0)return null;const te=ss.reduce((s,v)=>s+v.entryAmt,0);const tg=ss.reduce((s,v)=>s+v.totalAmt,0);const wu=ss.filter(s=>s.hasUpsell).length;const fr=refunds.filter(funnel.match);const ra=fr.reduce((s,t)=>s+Math.abs(t.amount),0);return{label:funnel.label,sessions:sc,avgEntry:te/sc,upsellRate:wu/sc*100,grossAOV:tg/sc,refunds:ra,netAOV:(tg-ra)/sc,totalRev:tg-ra};}).filter(Boolean);
+  function drawAOV(){const sorted=rows.slice().sort((a,b)=>{let va=a[aovFunnelSortCol],vb=b[aovFunnelSortCol];if(typeof va==='string'){va=va.toLowerCase();vb=(vb||'').toLowerCase();}return aovFunnelSortAsc?(va>vb?1:-1):(va<vb?1:-1);});let html='';sorted.forEach(r=>{html+='<tr><td>'+esc(r.label)+'</td><td class="num">'+r.sessions.toLocaleString('en-US')+'</td><td class="num">$'+fmt2(r.avgEntry)+'</td><td class="pct-col">'+r.upsellRate.toFixed(1)+'%</td><td class="num">$'+fmt2(r.grossAOV)+'</td><td class="num" style="color:#c0392b;">$'+fmt2(r.refunds)+'</td><td class="num" style="font-weight:600;">$'+fmt2(r.netAOV)+'</td><td class="num">$'+fmt2(r.totalRev)+'</td></tr>';});document.getElementById('aovFunnelBody').innerHTML=html||'<tr><td colspan="8">No data.</td></tr>';}
+  document.querySelectorAll('th[data-tbl="aovFunnel"]').forEach(th=>{th.onclick=()=>{const col=th.dataset.col;aovFunnelSortAsc=aovFunnelSortCol===col?!aovFunnelSortAsc:col==='label';aovFunnelSortCol=col;updateSortArrows('aovFunnel',aovFunnelSortCol,aovFunnelSortAsc);drawAOV();};});
+  updateSortArrows('aovFunnel',aovFunnelSortCol,aovFunnelSortAsc);drawAOV();
+}
+
+// ============================================================
+// AutoShip Attach Rate
+// ============================================================
+function renderAttachRate(salesOnly){
+  const signupTxns=salesOnly.filter(t=>t._category==='autoship-signup');
+  const coreOrders=salesOnly.filter(t=>t._category==='core-offer');
+  const sc=signupTxns.length,cc=coreOrders.length;const ar=cc>0?(sc/cc*100):0;
+  const sRev=signupTxns.reduce((s,t)=>s+t.amount,0);const avg=sc>0?sRev/sc:0;
+  setMetricText('mAttachRate',cc>0?ar.toFixed(1)+'%':'\u2013');
+  document.getElementById('mAttachRateSub').textContent=sc>0&&cc>0?sc+' signups / '+cc+' new orders':'no data';
+  document.getElementById('attachRateTiles').innerHTML='<div class="stat-tile"><div class="stat-tile-label">Attach Rate</div><div class="stat-tile-value">'+(cc>0?ar.toFixed(1)+'%':'\u2013')+'</div><div class="stat-tile-sub">'+sc+' signups of '+cc+' new orders</div></div><div class="stat-tile"><div class="stat-tile-label">Autoship Signups</div><div class="stat-tile-value">'+sc.toLocaleString('en-US')+'</div></div><div class="stat-tile"><div class="stat-tile-label">Signup Revenue</div><div class="stat-tile-value">'+(sc>0?'$'+fmt2(sRev):'\u2013')+'</div><div class="stat-tile-sub">'+(avg>0?'$'+avg.toFixed(2)+' avg':'')+'</div></div>';
+  const bf={};signupTxns.forEach(t=>{const f=t._productFamily||'other';if(!bf[f])bf[f]={count:0,revenue:0};bf[f].count++;bf[f].revenue+=t.amount;});
+  let html='';Object.entries(bf).map(([f,d])=>({label:FAMILY_LABELS[f]||f,count:d.count,revenue:d.revenue,pct:sc>0?d.count/sc*100:0,avg:d.count>0?d.revenue/d.count:0})).sort((a,b)=>b.count-a.count).forEach(r=>{html+='<tr><td>'+r.label+'</td><td class="num">'+r.count.toLocaleString('en-US')+'</td><td class="num">$'+fmt2(r.revenue)+'</td><td class="pct-col">'+r.pct.toFixed(1)+'%</td><td class="num">'+(r.avg>0?'$'+r.avg.toFixed(2):'\u2013')+'</td></tr>';});
+  document.getElementById('attachRateProductBody').innerHTML=html||'<tr><td colspan="5">No signups.</td></tr>';
+}
+
+// ============================================================
+// Churn + AutoShip by Family
+// ============================================================
+function renderChurnMetrics(endDateISO){
+  const endMs=DateTime.fromISO(endDateISO).endOf('day').toMillis();
+  const rbe={};allTxns.forEach(t=>{if(!t.isSuccess||!t.isRebill||!t.email||t.isRefund)return;if(!rbe[t.email])rbe[t.email]=[];rbe[t.email].push(t._ts);});
+  let active=0,churned=0,lsDays=[],trc=[];
+  Object.values(rbe).forEach(ts=>{ts.sort((a,b)=>a-b);trc.push(ts.length);let iv;if(ts.length>=2){const g=[];for(let i=1;i<ts.length;i++)g.push(ts[i]-ts[i-1]);g.sort((a,b)=>a-b);iv=g[Math.floor(g.length/2)];}else iv=35*86400000;iv=Math.min(iv,100*86400000);if(ts[ts.length-1]+iv*1.5<endMs){churned++;lsDays.push((ts[ts.length-1]+iv-ts[0])/86400000);}else active++;});
+  const total=active+churned;const cr=total>0?(churned/total*100).toFixed(1):'\u2013';
+  const avgLS=lsDays.length>0?(lsDays.reduce((s,v)=>s+v,0)/lsDays.length/30.44).toFixed(1):'\u2013';
+  const avgRB=trc.length>0?(trc.reduce((s,v)=>s+v,0)/trc.length).toFixed(1):'\u2013';
+  document.getElementById('churnStats').innerHTML='<div class="stat-tile"><div class="stat-tile-label">Active Subscribers</div><div class="stat-tile-value">'+active.toLocaleString('en-US')+'</div></div><div class="stat-tile"><div class="stat-tile-label">Churned Subscribers</div><div class="stat-tile-value">'+churned.toLocaleString('en-US')+'</div></div><div class="stat-tile"><div class="stat-tile-label">Churn Rate</div><div class="stat-tile-value">'+cr+'%</div><div class="stat-tile-sub">'+churned+' of '+total+'</div></div><div class="stat-tile"><div class="stat-tile-label">Avg Subscription Length</div><div class="stat-tile-value">'+avgLS+' mo</div><div class="stat-tile-sub">avg '+avgRB+' charges/customer</div></div>';
+}
+function renderAutoShipByFamily(successful,endDateISO){
+  const endMs=DateTime.fromISO(endDateISO).endOf('day').toMillis();
+  const fet={};allTxns.forEach(t=>{if(!t.isSuccess||!t.isRebill||!t.email||t.isRefund||!FAMILY_LABELS[t._productFamily])return;const f=t._productFamily;if(!fet[f])fet[f]={};if(!fet[f][t.email])fet[f][t.email]=[];fet[f][t.email].push(t._ts);});
+  const pRev={};successful.filter(t=>t.isRebill&&FAMILY_LABELS[t._productFamily]).forEach(t=>{if(!pRev[t._productFamily])pRev[t._productFamily]={rev:0,count:0};pRev[t._productFamily].rev+=t.amount;pRev[t._productFamily].count++;});
+  const fRows=[];
+  Object.entries(FAMILY_LABELS).forEach(([fam,label])=>{const em=fet[fam]||{};let active=0,churned=0,lsDays=[];Object.values(em).forEach(ts=>{ts.sort((a,b)=>a-b);let iv;if(ts.length>=2){const g=[];for(let i=1;i<ts.length;i++)g.push(ts[i]-ts[i-1]);g.sort((a,b)=>a-b);iv=g[Math.floor(g.length/2)];}else iv=35*86400000;iv=Math.min(iv,100*86400000);if(ts[ts.length-1]+iv*1.5<endMs){churned++;lsDays.push((ts[ts.length-1]+iv-ts[0])/86400000);}else active++;});const total=active+churned;if(total===0)return;const pr=pRev[fam]||{rev:0,count:0};const asl=lsDays.length>0?lsDays.reduce((s,v)=>s+v,0)/lsDays.length/30.44:null;fRows.push({family:fam,label,active,churned,churnRate:churned/total*100,rev:pr.rev,avgRebill:pr.count>0?pr.rev/pr.count:0,avgSubLen:asl});});
+  const fOpts=fRows.map(r=>({value:r.family,label:r.label}));initTableFilter('fp_family','family',fOpts,drawFT);
+  document.querySelectorAll('th[data-tbl="family"]').forEach(th=>{th.onclick=()=>{const col=th.dataset.col;familySortAsc=familySortCol===col?!familySortAsc:col==='label';familySortCol=col;updateSortArrows('family',familySortCol,familySortAsc);drawFT();};});updateSortArrows('family',familySortCol,familySortAsc);drawFT();
+  function drawFT(){const vis=fRows.filter(r=>passesFilter('family',r.family));vis.sort((a,b)=>{let va=a[familySortCol]??-1,vb=b[familySortCol]??-1;if(familySortCol==='label'){va=va.toLowerCase();vb=vb.toLowerCase();}return familySortAsc?(va>vb?1:-1):(va<vb?1:-1);});let html='';vis.forEach(r=>{html+='<tr><td>'+r.label+'</td><td class="num">'+r.active.toLocaleString('en-US')+'</td><td class="num">'+r.churned.toLocaleString('en-US')+'</td><td class="pct-col">'+r.churnRate.toFixed(1)+'%</td><td class="num">$'+fmt2(r.rev)+'</td><td class="num">'+(r.avgRebill>0?'$'+r.avgRebill.toFixed(2):'\u2013')+'</td><td class="num">'+(r.avgSubLen!==null?r.avgSubLen.toFixed(1)+' mo':'\u2013')+'</td></tr>';});document.getElementById('autoshipFamilyBody').innerHTML=html||'<tr><td colspan="7">No autoship data.</td></tr>';}
+}
+
+// ============================================================
+// Current Subscriber Breakdown
+// ============================================================
+function renderSubscriberBreakdown(successful,endDateISO){
+  const endMs=DateTime.fromISO(endDateISO).endOf('day').toMillis();
+  const ept={};allTxns.forEach(t=>{if(!t.isSuccess||!t.isRebill||!t.email||t.isRefund||!FAMILY_LABELS[t._productFamily])return;const pn=t.productName;if(!ept[t.email])ept[t.email]={};if(!ept[t.email][pn])ept[t.email][pn]={timestamps:[],lastPrice:0,family:t._productFamily,qty:parseProductQty(pn),freq:parseSubscriptionFrequency(pn)};ept[t.email][pn].timestamps.push(t._ts);ept[t.email][pn].lastPrice=t.amount;});
+  const vm={};Object.values(ept).forEach(products=>{Object.entries(products).forEach(([pn,data])=>{const ts=data.timestamps.sort((a,b)=>a-b);let iv;if(ts.length>=2){const g=[];for(let i=1;i<ts.length;i++)g.push(ts[i]-ts[i-1]);g.sort((a,b)=>a-b);iv=g[Math.floor(g.length/2)];}else iv=35*86400000;iv=Math.min(iv,100*86400000);if(ts[ts.length-1]+iv*1.5>=endMs){const vk=data.family+'|'+data.qty+'|'+data.freq.days;if(!vm[vk])vm[vk]={family:data.family,qty:data.qty,freq:data.freq,subscribers:0,prices:[],productNames:new Set()};vm[vk].subscribers++;vm[vk].prices.push(data.lastPrice);vm[vk].productNames.add(pn);}});});
+  const totalSubs=Object.values(vm).reduce((s,v)=>s+v.subscribers,0);
+  const vRows=Object.entries(vm).map(([vk,v])=>{const ap=v.prices.length>0?v.prices.reduce((s,p)=>s+p,0)/v.prices.length:0;const mm=v.freq.days>0?30/v.freq.days:1;return{vKey:vk,variant:[...v.productNames].sort((a,b)=>a.length-b.length)[0],family:v.family,familyLabel:FAMILY_LABELS[v.family]||v.family,qty:v.qty,freqLabel:v.freq.label,subscribers:v.subscribers,pctTotal:totalSubs>0?v.subscribers/totalSubs*100:0,avgPrice:ap,estMonthlyRev:ap*v.subscribers*mm};});
+  const tmr=vRows.reduce((s,r)=>s+r.estMonthlyRev,0);const tb=vRows.reduce((s,r)=>s+r.qty*r.subscribers,0);const ab=totalSubs>0?tb/totalSubs:0;const mbs=vRows.filter(r=>r.qty>1).reduce((s,r)=>s+r.subscribers,0);const pmb=totalSubs>0?(mbs/totalSubs*100).toFixed(1):'0.0';
+  document.getElementById('subBreakTiles').innerHTML='<div class="stat-tile"><div class="stat-tile-label">Active Subscribers</div><div class="stat-tile-value">'+totalSubs.toLocaleString('en-US')+'</div></div><div class="stat-tile"><div class="stat-tile-label">Est. Monthly Revenue</div><div class="stat-tile-value">$'+fmt2(tmr)+'</div></div><div class="stat-tile"><div class="stat-tile-label">Avg Bottles / Subscriber</div><div class="stat-tile-value">'+ab.toFixed(1)+'</div></div><div class="stat-tile"><div class="stat-tile-label">% Multi-Bottle</div><div class="stat-tile-value">'+pmb+'%</div></div>';
+  const fOpts=[...new Set(vRows.map(r=>r.family))].map(f=>({value:f,label:FAMILY_LABELS[f]||f}));initTableFilter('fp_subBreak','subBreak',fOpts,drawSB);
+  document.querySelectorAll('th[data-tbl="subBreak"]').forEach(th=>{th.onclick=()=>{const col=th.dataset.col;subBreakSortAsc=subBreakSortCol===col?!subBreakSortAsc:(col==='variant'||col==='family');subBreakSortCol=col;updateSortArrows('subBreak',subBreakSortCol,subBreakSortAsc);drawSB();};});updateSortArrows('subBreak',subBreakSortCol,subBreakSortAsc);drawSB();
+  const si=document.getElementById('subBreakSearch');if(si){si.value='';si.addEventListener('input',drawSB);}
+  // Qty distribution bars
+  const fq={};vRows.forEach(r=>{if(!fq[r.family])fq[r.family]={};if(!fq[r.family][r.qty])fq[r.family][r.qty]=0;fq[r.family][r.qty]+=r.subscribers;});
+  const colors=['#34a853','#4ecb71','#93e4a8','#b8f0c8'];let qhtml='';Object.entries(fq).sort((a,b)=>{const ta=Object.values(a[1]).reduce((s,v)=>s+v,0),tb2=Object.values(b[1]).reduce((s,v)=>s+v,0);return tb2-ta;}).forEach(([fam,qm])=>{const total=Object.values(qm).reduce((s,v)=>s+v,0);if(total===0)return;const qs=Object.keys(qm).map(Number).sort((a,b)=>a-b);qhtml+='<div style="margin-bottom:16px;"><div style="font-size:.9rem;font-weight:600;color:#333;margin-bottom:6px;">'+(FAMILY_LABELS[fam]||fam)+' <span style="color:#888;font-weight:400;">('+total+' subscribers)</span></div><div style="display:flex;height:28px;border-radius:6px;overflow:hidden;background:#e8e8e8;">';qs.forEach((q,i)=>{const cnt=qm[q];const pct=cnt/total*100;if(pct<0.5)return;const bl=q===1?'1 Bottle':q+' Bottles';qhtml+='<div style="width:'+pct+'%;background:'+colors[Math.min(i,colors.length-1)]+';display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;" title="'+bl+': '+cnt+'">';if(pct>8)qhtml+=bl+' '+pct.toFixed(0)+'%';qhtml+='</div>';});qhtml+='</div></div>';});
+  document.getElementById('subBreakQtyBars').innerHTML=qhtml||'<div style="color:#888;">No data.</div>';
+  function drawSB(){const st=(document.getElementById('subBreakSearch')?.value||'').toLowerCase();const vis=vRows.filter(r=>passesFilter('subBreak',r.family)&&(!st||r.variant.toLowerCase().includes(st)));vis.sort((a,b)=>{let va=a[subBreakSortCol]??-1,vb=b[subBreakSortCol]??-1;if(typeof va==='string'){va=va.toLowerCase();vb=(vb||'').toLowerCase();}return subBreakSortAsc?(va>vb?1:-1):(va<vb?1:-1);});let html='';vis.forEach(r=>{html+='<tr><td>'+esc(r.variant)+'</td><td>'+esc(r.familyLabel)+'</td><td class="num">'+r.qty+'</td><td>'+esc(r.freqLabel)+'</td><td class="num">'+r.subscribers.toLocaleString('en-US')+'</td><td class="pct-col">'+r.pctTotal.toFixed(1)+'%</td><td class="num">$'+r.avgPrice.toFixed(2)+'</td><td class="num">$'+fmt2(r.estMonthlyRev)+'</td></tr>';});document.getElementById('subBreakBody').innerHTML=html||'<tr><td colspan="8">No subscribers.</td></tr>';}
+}
+
+// ============================================================
+// Promo Performance
+// ============================================================
+function renderPromoPerformance(successful){
+  const EVENT_ORDER=['Black Friday','Christmas Sale','Cyber Monday','Memorial Day','Independence Day','Fall Discount'];
+  const eym={};successful.filter(t=>t._category==='promo').forEach(t=>{const ev=getPromoEvent(t.productName);if(!ev)return;const y=t.dt.year;if(!eym[ev])eym[ev]={_total:{orders:0,revenue:0}};if(!eym[ev][y])eym[ev][y]={orders:0,revenue:0};eym[ev][y].orders++;eym[ev][y].revenue+=t.amount;eym[ev]._total.orders++;eym[ev]._total.revenue+=t.amount;});
+  const totalRev=successful.reduce((s,t)=>s+t.amount,0);
+  const promoRows=EVENT_ORDER.filter(ev=>eym[ev]).map(ev=>{const tot=eym[ev]._total;return{ev,orders:tot.orders,revenue:tot.revenue,avg:tot.revenue/tot.orders,pct:totalRev>0?tot.revenue/totalRev*100:0};});
+  const pOpts=promoRows.map(r=>({value:r.ev,label:r.ev}));initTableFilter('fp_promo','promo',pOpts,drawP);
+  document.querySelectorAll('th[data-tbl="promo"]').forEach(th=>{th.onclick=()=>{const col=th.dataset.col;promoSortAsc=promoSortCol===col?!promoSortAsc:col==='ev';promoSortCol=col;updateSortArrows('promo',promoSortCol,promoSortAsc);drawP();};});updateSortArrows('promo',promoSortCol,promoSortAsc);drawP();
+  function drawP(){const vis=promoRows.filter(r=>passesFilter('promo',r.ev));vis.sort((a,b)=>{let va=a[promoSortCol]??0,vb=b[promoSortCol]??0;if(promoSortCol==='ev'){va=va.toLowerCase();vb=vb.toLowerCase();}return promoSortAsc?(va>vb?1:-1):(va<vb?1:-1);});let html='';vis.forEach(r=>{const years=Object.keys(eym[r.ev]).filter(k=>k!=='_total').map(Number).sort();const multi=years.length>1;if(multi){html+='<tr style="font-weight:700;background:#f0f7f1;"><td>'+esc(r.ev)+' <span style="color:#888fb3;font-weight:400;font-size:.85em;">(all years)</span></td><td class="num">'+r.orders.toLocaleString('en-US')+'</td><td class="num">$'+fmt2(r.revenue)+'</td><td class="num">$'+r.avg.toFixed(2)+'</td><td class="pct-col">'+r.pct.toFixed(1)+'%</td></tr>';years.forEach(yr=>{const yd=eym[r.ev][yr];const yp=totalRev>0?yd.revenue/totalRev*100:0;html+='<tr style="color:#555;"><td style="padding-left:24px;">'+esc(r.ev)+' ('+yr+')</td><td class="num">'+yd.orders.toLocaleString('en-US')+'</td><td class="num">$'+fmt2(yd.revenue)+'</td><td class="num">$'+(yd.revenue/yd.orders).toFixed(2)+'</td><td class="pct-col">'+yp.toFixed(1)+'%</td></tr>';});}else{const yr=years[0];html+='<tr><td>'+esc(r.ev)+' ('+yr+')</td><td class="num">'+r.orders.toLocaleString('en-US')+'</td><td class="num">$'+fmt2(r.revenue)+'</td><td class="num">$'+r.avg.toFixed(2)+'</td><td class="pct-col">'+r.pct.toFixed(1)+'%</td></tr>';}});document.getElementById('promoBody').innerHTML=html||'<tr><td colspan="5">No promo data.</td></tr>';}
+}
+
+// ============================================================
+// Product Mix Table
+// ============================================================
+function renderProductMix(successful){
+  const totalRev=successful.reduce((s,t)=>s+t.amount,0);const pm={};
+  successful.forEach(t=>{if(!pm[t.productName])pm[t.productName]={name:t.productName,orders:0,revenue:0,cats:{}};pm[t.productName].orders++;pm[t.productName].revenue+=t.amount;const cat=t._category||'other';pm[t.productName].cats[cat]=(pm[t.productName].cats[cat]||0)+1;});
+  productRows=Object.values(pm).map(p2=>{const dc=Object.entries(p2.cats).sort((a,b)=>b[1]-a[1])[0]?.[0]||'other';return{name:p2.name,category:dc,orders:p2.orders,revenue:p2.revenue,avg:p2.orders>0?p2.revenue/p2.orders:0,pct:totalRev>0?p2.revenue/totalRev*100:0};});
+  const pcOpts=[...new Set(productRows.map(r=>r.category))].map(c=>({value:c,label:CAT_LABELS[c]||c}));
+  initTableFilter('fp_product','product',pcOpts,()=>{productPage=0;renderProductPage(totalRev);});
+  sortProducts();productPage=0;renderProductPage(totalRev);
+  document.getElementById('productSearch').oninput=()=>{productPage=0;renderProductPage(totalRev);};
+  document.querySelectorAll('#productTable th[data-col]').forEach(th=>{th.onclick=()=>{const col=th.dataset.col;productSortAsc=productSortCol===col?!productSortAsc:(col==='name'||col==='category');productSortCol=col;document.querySelectorAll('#productTable th').forEach(h=>{const a=h.querySelector('.sort-arrow');if(a)a.innerHTML='&#8597;';});const a=th.querySelector('.sort-arrow');if(a)a.innerHTML=productSortAsc?'&#8593;':'&#8595;';sortProducts();productPage=0;renderProductPage(totalRev);};});
+}
+function sortProducts(){productRows.sort((a,b)=>{let va=a[productSortCol],vb=b[productSortCol];if(typeof va==='string'){va=va.toLowerCase();vb=vb.toLowerCase();}return productSortAsc?(va>vb?1:-1):(va<vb?1:-1);});}
+function renderProductPage(totalRev){
+  const st=(document.getElementById('productSearch')?.value||'').toLowerCase().trim();
+  const fr=productRows.filter(r=>passesFilter('product',r.category)&&(!st||r.name.toLowerCase().includes(st)));
+  const start=productPage*PRODUCT_PAGE_SIZE,end=Math.min(start+PRODUCT_PAGE_SIZE,fr.length);const pr=fr.slice(start,end);
+  let html='';pr.forEach(p2=>{const color=CAT_COLORS[p2.category]||'#aaa';const label=CAT_LABELS[p2.category]||p2.category;html+='<tr><td>'+esc(p2.name)+'</td><td><span class="cat-badge" style="background:'+color+'">'+label+'</span></td><td class="num">'+p2.orders.toLocaleString('en-US')+'</td><td class="num">$'+fmt2(p2.revenue)+'</td><td class="num">$'+p2.avg.toFixed(2)+'</td><td class="pct-col">'+p2.pct.toFixed(1)+'%</td></tr>';});
+  document.getElementById('productTableBody').innerHTML=html||'<tr><td colspan="6">No data.</td></tr>';
+  const pager=document.getElementById('productPager');const tp=Math.ceil(fr.length/PRODUCT_PAGE_SIZE);
+  if(tp>1){pager.innerHTML='<button id="ppPrev" '+(productPage===0?'disabled':'')+'>\u2190 Prev</button><span>'+(start+1)+'\u2013'+end+' of '+fr.length+' products</span><button id="ppNext" '+(productPage>=tp-1?'disabled':'')+'>Next \u2192</button>';document.getElementById('ppPrev').addEventListener('click',()=>{if(productPage>0){productPage--;renderProductPage(totalRev);}});document.getElementById('ppNext').addEventListener('click',()=>{if(productPage<tp-1){productPage++;renderProductPage(totalRev);}});}else pager.innerHTML='';
+}
+
+// ============================================================
+// Top Customers
+// ============================================================
+function renderTopCustomers(successful){
+  const cm={};successful.forEach(t=>{if(!t.email)return;if(!cm[t.email])cm[t.email]={email:t.email,name:(t.firstName+' '+t.lastName).trim(),orders:0,revenue:0,lastDate:t._dateISO};cm[t.email].orders++;cm[t.email].revenue+=t.amount;if(t._dateISO>cm[t.email].lastDate)cm[t.email].lastDate=t._dateISO;});
+  const top=Object.values(cm).sort((a,b)=>b.revenue-a.revenue).slice(0,15);
+  let html='';top.forEach(c=>{const d=c.name||c.email;const ld=DateTime.fromISO(c.lastDate).toLocaleString(DateTime.DATE_MED);html+='<tr><td title="'+esc(c.email)+'">'+esc(d)+'</td><td class="num">'+c.orders+'</td><td class="num">$'+fmt2(c.revenue)+'</td><td>'+ld+'</td></tr>';});
+  document.getElementById('topCustomersBody').innerHTML=html||'<tr><td colspan="4">No data.</td></tr>';
+}
+
+// ============================================================
+// Customer Purchase Frequency
+// ============================================================
+function renderCustomerFrequency(salesOnly){
+  const sbe={},rbe={};
+  salesOnly.forEach(t=>{if(!t.email)return;if(!rbe[t.email])rbe[t.email]=0;rbe[t.email]+=t.amount;if(t._sessionIdx===null||t.isRebill)return;if(!sbe[t.email])sbe[t.email]=new Set();sbe[t.email].add(t._sessionIdx);});
+  const allE=new Set(Object.keys(rbe));const allC=allE.size;const allR=Object.values(rbe).reduce((s,v)=>s+v,0);
+  const BKTS=[{label:'1x (first-time)',min:1,max:1},{label:'2\u20133x',min:2,max:3},{label:'4\u20136x',min:4,max:6},{label:'7\u201310x',min:7,max:10},{label:'11x+',min:11,max:Infinity}];
+  const bkts=BKTS.map(b=>({...b,customers:0,revenue:0}));
+  Object.entries(sbe).forEach(([email,ss])=>{const n=ss.size;const rev=rbe[email]||0;const b=bkts.find(b2=>n>=b2.min&&n<=b2.max);if(b){b.customers++;b.revenue+=rev;}});
+  let html='';bkts.filter(b=>b.customers>0).forEach(b=>{const cp=allC>0?(b.customers/allC*100).toFixed(1):0;const rp=allR>0?(b.revenue/allR*100).toFixed(1):0;const bw=Math.round(parseFloat(rp));html+='<tr><td>'+b.label+'</td><td class="num">'+b.customers.toLocaleString('en-US')+'</td><td class="pct-col">'+cp+'%</td><td class="num">$'+fmt2(b.revenue)+'</td><td class="pct-col">'+rp+'%</td><td><span class="freq-bar-bg"><span class="freq-bar-fill" style="width:'+bw+'%"></span></span></td></tr>';});
+  document.getElementById('freqBody').innerHTML=html||'<tr><td colspan="6">No data.</td></tr>';
+}
+
+// ============================================================
+// Cancellation Rate
+// ============================================================
+function renderCancellationRate(cancelledTxns,salesOnly){
+  const tc=cancelledTxns.length;const ts=salesOnly.filter(t=>!t.isRefund).length;const ta=tc+ts;const cr=ta>0?(tc/ta*100):0;const cRev=cancelledTxns.reduce((s,t)=>s+t.amount,0);
+  document.getElementById('cancelTiles').innerHTML='<div class="stat-tile"><div class="stat-tile-label">Cancel Rate</div><div class="stat-tile-value">'+(ta>0?cr.toFixed(1)+'%':'\u2013')+'</div><div class="stat-tile-sub">'+tc+' of '+ta+' attempts</div></div><div class="stat-tile"><div class="stat-tile-label">Cancelled Orders</div><div class="stat-tile-value">'+tc.toLocaleString('en-US')+'</div></div><div class="stat-tile"><div class="stat-tile-label">Lost Revenue</div><div class="stat-tile-value">'+(tc>0?'$'+fmt2(cRev):'\u2013')+'</div></div>';
+  const bf={};const addE=(m,f,k,t)=>{if(!m[f])m[f]={successful:0,cancelled:0};m[f][k]++;};
+  salesOnly.filter(t=>!t.isRefund).forEach(t=>{addE(bf,t._productFamily||'other','successful',t);});
+  cancelledTxns.forEach(t=>{addE(bf,t._productFamily||'other','cancelled',t);});
+  const rows=Object.entries(bf).map(([f,d])=>{const a=d.successful+d.cancelled;return{label:FAMILY_LABELS[f]||(f==='other'?'Other':f),successful:d.successful,cancelled:d.cancelled,rate:a>0?(d.cancelled/a*100):0};}).filter(r=>r.cancelled>0||r.successful>0).sort((a,b)=>b.cancelled-a.cancelled);
+  let html='';rows.forEach(r=>{html+='<tr><td>'+r.label+'</td><td class="num">'+r.successful.toLocaleString('en-US')+'</td><td class="num">'+r.cancelled.toLocaleString('en-US')+'</td><td class="pct-col">'+r.rate.toFixed(1)+'%</td></tr>';});
+  document.getElementById('cancelBody').innerHTML=html||'<tr><td colspan="4">No cancellations.</td></tr>';
+}
+
+// ============================================================
+// Inventory & Burn Rate
+// ============================================================
+function renderInventoryBurnRate(salesOnly,startDate,endDate){
+  const grid=document.getElementById('invGrid');if(!grid)return;
+  const rangeDays=Math.max(1,DateTime.fromISO(endDate).diff(DateTime.fromISO(startDate),'days').days+1);
+  INV_PRODUCTS.forEach(p2=>{invBurnCache[p2.key]=0;});
+  salesOnly.forEach(t=>{if(t._productFamily&&invBurnCache.hasOwnProperty(t._productFamily))invBurnCache[t._productFamily]+=parseProductQty(t.productName);});
+  INV_PRODUCTS.forEach(p2=>{invBurnCache[p2.key]/=rangeDays;});
+  const note=document.getElementById('invPeriodNote');if(note)note.textContent='burn rate based on '+Math.round(rangeDays)+'-day selected period';
+  grid.innerHTML=INV_PRODUCTS.map(p2=>invCardHTML(p2)).join('');
+}
+function invCardHTML(p2){
+  const db=invBurnCache[p2.key]||0;const oh=invUnits.hasOwnProperty(p2.key)?invUnits[p2.key]:null;const ld=invLeadDays[p2.key]??p2.leadDefault;
+  const st=invStatus(db,oh,ld);const fN=n=>n.toFixed(1);
+  const badge=st.status!=='none'?'<span class="inv-badge" id="invBadge_'+p2.key+'" style="background:'+st.badgeColor+'">'+st.badgeText+'</span>':'<span class="inv-badge" id="invBadge_'+p2.key+'" style="display:none"></span>';
+  return '<div class="inv-card" id="invCard_'+p2.key+'" style="border-color:'+st.border+';background:'+st.bg+';"><div class="inv-card-header"><div class="inv-name">'+p2.label+'</div>'+badge+'</div><div class="inv-burn-row"><div class="inv-stat"><div class="inv-stat-val">'+fN(db)+'</div><div class="inv-stat-lbl">/ day</div></div><div class="inv-stat"><div class="inv-stat-val">'+fN(db*7)+'</div><div class="inv-stat-lbl">/ week</div></div><div class="inv-stat"><div class="inv-stat-val">'+fN(db*30.44)+'</div><div class="inv-stat-lbl">/ month</div></div></div><div class="inv-fields"><div><label class="inv-lbl">Units on hand</label><input type="number" class="inv-input" id="invU_'+p2.key+'" min="0" placeholder="enter count" value="'+(oh!==null?oh:'')+'" oninput="onInvUnitsChange(\''+p2.key+'\',this.value)"></div><div><label class="inv-lbl">Lead time (days)</label><input type="number" class="inv-input" id="invL_'+p2.key+'" min="1" value="'+ld+'" oninput="onInvLeadChange(\''+p2.key+'\',this.value)"></div></div><div id="invProj_'+p2.key+'">'+invProjHTML(p2.key,db,oh,ld)+'</div></div>';
+}
+function invStatus(db,oh,ld){
+  const S={now:{border:'#c0392b',bg:'#fff5f5',badgeColor:'#c0392b',badgeText:'ORDER NOW'},soon:{border:'#e07b00',bg:'#fffbf2',badgeColor:'#e07b00',badgeText:'Order Soon'},ok:{border:'#2b7b31',bg:'#f4fbf5',badgeColor:'#2b7b31',badgeText:'OK'},none:{border:'#d0d7e8',bg:'#f8f9fc',badgeColor:'#888fb3',badgeText:''}};
+  if(oh===null||db===0)return{...S.none,status:'none'};const d=(oh/db)-ld;const k=d<=0?'now':d<=14?'soon':'ok';return{...S[k],status:k};
+}
+function invProjHTML(key,db,oh,ld){
+  if(oh===null)return'';if(db===0)return'<div style="margin-top:12px;font-size:.82rem;color:#888fb3;font-style:italic;">No sales in selected period</div>';
+  const today=DateTime.now();const duo=oh/db;const dord=duo-ld;const soDate=today.plus({days:duo});const obDate=dord>0?today.plus({days:dord}):today;
+  const st=invStatus(db,oh,ld);const fmtD=dt=>dt.toFormat('MMM d, yyyy');
+  return '<div class="inv-proj"><div class="inv-proj-row"><span class="inv-proj-lbl">Stockout</span><span class="inv-proj-val">'+fmtD(soDate)+' <span class="inv-proj-dim">('+Math.round(duo)+'d)</span></span></div><div class="inv-proj-row"><span class="inv-proj-lbl">Lead time</span><span class="inv-proj-val">'+ld+'d</span></div><div class="inv-proj-row" style="color:'+st.border+'"><span class="inv-proj-lbl" style="color:'+st.border+'">Order by</span><span class="inv-proj-val" style="color:'+st.border+'">'+fmtD(obDate)+(dord<=0?' !!':'')+'</span></div></div>';
+}
+function invRefreshCard(key){
+  const p2=INV_PRODUCTS.find(x=>x.key===key);const card=document.getElementById('invCard_'+key);const badge=document.getElementById('invBadge_'+key);const proj=document.getElementById('invProj_'+key);if(!p2||!card)return;
+  const oh=invUnits.hasOwnProperty(key)?invUnits[key]:null;const ld=invLeadDays[key]??p2.leadDefault;const db=invBurnCache[key]||0;const st=invStatus(db,oh,ld);
+  card.style.borderColor=st.border;card.style.background=st.bg;if(badge){badge.style.background=st.badgeColor;badge.textContent=st.badgeText;badge.style.display=st.status==='none'?'none':'';}if(proj)proj.innerHTML=invProjHTML(key,db,oh,ld);
+}
+function onInvUnitsChange(key,val){const n=parseFloat(val);if(val===''||isNaN(n))delete invUnits[key];else invUnits[key]=Math.max(0,n);invRefreshCard(key);}
+function onInvLeadChange(key,val){const n=parseInt(val);if(!isNaN(n)&&n>0)invLeadDays[key]=n;invRefreshCard(key);}
+
+// ============================================================
+// Startup
+// ============================================================
+(function init(){
+  setTimeout(()=>{
+    allTxns=generateMockData();
+    const tsList=allTxns.filter(t=>t.isSuccess).map(t=>t._ts);
+    const minISO=DateTime.fromMillis(Math.min(...tsList)).toISODate();
+    const maxISO=DateTime.fromMillis(Math.max(...tsList)).toISODate();
+    dataDateRange=[minISO,maxISO];
+    const successCount=allTxns.filter(t=>t.isSuccess&&!t.isCancelled).length;
+    document.getElementById('infoRows').textContent=allTxns.length.toLocaleString('en-US')+' rows \u00B7 '+successCount.toLocaleString('en-US')+' successful';
+    document.getElementById('infoDateSpan').textContent='Data range: '+DateTime.fromISO(minISO).toLocaleString(DateTime.DATE_MED)+' \u2013 '+DateTime.fromISO(maxISO).toLocaleString(DateTime.DATE_MED);
+    const luEl=document.getElementById('lastUpdated');if(luEl)luEl.textContent='Generated '+DateTime.now().toLocaleString(DateTime.TIME_SIMPLE);
+    initDateControls(minISO,maxISO);
+    _drpActivePreset='all';
+    render(minISO,maxISO);
+    document.getElementById('spinnerOverlay').classList.remove('visible');
+    // Wrap all data tables in scroll containers for mobile
+    document.querySelectorAll('.data-table').forEach(t=>{
+      if(!t.parentElement.classList.contains('table-scroll')){
+        const w=document.createElement('div');
+        w.className='table-scroll';
+        t.parentElement.insertBefore(w,t);
+        w.appendChild(t);
+      }
+    });
+  },50);
+})();
+
+</script>
+</body>
+</html>

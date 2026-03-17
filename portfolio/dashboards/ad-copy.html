@@ -1,0 +1,1842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verdant Wellness — Ad Copy Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2/dist/chartjs-plugin-zoom.min.js"></script>
+<style>
+:root {
+  --amber-dark: #92400e;
+  --amber-main: #b45309;
+  --amber-accent: #d97706;
+  --amber-light: #fef3c7;
+  --amber-pale: #fffbeb;
+  --bg: #fffbeb;
+  --card-bg: #ffffff;
+  --text-main: #1a1a2e;
+  --text-mid: #888fb3;
+  --text-light: #b0b7d1;
+  --border: #e2e8f0;
+  --shadow: 0 1px 4px rgba(0,0,0,0.06), 0 2px 12px rgba(0,0,0,0.04);
+  --shadow-hover: 0 2px 8px rgba(0,0,0,0.10), 0 4px 16px rgba(0,0,0,0.06);
+  --radius: 16px;
+  --radius-sm: 8px;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --green-good: #16a34a;
+  --green-light: #dcfce7;
+  --red-bad: #dc2626;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text-main);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* Header */
+.header {
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-left { display: flex; align-items: center; gap: 16px; }
+.back-link {
+  color: var(--text-mid);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--amber-main); }
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+.header-dot {
+  width: 12px; height: 12px;
+  background: var(--amber-accent);
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Demo Banner */
+.demo-banner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 10px 32px;
+  font-size: 13px;
+  color: #5a6577;
+  background: linear-gradient(90deg, var(--amber-pale), #fef3c7);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Tab Bar */
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  padding: 12px 32px 0;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+}
+.tab-btn {
+  padding: 10px 24px;
+  border: none;
+  background: transparent;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-mid);
+  cursor: pointer;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  transition: all 0.2s;
+}
+.tab-btn:hover { background: var(--amber-light); color: var(--amber-dark); }
+.tab-btn.active { background: var(--amber-main); color: #fff; }
+.tab-content { display: none; padding: 24px 32px; max-width: 1280px; margin: 0 auto; }
+.tab-content.active { display: block; }
+
+/* Metric Cards */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.metrics-grid-8 { grid-template-columns: repeat(8, 1fr); }
+.metric-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.2s;
+}
+.metric-card:hover { box-shadow: var(--shadow-hover); }
+.metric-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.metric-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+/* Section headers */
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 16px;
+  margin-top: 8px;
+}
+
+/* Two Column Layout */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+/* Tables */
+.table-section {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+.table-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 0;
+}
+.table-header-bar .section-title { margin: 0; }
+.table-filters {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  align-items: center;
+}
+.table-filters input,
+.table-filters select {
+  font-family: var(--font);
+  font-size: 13px;
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--text-main);
+}
+.table-filters input { min-width: 200px; }
+.table-wrap { overflow-x: auto; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+thead th {
+  text-align: left;
+  padding: 12px 14px;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-mid);
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s;
+}
+thead th:hover { color: var(--amber-main); }
+thead th .sort-indicator { margin-left: 4px; font-size: 10px; }
+tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+tbody tr:hover { background: var(--amber-light); }
+tfoot td {
+  padding: 12px 14px;
+  font-weight: 700;
+  border-top: 2px solid var(--border);
+  background: var(--bg);
+  white-space: nowrap;
+}
+
+/* Sticky first column */
+thead th:first-child,
+tbody td:first-child,
+tfoot td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: var(--card-bg);
+}
+thead th:first-child { background: var(--card-bg); z-index: 3; }
+tfoot td:first-child { background: var(--bg); }
+tbody tr:hover td:first-child { background: var(--amber-light); }
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.badge-headline { background: #e3f2fd; color: #1565c0; }
+.badge-description { background: #f3e5f5; color: #7b1fa2; }
+.badge-sitelink { background: #fff3e0; color: #e65100; }
+.badge-callout { background: #e8f5e9; color: #2e7d32; }
+.badge-longheadline { background: #fce4ec; color: #c62828; }
+.badge-structuredsnippet { background: #e0f2f1; color: #00695c; }
+.badge-search { background: #e3f2fd; color: #1565c0; }
+.badge-pmax { background: #fff3e0; color: #e65100; }
+.badge-yes { background: #e8f5e9; color: #2e7d32; }
+.badge-no { background: #f5f5f5; color: #9e9e9e; }
+.badge-image { background: #e3f2fd; color: #1565c0; }
+.badge-video { background: #fce4ec; color: #c62828; }
+.badge-carousel { background: #fff3e0; color: #e65100; }
+.badge-active { background: #e8f5e9; color: #2e7d32; }
+.badge-paused { background: #f5f5f5; color: #9e9e9e; }
+
+/* Pagination */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+}
+.pagination-info { font-size: 13px; color: var(--text-mid); }
+.pagination-btns { display: flex; gap: 4px; }
+.page-btn {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+.page-btn:hover { border-color: var(--amber-main); color: var(--amber-main); }
+.page-btn.active { background: var(--amber-main); color: #fff; border-color: var(--amber-main); }
+.page-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* Asset Type Cards */
+.asset-type-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.asset-type-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+  text-align: center;
+  transition: box-shadow 0.2s;
+}
+.asset-type-card:hover { box-shadow: var(--shadow-hover); }
+.asset-type-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+.asset-type-count {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-mid);
+}
+
+/* Column filter dropdown */
+.th-inner { display: flex; align-items: center; justify-content: space-between; gap: 4px; white-space: nowrap; }
+.th-label { cursor: pointer; flex: 1; }
+.th-arrow {
+  background: none; border: none; padding: 1px 4px; font-size: 11px;
+  cursor: pointer; color: var(--text-light); line-height: 1; border-radius: 3px; flex-shrink: 0;
+}
+.th-arrow:hover { background: rgba(0,0,0,0.06); color: var(--text-main); }
+.th-arrow.filter-active { color: var(--amber-main); background: var(--amber-light); }
+.col-filtered { background: #fffbe6 !important; }
+.col-filter-drop {
+  position: fixed; background: #fff; border: 1.5px solid var(--border); border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12); padding: 8px; min-width: 180px; z-index: 9999; display: none;
+}
+.col-filter-drop.open { display: block; }
+.cfd-sort-btn {
+  display: block; width: 100%; text-align: left; padding: 6px 10px; border: none;
+  background: none; font-size: 12px; cursor: pointer; border-radius: 5px;
+  font-family: var(--font); color: var(--text-main);
+}
+.cfd-sort-btn:hover { background: var(--amber-light); }
+.cfd-sort-btn.active { color: var(--amber-main); font-weight: 700; }
+.cfd-divider { border: none; border-top: 1px solid #eef1fa; margin: 6px 0; }
+.cfd-label { font-size: 11px; color: var(--text-mid); padding: 0 2px 4px; }
+.cfd-filter-row { display: flex; align-items: center; gap: 5px; }
+.cfd-op {
+  padding: 4px 6px; border: 1.5px solid var(--border); border-radius: 5px;
+  font-size: 12px; font-family: var(--font); background: #fff; cursor: pointer; width: 50px;
+}
+.cfd-val {
+  padding: 4px 8px; border: 1.5px solid var(--border); border-radius: 5px;
+  font-size: 12px; font-family: var(--font); width: 90px;
+}
+.cfd-val:focus, .cfd-op:focus { outline: none; border-color: var(--amber-main); }
+.cfd-clear {
+  margin-top: 8px; display: block; width: 100%; padding: 5px;
+  border: 1.5px solid var(--border); border-radius: 5px; background: none;
+  font-size: 12px; color: #e53935; cursor: pointer; font-family: var(--font);
+}
+.cfd-clear:hover { border-color: #e53935; background: #fff5f5; }
+
+/* Checkbox dropdown filter */
+.filter-dropdown-wrap { position: relative; display: inline-block; }
+.filter-dropdown-btn {
+  font-family: var(--font);
+  font-size: 13px;
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--text-main);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.filter-dropdown-btn .arrow { font-size: 10px; color: var(--text-light); }
+.filter-dropdown-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  padding: 8px;
+  min-width: 200px;
+  z-index: 9999;
+  display: none;
+}
+.filter-dropdown-panel.open { display: block; }
+.filter-dropdown-panel label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.filter-dropdown-panel label:hover { background: var(--amber-light); }
+.filter-dropdown-panel input[type="checkbox"] { accent-color: var(--amber-main); }
+
+/* Chart section */
+.chart-section {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+}
+
+/* Scatter legend */
+.scatter-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 24px;
+  align-items: start;
+}
+.scatter-canvas-wrap { position: relative; height: 420px; }
+.scatter-canvas-wrap canvas { width: 100% !important; }
+.scatter-legend {
+  padding: 16px;
+  background: var(--amber-pale);
+  border-radius: var(--radius-sm);
+  border: 1px solid #fde68a;
+}
+.scatter-legend h4 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--text-main);
+}
+.scatter-legend p {
+  font-size: 12px;
+  color: var(--text-mid);
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+.scatter-legend-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.scatter-legend-item strong { white-space: nowrap; }
+
+/* CSV Export button */
+.csv-btn {
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  background: #fff;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+.csv-btn:hover { border-color: var(--amber-main); color: var(--amber-main); }
+
+/* Small table in two-col section */
+.mini-table {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.mini-table-header {
+  padding: 16px 20px 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+  border-bottom: 1px solid var(--border);
+}
+.mini-table-subtitle {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-mid);
+  margin-top: 2px;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .metrics-grid { grid-template-columns: repeat(3, 1fr); }
+  .metrics-grid-8 { grid-template-columns: repeat(4, 1fr); }
+  .asset-type-grid { grid-template-columns: repeat(3, 1fr); }
+  .scatter-layout { grid-template-columns: 1fr; }
+  .scatter-legend { margin-top: 0; }
+  .two-col { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .header { padding: 12px 16px; flex-direction: column; align-items: flex-start; gap: 8px; }
+  .tab-bar { padding: 8px 16px 0; overflow-x: auto; }
+  .tab-content { padding: 16px; }
+  .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .metrics-grid-8 { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .metric-value { font-size: 18px; }
+  .asset-type-grid { grid-template-columns: repeat(2, 1fr); }
+  .scatter-layout { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <a href="../work.html" class="back-link">&larr; Back to Work</a>
+    <div class="header-title">
+      <span class="header-dot"></span>
+      Verdant Wellness &mdash; Ad Copy Intelligence
+    </div>
+  </div>
+</div>
+
+<!-- Demo Banner -->
+<div class="demo-banner">
+  <strong>Demo Dashboard</strong> &mdash; This dashboard uses seeded mock data to showcase ad copy performance analysis for a fictional liver health supplement brand.
+</div>
+
+<!-- Tab Bar -->
+<div class="tab-bar">
+  <button class="tab-btn active" data-tab="google">Google RSA Copy</button>
+  <button class="tab-btn" data-tab="meta">Meta Ad Copy</button>
+</div>
+
+<!-- ==================== GOOGLE RSA TAB ==================== -->
+<div class="tab-content active" id="tab-google">
+
+  <!-- Scorecards -->
+  <div class="metrics-grid" id="googleMetrics"></div>
+
+  <!-- Two Column: Spend Bleeders + Top Performers -->
+  <div class="two-col">
+    <div class="mini-table">
+      <div class="mini-table-header">Spend Bleeders<div class="mini-table-subtitle">Highest Spend, 0 Conversions</div></div>
+      <div class="table-wrap"><table id="bleedersTable"><thead><tr></tr></thead><tbody></tbody></table></div>
+    </div>
+    <div class="mini-table">
+      <div class="mini-table-header">Top Performers<div class="mini-table-subtitle">Highest Conversions</div></div>
+      <div class="table-wrap"><table id="performersTable"><thead><tr></tr></thead><tbody></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- Asset Type Cards -->
+  <div class="section-title">Asset Types</div>
+  <div class="asset-type-grid" id="assetTypeCards"></div>
+
+  <!-- Asset Performance Master Table -->
+  <div class="table-section">
+    <div class="table-header-bar">
+      <div class="section-title">Asset Performance</div>
+      <button class="csv-btn" id="googleCsvBtn">Export CSV</button>
+    </div>
+    <div class="table-filters" id="googleFilters">
+      <select id="gTextMode">
+        <option value="containsAny">Contains Any</option>
+        <option value="doesntContain">Doesn't Contain</option>
+        <option value="containsAll">Contains All</option>
+      </select>
+      <input type="text" id="gTextFilter" placeholder="Filter asset text...">
+      <div class="filter-dropdown-wrap">
+        <button class="filter-dropdown-btn" id="gTypeBtn">Asset Type <span class="arrow">&#9662;</span></button>
+        <div class="filter-dropdown-panel" id="gTypePanel"></div>
+      </div>
+      <div class="filter-dropdown-wrap">
+        <button class="filter-dropdown-btn" id="gCampTypeBtn">Campaign Type <span class="arrow">&#9662;</span></button>
+        <div class="filter-dropdown-panel" id="gCampTypePanel"></div>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table id="googleMasterTable"><thead><tr></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="pagination" id="googlePagination"></div>
+  </div>
+
+  <!-- Asset Action Quadrant -->
+  <div class="chart-section">
+    <div class="section-title">Asset Action Quadrant</div>
+    <div class="scatter-layout">
+      <div class="scatter-canvas-wrap">
+        <canvas id="googleScatterChart"></canvas>
+      </div>
+      <div class="scatter-legend">
+        <h4>How to read this chart</h4>
+        <p>This scatter plot dynamically maps your assets based on the active filters from the master table. Hover over any bubble to see exact performance metrics.</p>
+        <div class="scatter-legend-item">&#x1F7E2; <div><strong>Unicorns (Top Right)</strong> &mdash; High CTR &amp; high conversion rate. Scale these.</div></div>
+        <div class="scatter-legend-item">&#x1F535; <div><strong>Hidden Gems (Top Left)</strong> &mdash; Convert well but low CTR. Improve ad copy/targeting.</div></div>
+        <div class="scatter-legend-item">&#x1F7E1; <div><strong>Clickbait (Bottom Right)</strong> &mdash; Get clicks but don't convert. Fix landing pages or messaging.</div></div>
+        <div class="scatter-legend-item">&#x1F534; <div><strong>Losers (Bottom Left)</strong> &mdash; Low CTR &amp; low conversion. Consider pausing or reworking.</div></div>
+        <div class="scatter-legend-item">&#x26AB; <div><strong>Bubble Size = Spend</strong> &mdash; Larger bubbles represent more spend.</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ==================== META AD COPY TAB ==================== -->
+<div class="tab-content" id="tab-meta">
+
+  <!-- Scorecards -->
+  <div class="metrics-grid metrics-grid-8" id="metaMetrics"></div>
+
+  <!-- Two Column: Fatigue Watch + Top Creative -->
+  <div class="two-col">
+    <div class="mini-table">
+      <div class="mini-table-header">Fatigue Watch<div class="mini-table-subtitle">High Frequency, Declining CTR</div></div>
+      <div class="table-wrap"><table id="fatigueTable"><thead><tr></tr></thead><tbody></tbody></table></div>
+    </div>
+    <div class="mini-table">
+      <div class="mini-table-header">Top Creative<div class="mini-table-subtitle">Best ROAS</div></div>
+      <div class="table-wrap"><table id="topCreativeTable"><thead><tr></tr></thead><tbody></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- Meta Performance Master Table -->
+  <div class="table-section">
+    <div class="table-header-bar">
+      <div class="section-title">Ad Performance</div>
+      <button class="csv-btn" id="metaCsvBtn">Export CSV</button>
+    </div>
+    <div class="table-filters" id="metaFilters">
+      <input type="text" id="mTextFilter" placeholder="Search ad name...">
+      <div class="filter-dropdown-wrap">
+        <button class="filter-dropdown-btn" id="mFormatBtn">Format <span class="arrow">&#9662;</span></button>
+        <div class="filter-dropdown-panel" id="mFormatPanel"></div>
+      </div>
+      <div class="filter-dropdown-wrap">
+        <button class="filter-dropdown-btn" id="mStatusBtn">Status <span class="arrow">&#9662;</span></button>
+        <div class="filter-dropdown-panel" id="mStatusPanel"></div>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table id="metaMasterTable"><thead><tr></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="pagination" id="metaPagination"></div>
+  </div>
+
+  <!-- Creative Performance Quadrant -->
+  <div class="chart-section">
+    <div class="section-title">Creative Performance Quadrant</div>
+    <div class="scatter-layout">
+      <div class="scatter-canvas-wrap">
+        <canvas id="metaScatterChart"></canvas>
+      </div>
+      <div class="scatter-legend">
+        <h4>How to read this chart</h4>
+        <p>This scatter plot dynamically maps your ads based on the active filters from the master table. Hover over any bubble to see exact performance metrics.</p>
+        <div class="scatter-legend-item">&#x1F7E2; <div><strong>Unicorns (Top Right)</strong> &mdash; High CTR &amp; high ROAS. Scale these.</div></div>
+        <div class="scatter-legend-item">&#x1F535; <div><strong>Hidden Gems (Top Left)</strong> &mdash; Great ROAS but low CTR. Improve creative/targeting.</div></div>
+        <div class="scatter-legend-item">&#x1F7E1; <div><strong>Clickbait (Bottom Right)</strong> &mdash; Get clicks but low ROAS. Fix funnel or messaging.</div></div>
+        <div class="scatter-legend-item">&#x1F534; <div><strong>Losers (Bottom Left)</strong> &mdash; Low CTR &amp; low ROAS. Consider pausing or reworking.</div></div>
+        <div class="scatter-legend-item">&#x26AB; <div><strong>Bubble Size = Spend</strong> &mdash; Larger bubbles represent more spend.</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Shared column filter dropdown -->
+<div class="col-filter-drop" id="colFilterDrop"></div>
+
+<script>
+// ==================== SEEDED PRNG ====================
+function seededRandom(seed) {
+  let s = seed;
+  return function() {
+    s = (s * 16807 + 0) % 2147483647;
+    return (s - 1) / 2147483646;
+  };
+}
+const rand = seededRandom(42);
+
+// ==================== HELPERS ====================
+function fmtCurrency(v) {
+  if (v == null || isNaN(v)) return '—';
+  if (Math.abs(v) >= 100000) return '$' + (v/1000).toFixed(1) + 'K';
+  return '$' + v.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function fmtPct(v) { return v == null || isNaN(v) ? '—' : (v*100).toFixed(2) + '%'; }
+function fmtPctShort(v) { return v == null || isNaN(v) ? '—' : (v*100).toFixed(1) + '%'; }
+function fmtNum(v) { return v == null || isNaN(v) ? '—' : Math.round(v).toLocaleString('en-US'); }
+function fmtRoas(v) { return v == null || isNaN(v) ? '—' : v.toFixed(2) + 'x'; }
+
+function pick(arr) { return arr[Math.floor(rand() * arr.length)]; }
+function randBetween(lo, hi) { return lo + rand() * (hi - lo); }
+function randInt(lo, hi) { return Math.floor(randBetween(lo, hi + 1)); }
+
+// ==================== TAB SWITCHING ====================
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ==================== GOOGLE RSA DATA ====================
+const headlineTexts = [
+  "Restore Your Liver Health", "Premium Liver Support", "Liver Restore Ultimate™", "Clinically Studied Formula",
+  "Free Shipping Over $50", "30-Day Money Back Guarantee", "Trusted by 10,000+ Customers", "Natural Liver Detox Support",
+  "Shop Liver Supplements", "Save 20% Today", "Doctor Recommended Formula", "Buy 2 Get 1 Free",
+  "Organic Liver Cleanse", "Support Healthy Liver Function", "Limited Time Offer", "Subscribe & Save 25%",
+  "Milk Thistle + NAC Formula", "Detox Your Liver Naturally", "Feel the Difference in 30 Days",
+  "#1 Rated Liver Supplement", "Science-Backed Ingredients", "Made in the USA", "GMP Certified Quality",
+  "Liver Health Starts Here", "Protect Your Liver Today", "Shop Our Best Sellers", "New Customer Discount",
+  "Turmeric & Liver Support", "Artichoke Extract Benefits", "Powerful Antioxidant Blend",
+  "Revitalize Your Health", "Pure & Potent Formula", "Shop Risk Free", "Fast Free Shipping",
+  "Third-Party Lab Tested", "Non-GMO Liver Support", "Vegan Liver Supplement", "Liver Detox Formula",
+  "Comprehensive Liver Care", "Get 15% Off First Order", "Auto-Ship & Save More", "Top-Selling Supplement",
+  "Over 5,000 Five Star Reviews", "Boost Your Energy Levels", "Support Natural Detox", "Premium Quality Guaranteed",
+  "Liver Support for Men", "Liver Support for Women", "Senior Liver Health", "Athletic Liver Recovery",
+  "Post-Workout Liver Care", "Alcohol Liver Recovery", "Fatty Liver Support", "NAFLD Support Formula",
+  "Liver Enzyme Support", "Healthy ALT & AST Levels", "Biliary Support Complex", "Glutathione Liver Support",
+  "N-Acetyl Cysteine Formula", "Dandelion Root Extract", "Schisandra Berry Blend", "Burdock Root Complex",
+  "Chicory Root Supplement", "Beetroot Liver Cleanse", "Chlorella Detox Support", "Spirulina Liver Health",
+  "Alpha Lipoic Acid Formula", "CoQ10 + Liver Support", "Vitamin E Liver Health", "Selenium + Zinc Formula",
+  "B-Complex Liver Support", "Phosphatidylcholine Caps", "SAMe Liver Support", "Choline Supplement",
+  "Liver Flush Protocol", "7-Day Liver Cleanse", "21-Day Detox Program", "Monthly Liver Reset",
+  "Best Liver Supplement 2025", "Award-Winning Formula", "As Seen on TV", "Featured in Health Magazine",
+  "Compare Our Ingredients", "No Fillers or Additives", "Clean Label Supplement", "Transparent Dosing",
+  "Bioavailable Formula", "Maximum Absorption", "Extended Release Capsule", "Enteric Coated Tablets",
+  "60 Capsules Per Bottle", "90-Day Supply", "Family Size Available", "Travel Size Option",
+  "Bundle & Save Big", "Gift Sets Available", "Holiday Sale Live Now", "Flash Sale: 40% Off",
+  "Clearance: Extra 30% Off", "New Improved Formula", "Now with Artichoke Extract", "Extra Strength Version",
+  "Professional Strength", "Clinical Dose Formula", "Physician Grade Quality", "Hospital Trusted Brand",
+  "Liver Support Since 2018", "Family Owned Business", "Small Batch Production", "Sustainably Sourced",
+  "Eco-Friendly Packaging", "Carbon Neutral Shipping", "Cruelty Free Product", "Halal Certified",
+  "Kosher Liver Supplement", "Allergen Free Formula", "No Gluten or Soy", "Dairy Free Formula",
+  "Keto Friendly Supplement", "Paleo Approved Formula", "Whole30 Compatible", "Diabetic Friendly",
+  "Low Sodium Formula", "No Artificial Colors", "No Preservatives Added", "Sugar Free Supplement",
+  "Customer Favorite Pick", "Staff Recommended", "Editor's Choice Award", "Most Popular Product",
+  "Fastest Shipping Option", "Same Day Processing", "Express Delivery Available", "International Shipping",
+  "Easy Returns Policy", "No Questions Asked", "Hassle Free Refunds", "Customer Service 24/7",
+  "Live Chat Support", "Call Us Toll Free", "Expert Health Advisors", "Personalized Recommendations",
+  "Take Our Liver Quiz", "Free Health Assessment", "Download Our Guide"
+];
+
+const descriptionTexts = [
+  "Support your liver with our clinically studied blend of milk thistle, NAC, and artichoke extract. Over 10,000 satisfied customers trust Verdant Wellness.",
+  "Our premium liver support formula combines 12 powerful ingredients to promote healthy liver function, natural detoxification, and cellular repair.",
+  "Experience the Verdant Wellness difference. 30-day money back guarantee, free shipping, and third-party lab tested for purity and potency.",
+  "Restore and protect your liver health with our GMP-certified, non-GMO formula. Made in the USA with globally sourced premium ingredients.",
+  "Struggling with liver health? Our comprehensive formula supports healthy ALT and AST levels, promotes bile flow, and aids natural detox pathways.",
+  "Join the Verdant Wellness family. Subscribe today for 25% off every order, free shipping, and exclusive access to health tips from our experts.",
+  "Liver Restore Ultimate™ features pharmaceutical-grade milk thistle (80% silymarin), NAC 600mg, and 10 more clinically dosed ingredients.",
+  "Don't wait until it's too late. Support your liver proactively with our award-winning supplement. Trusted by doctors and nutritionists nationwide.",
+  "Looking for the best liver supplement? Compare our transparent label, clinical doses, and third-party testing to any competitor. We stand out.",
+  "Buy 2 bottles and get 1 free! Our best-selling liver support formula at an unbeatable price. Limited time offer with free expedited shipping.",
+  "Natural liver detoxification support with organic dandelion root, burdock root, and schisandra berry. Gentle yet effective daily cleansing.",
+  "Our liver supplement is designed for modern life. Combat the effects of processed foods, alcohol, medications, and environmental toxins naturally.",
+  "Backed by science, loved by customers. See why over 5,000 reviewers gave Liver Restore Ultimate™ a 5-star rating on our website.",
+  "Comprehensive liver care in just two capsules per day. No complicated protocols, no harsh cleanses. Just pure, effective liver support.",
+  "New to liver supplements? Start with our starter pack. Includes a 30-day supply, dosing guide, and access to our liver health community.",
+  "Professional strength liver support for those who need it most. Higher doses of key ingredients for maximum therapeutic benefit.",
+  "Vegan, gluten-free, and allergen-friendly. Our liver supplement fits every lifestyle without compromising on quality or effectiveness.",
+  "Subscribe to our auto-ship program and never miss a dose. Save 25%, get free shipping, and enjoy the flexibility to pause or cancel anytime.",
+  "From seed to supplement, we control every step. Our vertical integration ensures the highest quality liver support at the best price.",
+  "Gift the gift of health. Our liver support bundles make perfect presents for health-conscious friends and family. Free gift wrapping available.",
+  "Flash sale alert! Save 40% on our entire liver health collection this week only. Use code LIVER40 at checkout. Free shipping on all orders.",
+  "Support your liver during the holidays. Our seasonal detox bundle includes Liver Restore Ultimate™, a detox tea, and our recipe e-book.",
+  "Post-workout liver recovery for athletes. Our specialized formula supports liver function during intense training and high-protein diets.",
+  "Senior liver health matters. Our gentle formula is designed for adults 50+ with optimized doses and easy-to-swallow capsules.",
+  "Fatty liver support backed by research. Key ingredients shown to support healthy fat metabolism in the liver and reduce oxidative stress.",
+  "Transform your liver health in 90 days. Our comprehensive program includes supplements, diet guide, and weekly check-in emails.",
+  "Third-party tested for heavy metals, pesticides, and microbial contaminants. Every batch verified. Certificate of analysis available online.",
+  "Small batch production ensures freshness and potency. We never mass-produce. Each bottle is made with care in our FDA-registered facility.",
+  "Carbon neutral shipping on every order. We offset 100% of our shipping emissions because liver health and planet health go hand in hand.",
+  "Read our blog for liver health tips, recipes, and the latest research. Empowering you with knowledge for a healthier liver and life.",
+  "Bundle our liver supplement with our turmeric complex and omega-3 for complete inflammation support. Save 30% on the wellness trio.",
+  "Try our 7-day liver flush protocol. Includes our supplement, herbal tea blend, and step-by-step guide. Gentle enough for beginners.",
+  "Our founder's story: How a personal liver health scare led to creating the most comprehensive liver supplement on the market.",
+  "Compare us to LiverGuard, Hepato-Cleanse, and other leading brands. We win on ingredients, dosing, testing, and price. See the comparison.",
+  "International shipping now available to 40+ countries. Same premium quality, same great prices, delivered to your door worldwide.",
+  "Wholesale and practitioner pricing available. If you're a health professional, join our partner program for exclusive rates and resources.",
+  "Now available at select Whole Foods and Sprouts locations. Find a store near you or order direct from our website for the best deals.",
+  "Your liver works hard for you. Return the favor with Verdant Wellness Liver Restore Ultimate™. Start your journey to better liver health today.",
+  "Clinically studied ingredients at therapeutic doses. No pixie dusting, no proprietary blends. Just honest, effective liver support.",
+  "Auto-ship customers get early access to new products, exclusive discounts, and a dedicated support line. Join the VW inner circle today.",
+  "Holiday gift guide: Top 5 liver health products for every budget. From stocking stuffers to premium bundles, we've got you covered.",
+  "New formula alert! We've added artichoke extract and increased our NAC dose to 800mg per serving. Same great price, even better results.",
+  "Not sure which product is right for you? Take our 2-minute liver health quiz and get a personalized supplement recommendation.",
+  "Eco-friendly packaging update: All our bottles are now made from 100% post-consumer recycled plastic. Better for your liver, better for the planet.",
+  "Customer spotlight: See how real people are transforming their liver health with Verdant Wellness. Read their inspiring stories on our blog."
+];
+
+const sitelinkTexts = [
+  "Shop Now", "See Reviews", "Learn About Ingredients", "AutoShip & Save", "Contact Us", "View Lab Results",
+  "Compare Products", "Read Our Blog", "Take the Liver Quiz", "Gift Cards Available", "Wholesale Pricing",
+  "Track Your Order", "Download Free Guide", "Find a Store Near You", "See Before & After", "Meet Our Team",
+  "View Bundles & Deals", "New Arrivals", "Best Sellers", "Student Discount", "Military Discount",
+  "Refer a Friend", "Loyalty Rewards", "Subscription Options"
+];
+
+const calloutTexts = [
+  "Free Shipping", "Non-GMO", "Made in USA", "GMP Certified", "30-Day Guarantee", "Vegan Formula",
+  "Gluten Free", "No Artificial Colors", "Third-Party Tested", "Clinically Dosed", "No Fillers",
+  "Dairy Free", "Soy Free", "Kosher Certified", "Halal Certified", "Cruelty Free", "Organic Ingredients",
+  "Fast Shipping", "Easy Returns", "24/7 Support", "Family Owned", "Since 2018", "Award Winning",
+  "Doctor Recommended", "Clean Label", "Eco-Friendly", "Carbon Neutral", "Lab Verified", "No Preservatives",
+  "Sugar Free", "Keto Friendly", "Paleo Approved", "Allergen Free", "Small Batch", "Premium Quality",
+  "Transparent Label"
+];
+
+const longHeadlineTexts = [
+  "Restore Your Liver Health with Our Clinically Studied Premium Formula",
+  "Join 10,000+ Happy Customers Who Trust Verdant Wellness for Liver Support",
+  "Premium Liver Detox Support with Milk Thistle, NAC & Artichoke Extract",
+  "Buy 2 Get 1 Free on Our Best-Selling Liver Restore Ultimate™ Formula",
+  "Science-Backed Liver Support Made in the USA with GMP Certification",
+  "Subscribe & Save 25% on Monthly Liver Support Delivered to Your Door",
+  "The #1 Rated Liver Supplement with Over 5,000 Five-Star Customer Reviews",
+  "Comprehensive Liver Care: 12 Powerful Ingredients in One Daily Capsule",
+  "Support Healthy ALT & AST Levels Naturally with Our Premium Blend",
+  "Limited Time: 40% Off Our Entire Liver Health Collection This Week Only",
+  "From Seed to Supplement: Vertically Integrated Quality You Can Trust",
+  "Protect Your Liver From Modern Life: Processed Foods, Alcohol & Toxins",
+  "Professional Strength Liver Support for Those Who Need It Most",
+  "Flash Sale: Save Big on Award-Winning Liver Restore Ultimate™ Today",
+  "New Improved Formula with Artichoke Extract & 800mg NAC Per Serving",
+  "Gentle 7-Day Liver Flush Protocol for Beginners and Health Enthusiasts",
+  "Athletic Liver Recovery: Support Your Liver During Intense Training",
+  "Gift the Gift of Health: Premium Liver Support Bundles for Loved Ones"
+];
+
+const snippetTexts = [
+  "Types: Capsules", "Types: Tablets", "Types: Powder", "Types: Liquid", "Types: Softgels",
+  "Brands: Verdant Wellness", "Brands: Liver Restore", "Brands: VW Professional", "Brands: Pure Liver",
+  "Ingredients: Milk Thistle", "Ingredients: NAC", "Ingredients: Artichoke Extract", "Ingredients: Turmeric",
+  "Ingredients: Dandelion Root", "Ingredients: Burdock Root", "Ingredients: Schisandra Berry",
+  "Benefits: Detoxification", "Benefits: Liver Support", "Benefits: Antioxidant", "Benefits: Energy",
+  "Benefits: Cellular Repair", "Benefits: Bile Flow", "Benefits: Fat Metabolism",
+  "Certifications: GMP", "Certifications: Non-GMO", "Certifications: Vegan", "Certifications: Lab Tested",
+  "Certifications: Kosher"
+];
+
+// Build assets
+const assetTypes = ['Headline', 'Description', 'Sitelink', 'Callout', 'Long Headline', 'Structured Snippet'];
+const assetTextPools = {
+  'Headline': headlineTexts,
+  'Description': descriptionTexts,
+  'Sitelink': sitelinkTexts,
+  'Callout': calloutTexts,
+  'Long Headline': longHeadlineTexts,
+  'Structured Snippet': snippetTexts
+};
+
+const campTypes = ['Search', 'Performance Max'];
+
+const googleAssets = [];
+let assetId = 0;
+
+// Generate assets by type with proper counts
+const typeTargets = { 'Headline': 142, 'Description': 48, 'Sitelink': 24, 'Callout': 36, 'Long Headline': 18, 'Structured Snippet': 28 };
+
+Object.entries(typeTargets).forEach(([type, count]) => {
+  const pool = assetTextPools[type];
+  for (let i = 0; i < count; i++) {
+    const text = pool[i % pool.length] + (i >= pool.length ? ' ' + (Math.floor(i / pool.length) + 1) : '');
+    const isPinned = rand() < 0.15;
+    const campType = rand() < 0.65 ? 'Search' : (rand() < 0.5 ? 'Performance Max' : 'Both');
+    const usedBy = randInt(1, 8);
+
+    // Create a spread: some unicorns, some bleeders, some gems, some losers
+    const bucket = rand();
+    let impressions, ctr, cpc, conversions;
+
+    if (bucket < 0.12) {
+      // Unicorns: high CTR, high conv rate
+      impressions = randInt(50000, 500000);
+      ctr = randBetween(0.08, 0.15);
+      cpc = randBetween(0.50, 2.50);
+      const clicks = Math.round(impressions * ctr);
+      conversions = Math.round(clicks * randBetween(0.04, 0.12));
+      const spend = clicks * cpc;
+      googleAssets.push({
+        id: assetId++, text, type, pinned: isPinned, campType, usedBy,
+        impressions, clicks, ctr, cpc, spend, conversions,
+        cpa: conversions > 0 ? spend / conversions : null,
+        convRate: clicks > 0 ? conversions / clicks : 0
+      });
+    } else if (bucket < 0.28) {
+      // Spend bleeders: decent spend, 0 conversions
+      impressions = randInt(10000, 300000);
+      ctr = randBetween(0.04, 0.12);
+      cpc = randBetween(1.00, 4.50);
+      const clicks = Math.round(impressions * ctr);
+      conversions = 0;
+      const spend = clicks * cpc;
+      googleAssets.push({
+        id: assetId++, text, type, pinned: isPinned, campType, usedBy,
+        impressions, clicks, ctr, cpc, spend, conversions,
+        cpa: null,
+        convRate: 0
+      });
+    } else if (bucket < 0.40) {
+      // Hidden gems: low CTR but good conv rate
+      impressions = randInt(5000, 150000);
+      ctr = randBetween(0.02, 0.05);
+      cpc = randBetween(0.80, 3.00);
+      const clicks = Math.round(impressions * ctr);
+      conversions = Math.max(1, Math.round(clicks * randBetween(0.05, 0.15)));
+      const spend = clicks * cpc;
+      googleAssets.push({
+        id: assetId++, text, type, pinned: isPinned, campType, usedBy,
+        impressions, clicks, ctr, cpc, spend, conversions,
+        cpa: spend / conversions,
+        convRate: clicks > 0 ? conversions / clicks : 0
+      });
+    } else if (bucket < 0.55) {
+      // Losers: low CTR, low conv rate
+      impressions = randInt(500, 80000);
+      ctr = randBetween(0.02, 0.04);
+      cpc = randBetween(1.50, 4.50);
+      const clicks = Math.max(1, Math.round(impressions * ctr));
+      conversions = rand() < 0.4 ? 0 : randInt(0, 3);
+      const spend = clicks * cpc;
+      googleAssets.push({
+        id: assetId++, text, type, pinned: isPinned, campType, usedBy,
+        impressions, clicks, ctr, cpc, spend, conversions,
+        cpa: conversions > 0 ? spend / conversions : null,
+        convRate: clicks > 0 ? conversions / clicks : 0
+      });
+    } else {
+      // Mid-range
+      impressions = randInt(2000, 250000);
+      ctr = randBetween(0.03, 0.10);
+      cpc = randBetween(0.50, 3.50);
+      const clicks = Math.max(1, Math.round(impressions * ctr));
+      conversions = Math.max(0, Math.round(clicks * randBetween(0.01, 0.06)));
+      const spend = clicks * cpc;
+      googleAssets.push({
+        id: assetId++, text, type, pinned: isPinned, campType, usedBy,
+        impressions, clicks, ctr, cpc, spend, conversions,
+        cpa: conversions > 0 ? spend / conversions : null,
+        convRate: clicks > 0 ? conversions / clicks : 0
+      });
+    }
+  }
+});
+
+// ==================== GOOGLE SCORECARDS ====================
+const gTotalAssets = googleAssets.length;
+const gTotalImpr = googleAssets.reduce((s,a) => s + a.impressions, 0);
+const gTotalClicks = googleAssets.reduce((s,a) => s + a.clicks, 0);
+const gTotalSpend = googleAssets.reduce((s,a) => s + a.spend, 0);
+const gTotalConv = googleAssets.reduce((s,a) => s + a.conversions, 0);
+const gCtr = gTotalClicks / gTotalImpr;
+const gAvgCpc = gTotalSpend / gTotalClicks;
+
+document.getElementById('googleMetrics').innerHTML = [
+  { label: 'Total Assets', value: fmtNum(gTotalAssets) },
+  { label: 'Impressions', value: fmtNum(gTotalImpr) },
+  { label: 'Clicks', value: fmtNum(gTotalClicks) },
+  { label: 'CTR', value: fmtPctShort(gCtr) },
+  { label: 'Avg. CPC', value: fmtCurrency(gAvgCpc) },
+  { label: 'Conversions', value: fmtNum(gTotalConv) }
+].map(m => `<div class="metric-card"><div class="metric-label">${m.label}</div><div class="metric-value">${m.value}</div></div>`).join('');
+
+// ==================== SPEND BLEEDERS & TOP PERFORMERS ====================
+const bleeders = googleAssets.filter(a => a.conversions === 0 && a.spend > 0)
+  .sort((a,b) => b.spend - a.spend).slice(0, 10);
+
+document.querySelector('#bleedersTable thead tr').innerHTML =
+  '<th>Asset</th><th>Spend</th><th>Clicks</th>';
+document.querySelector('#bleedersTable tbody').innerHTML = bleeders.map(a =>
+  `<tr><td style="max-width:300px;overflow:hidden;text-overflow:ellipsis" title="${a.text.replace(/"/g,'&quot;')}">${a.text}</td><td style="color:var(--red-bad);font-weight:700">${fmtCurrency(a.spend)}</td><td>${fmtNum(a.clicks)}</td></tr>`
+).join('');
+
+const topPerformers = googleAssets.filter(a => a.conversions > 0)
+  .sort((a,b) => b.conversions - a.conversions).slice(0, 10);
+
+document.querySelector('#performersTable thead tr').innerHTML =
+  '<th>Asset</th><th>Conv</th><th>CPA</th>';
+document.querySelector('#performersTable tbody').innerHTML = topPerformers.map(a =>
+  `<tr><td style="max-width:300px;overflow:hidden;text-overflow:ellipsis" title="${a.text.replace(/"/g,'&quot;')}">${a.text}</td><td style="font-weight:700">${fmtNum(a.conversions)}</td><td style="color:var(--green-good);font-weight:600">${fmtCurrency(a.cpa)}</td></tr>`
+).join('');
+
+// ==================== ASSET TYPE CARDS ====================
+document.getElementById('assetTypeCards').innerHTML = assetTypes.map(type => {
+  const count = googleAssets.filter(a => a.type === type).length;
+  return `<div class="asset-type-card"><div class="asset-type-name">${type}</div><div class="asset-type-count">${count} Assets</div></div>`;
+}).join('');
+
+// ==================== GOOGLE MASTER TABLE ====================
+const gColumnFilters = {};
+
+function typeBadge(t) {
+  const cls = t.toLowerCase().replace(/\s+/g, '');
+  return `<span class="badge badge-${cls}">${t}</span>`;
+}
+function pinnedBadge(p) {
+  return p ? '<span class="badge badge-yes">Yes</span>' : '<span class="badge badge-no">No</span>';
+}
+
+const gCols = [
+  { key: 'text', label: 'Asset', fmt: (v) => `<span style="max-width:280px;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${(v||'').replace(/"/g,'&quot;')}">${v}</span>` },
+  { key: 'type', label: 'Type', fmt: v => typeBadge(v) },
+  { key: 'pinned', label: 'Pinned?', fmt: v => pinnedBadge(v) },
+  { key: 'usedBy', label: 'Used By', fmt: v => fmtNum(v), numeric: true },
+  { key: 'impressions', label: 'Impr.', fmt: v => fmtNum(v), numeric: true },
+  { key: 'clicks', label: 'Clicks', fmt: v => fmtNum(v), numeric: true },
+  { key: 'ctr', label: 'CTR', fmt: v => fmtPct(v), numeric: true },
+  { key: 'cpc', label: 'Avg. CPC', fmt: v => fmtCurrency(v), numeric: true },
+  { key: 'spend', label: 'Spend', fmt: v => fmtCurrency(v), numeric: true },
+  { key: 'conversions', label: 'Conv', fmt: v => fmtNum(v), numeric: true },
+  { key: 'cpa', label: 'CPA', fmt: v => v != null ? fmtCurrency(v) : '—', numeric: true },
+  { key: 'convRate', label: 'Conv Rate', fmt: v => fmtPct(v), numeric: true }
+];
+
+// Track the current filtered data for the scatter plot
+let googleFilteredForScatter = [...googleAssets];
+
+function getGoogleFiltered() {
+  let data = [...googleAssets];
+
+  // Text filter
+  const textVal = document.getElementById('gTextFilter').value.trim().toLowerCase();
+  const textMode = document.getElementById('gTextMode').value;
+  if (textVal) {
+    const words = textVal.split(/\s+/);
+    if (textMode === 'containsAny') {
+      data = data.filter(r => words.some(w => r.text.toLowerCase().includes(w)));
+    } else if (textMode === 'doesntContain') {
+      data = data.filter(r => !words.some(w => r.text.toLowerCase().includes(w)));
+    } else if (textMode === 'containsAll') {
+      data = data.filter(r => words.every(w => r.text.toLowerCase().includes(w)));
+    }
+  }
+
+  // Asset type filter
+  const typeChecked = getCheckedValues('gTypePanel');
+  if (typeChecked.length > 0 && typeChecked.length < assetTypes.length) {
+    data = data.filter(r => typeChecked.includes(r.type));
+  }
+
+  // Campaign type filter
+  const campChecked = getCheckedValues('gCampTypePanel');
+  if (campChecked.length > 0 && campChecked.length < campTypes.length) {
+    data = data.filter(r => campChecked.includes(r.campType) || r.campType === 'Both');
+  }
+
+  return data;
+}
+
+function applyGoogleFilters() {
+  const filtered = getGoogleFiltered();
+  googleFilteredForScatter = filtered;
+  gTable.setFilteredData(filtered);
+  updateGoogleScatter();
+}
+
+// Checkbox dropdown helpers
+function buildCheckboxPanel(panelId, options) {
+  const panel = document.getElementById(panelId);
+  panel.innerHTML = options.map(opt =>
+    `<label><input type="checkbox" value="${opt}" checked> ${opt}</label>`
+  ).join('');
+  panel.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('change', () => {
+      if (panelId === 'gTypePanel' || panelId === 'gCampTypePanel') applyGoogleFilters();
+      else if (panelId === 'mFormatPanel' || panelId === 'mStatusPanel') applyMetaFilters();
+    });
+  });
+}
+
+function getCheckedValues(panelId) {
+  return Array.from(document.querySelectorAll(`#${panelId} input:checked`)).map(i => i.value);
+}
+
+// Toggle dropdown panels
+function setupDropdownToggle(btnId, panelId) {
+  document.getElementById(btnId).addEventListener('click', (e) => {
+    e.stopPropagation();
+    const panel = document.getElementById(panelId);
+    // Close all other panels
+    document.querySelectorAll('.filter-dropdown-panel').forEach(p => {
+      if (p.id !== panelId) p.classList.remove('open');
+    });
+    panel.classList.toggle('open');
+  });
+}
+
+buildCheckboxPanel('gTypePanel', assetTypes);
+buildCheckboxPanel('gCampTypePanel', campTypes);
+setupDropdownToggle('gTypeBtn', 'gTypePanel');
+setupDropdownToggle('gCampTypeBtn', 'gCampTypePanel');
+
+document.getElementById('gTextFilter').addEventListener('input', applyGoogleFilters);
+document.getElementById('gTextMode').addEventListener('change', applyGoogleFilters);
+
+// Column filter dropdown opener
+function openColFilterDrop(col, anchorBtn, filters, curSortCol, curSortAsc, setSort, rerender) {
+  const drop = document.getElementById('colFilterDrop');
+  const rect = anchorBtn.getBoundingClientRect();
+  drop.style.top = (rect.bottom + 4) + 'px';
+  drop.style.left = Math.max(0, rect.left - 80) + 'px';
+
+  const existing = filters[col] || { op: 'gt', val: '' };
+  const sortAscActive = curSortCol === col && curSortAsc;
+  const sortDescActive = curSortCol === col && !curSortAsc;
+
+  drop.innerHTML = `
+    <button class="cfd-sort-btn ${sortAscActive ? 'active' : ''}" data-action="sort-asc">Sort ascending &#8593;</button>
+    <button class="cfd-sort-btn ${sortDescActive ? 'active' : ''}" data-action="sort-desc">Sort descending &#8595;</button>
+    <hr class="cfd-divider">
+    <div class="cfd-label">Filter where value is:</div>
+    <div class="cfd-filter-row">
+      <select class="cfd-op" id="cfdOp">
+        <option value="gt" ${existing.op === 'gt' ? 'selected' : ''}>&gt;</option>
+        <option value="gte" ${existing.op === 'gte' ? 'selected' : ''}>&gt;=</option>
+        <option value="lt" ${existing.op === 'lt' ? 'selected' : ''}>&lt;</option>
+        <option value="lte" ${existing.op === 'lte' ? 'selected' : ''}>&lt;=</option>
+        <option value="eq" ${existing.op === 'eq' ? 'selected' : ''}>=</option>
+      </select>
+      <input type="number" class="cfd-val" id="cfdVal" value="${existing.val}" placeholder="value" step="any">
+    </div>
+    <button class="cfd-clear" data-action="clear">Clear filter</button>
+  `;
+
+  drop.classList.add('open');
+
+  drop.querySelector('[data-action="sort-asc"]').addEventListener('click', () => {
+    setSort(col, true);
+    drop.classList.remove('open');
+  });
+  drop.querySelector('[data-action="sort-desc"]').addEventListener('click', () => {
+    setSort(col, false);
+    drop.classList.remove('open');
+  });
+
+  const applyFilter = () => {
+    const op = document.getElementById('cfdOp').value;
+    const val = document.getElementById('cfdVal').value;
+    if (val !== '') {
+      filters[col] = { op, val };
+    } else {
+      delete filters[col];
+    }
+    drop.classList.remove('open');
+    rerender();
+    // Also update scatter
+    if (filters === gColumnFilters) updateGoogleScatter();
+    if (filters === mColumnFilters) updateMetaScatter();
+  };
+
+  document.getElementById('cfdVal').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') applyFilter();
+  });
+  document.getElementById('cfdOp').addEventListener('change', () => {
+    if (document.getElementById('cfdVal').value !== '') applyFilter();
+  });
+
+  drop.querySelector('[data-action="clear"]').addEventListener('click', () => {
+    delete filters[col];
+    drop.classList.remove('open');
+    rerender();
+    if (filters === gColumnFilters) updateGoogleScatter();
+    if (filters === mColumnFilters) updateMetaScatter();
+  });
+}
+
+// createSortableTable (reusable)
+function createSortableTable({ tableId, paginationId, columns, data, defaultSort, defaultAsc, pageSize, rowClass, columnFilters, openColFilterDropFn }) {
+  let sortCol = defaultSort || columns[0].key;
+  let sortAsc = defaultAsc !== undefined ? defaultAsc : false;
+  let currentPage = 1;
+  let filteredData = data;
+  const perPage = pageSize || 25;
+  const hasColFilters = !!columnFilters;
+
+  function getFilteredData() { return filteredData; }
+  function setFilteredData(d) { filteredData = d; currentPage = 1; render(); }
+
+  function render() {
+    let working = [...filteredData];
+    if (hasColFilters) {
+      Object.entries(columnFilters).forEach(([col, f]) => {
+        const val = parseFloat(f.val);
+        if (!isNaN(val)) {
+          working = working.filter(r => {
+            const cv = r[col] || 0;
+            if (f.op === 'gt')  return cv > val;
+            if (f.op === 'gte') return cv >= val;
+            if (f.op === 'lt')  return cv < val;
+            if (f.op === 'lte') return cv <= val;
+            if (f.op === 'eq')  return Math.abs(cv - val) < 0.001;
+            return true;
+          });
+        }
+      });
+    }
+
+    const sorted = [...working].sort((a,b) => {
+      let av = a[sortCol], bv = b[sortCol];
+      if (av == null) av = -Infinity;
+      if (bv == null) bv = -Infinity;
+      if (typeof av === 'string') { av = av.toLowerCase(); bv = (bv||'').toLowerCase(); }
+      if (typeof av === 'boolean') { av = av ? 1 : 0; bv = bv ? 1 : 0; }
+      return sortAsc ? (av > bv ? 1 : av < bv ? -1 : 0) : (av < bv ? 1 : av > bv ? -1 : 0);
+    });
+
+    const totalPages = Math.ceil(sorted.length / perPage);
+    if (currentPage > totalPages) currentPage = totalPages || 1;
+    const start = (currentPage - 1) * perPage;
+    const pageData = sorted.slice(start, start + perPage);
+
+    const thead = document.querySelector(`#${tableId} thead tr`);
+    thead.innerHTML = columns.map(c => {
+      if (hasColFilters && c.numeric) {
+        const hf = columnFilters[c.key] && columnFilters[c.key].val !== '';
+        const arrowCls = hf ? 'th-arrow filter-active' : 'th-arrow';
+        const sortInd = sortCol === c.key ? (sortAsc ? ' \u25B2' : ' \u25BC') : '';
+        return `<th data-col="${c.key}" class="${hf ? 'col-filtered' : ''}"><div class="th-inner"><span class="th-label">${c.label}<span class="sort-indicator">${sortInd}</span></span><button class="${arrowCls}" data-col="${c.key}">\u25BE</button></div></th>`;
+      }
+      return `<th data-col="${c.key}">${c.label}<span class="sort-indicator">${sortCol === c.key ? (sortAsc ? ' \u25B2' : ' \u25BC') : ''}</span></th>`;
+    }).join('');
+
+    const tbody = document.querySelector(`#${tableId} tbody`);
+    tbody.innerHTML = pageData.map(r => {
+      const cls = rowClass ? rowClass(r) : '';
+      return `<tr${cls ? ' class="'+cls+'"' : ''}>${columns.map(c => `<td>${c.fmt(r[c.key], r)}</td>`).join('')}</tr>`;
+    }).join('');
+
+    // Wire up sorting
+    if (hasColFilters) {
+      thead.querySelectorAll('.th-label').forEach(lbl => {
+        lbl.addEventListener('click', () => {
+          const col = lbl.closest('th').dataset.col;
+          if (sortCol === col) sortAsc = !sortAsc;
+          else { sortCol = col; sortAsc = false; }
+          render();
+        });
+      });
+      thead.querySelectorAll('th').forEach(th => {
+        if (!th.querySelector('.th-inner')) {
+          th.addEventListener('click', () => {
+            const col = th.dataset.col;
+            if (sortCol === col) sortAsc = !sortAsc;
+            else { sortCol = col; sortAsc = false; }
+            render();
+          });
+        }
+      });
+      thead.querySelectorAll('.th-arrow').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (openColFilterDropFn) openColFilterDropFn(btn.dataset.col, btn, columnFilters, sortCol, sortAsc, (col, asc) => { sortCol = col; sortAsc = asc; render(); }, render);
+        });
+      });
+    } else {
+      thead.querySelectorAll('th').forEach(th => {
+        th.addEventListener('click', () => {
+          const col = th.dataset.col;
+          if (sortCol === col) sortAsc = !sortAsc;
+          else { sortCol = col; sortAsc = false; }
+          render();
+        });
+      });
+    }
+
+    // Pagination
+    if (paginationId) {
+      const pag = document.getElementById(paginationId);
+      if (sorted.length <= perPage) { pag.innerHTML = ''; return; }
+      const end = Math.min(start + perPage, sorted.length);
+      let btnsHtml = `<button class="page-btn" ${currentPage <= 1 ? 'disabled' : ''} data-page="${currentPage-1}">&laquo;</button>`;
+      for (let i = 1; i <= totalPages; i++) {
+        if (totalPages > 7 && Math.abs(i - currentPage) > 2 && i !== 1 && i !== totalPages) {
+          if (i === 2 || i === totalPages - 1) btnsHtml += '<span style="padding:0 4px;color:var(--text-light)">...</span>';
+          continue;
+        }
+        btnsHtml += `<button class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+      }
+      btnsHtml += `<button class="page-btn" ${currentPage >= totalPages ? 'disabled' : ''} data-page="${currentPage+1}">&raquo;</button>`;
+      pag.innerHTML = `<div class="pagination-info">Showing ${start+1}&ndash;${end} of ${sorted.length}</div><div class="pagination-btns">${btnsHtml}</div>`;
+      pag.querySelectorAll('.page-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const p = parseInt(btn.dataset.page);
+          if (p >= 1 && p <= totalPages) { currentPage = p; render(); }
+        });
+      });
+    }
+  }
+
+  render();
+  return { render, setFilteredData, getFilteredData };
+}
+
+const gTable = createSortableTable({
+  tableId: 'googleMasterTable',
+  paginationId: 'googlePagination',
+  columns: gCols,
+  data: googleAssets,
+  defaultSort: 'spend',
+  defaultAsc: false,
+  pageSize: 25,
+  columnFilters: gColumnFilters,
+  openColFilterDropFn: openColFilterDrop
+});
+
+// ==================== GOOGLE SCATTER CHART ====================
+let googleScatterChart = null;
+
+function updateGoogleScatter() {
+  const data = googleFilteredForScatter.filter(a => a.clicks > 0);
+  if (data.length === 0) {
+    if (googleScatterChart) { googleScatterChart.destroy(); googleScatterChart = null; }
+    return;
+  }
+
+  const ctrs = data.map(d => d.ctr);
+  const cvrs = data.map(d => d.convRate);
+  const medianCtr = ctrs.sort((a,b) => a-b)[Math.floor(ctrs.length/2)];
+  const medianCvr = cvrs.sort((a,b) => a-b)[Math.floor(cvrs.length/2)];
+
+  const maxSpend = Math.max(...data.map(d => d.spend));
+  const minR = 4, maxR = 25;
+
+  const points = data.map(d => {
+    const x = d.ctr * 100;
+    const y = d.convRate * 100;
+    const r = minR + (maxR - minR) * Math.sqrt(d.spend / maxSpend);
+    let color;
+    if (x >= medianCtr * 100 && y >= medianCvr * 100) color = 'rgba(22,163,74,0.6)';      // Unicorn green
+    else if (x < medianCtr * 100 && y >= medianCvr * 100) color = 'rgba(59,130,246,0.6)';  // Hidden gem blue
+    else if (x >= medianCtr * 100 && y < medianCvr * 100) color = 'rgba(217,119,6,0.6)';   // Clickbait amber
+    else color = 'rgba(220,38,38,0.6)';                                                      // Loser red
+    return { x, y, r, backgroundColor: color, borderColor: color.replace('0.6', '1'), label: d.text, spend: d.spend, ctr: d.ctr, convRate: d.convRate, conversions: d.conversions };
+  });
+
+  const chartData = {
+    datasets: [{
+      data: points,
+      backgroundColor: points.map(p => p.backgroundColor),
+      borderColor: points.map(p => p.borderColor),
+      borderWidth: 1
+    }]
+  };
+
+  const config = {
+    type: 'bubble',
+    data: chartData,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          title: { display: true, text: 'CTR (%)', font: { family: 'Inter', weight: 600 } },
+          grid: { color: '#f0f0f0' },
+          min: 0
+        },
+        y: {
+          title: { display: true, text: 'Conversion Rate (%)', font: { family: 'Inter', weight: 600 } },
+          grid: { color: '#f0f0f0' },
+          min: 0
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const p = ctx.raw;
+              return [
+                p.label.substring(0, 60) + (p.label.length > 60 ? '...' : ''),
+                `CTR: ${(p.ctr*100).toFixed(2)}%`,
+                `Conv Rate: ${(p.convRate*100).toFixed(2)}%`,
+                `Spend: ${fmtCurrency(p.spend)}`,
+                `Conversions: ${p.conversions}`
+              ];
+            }
+          }
+        },
+        zoom: {
+          zoom: {
+            wheel: { enabled: true },
+            pinch: { enabled: true },
+            mode: 'xy'
+          },
+          pan: {
+            enabled: true,
+            mode: 'xy'
+          }
+        }
+      }
+    },
+    plugins: [{
+      id: 'quadrantLines',
+      afterDraw(chart) {
+        const { ctx, chartArea: {left, right, top, bottom}, scales: {x, y} } = chart;
+        const mx = x.getPixelForValue(medianCtr * 100);
+        const my = y.getPixelForValue(medianCvr * 100);
+        ctx.save();
+        ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([6, 4]);
+        // Vertical median line
+        ctx.beginPath(); ctx.moveTo(mx, top); ctx.lineTo(mx, bottom); ctx.stroke();
+        // Horizontal median line
+        ctx.beginPath(); ctx.moveTo(left, my); ctx.lineTo(right, my); ctx.stroke();
+        ctx.restore();
+      }
+    }]
+  };
+
+  if (googleScatterChart) {
+    googleScatterChart.destroy();
+  }
+  googleScatterChart = new Chart(document.getElementById('googleScatterChart'), config);
+}
+
+updateGoogleScatter();
+
+// ==================== GOOGLE CSV EXPORT ====================
+document.getElementById('googleCsvBtn').addEventListener('click', () => {
+  const headers = gCols.map(c => c.label);
+  const rows = googleFilteredForScatter.map(r => gCols.map(c => {
+    const v = r[c.key];
+    if (v == null) return '';
+    if (typeof v === 'boolean') return v ? 'Yes' : 'No';
+    if (typeof v === 'number') return c.key === 'ctr' || c.key === 'convRate' ? (v*100).toFixed(2) + '%' : v;
+    return '"' + String(v).replace(/"/g, '""') + '"';
+  }));
+  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'google_rsa_assets.csv'; a.click();
+  URL.revokeObjectURL(url);
+});
+
+// ==================== META AD DATA ====================
+const metaAdNames = [
+  "LR - Liver Detox - Testimonial - Video - v3",
+  "LR - Before/After - Image - Broad",
+  "Turmeric - Benefits Carousel - LAL 3%",
+  "Brand - Founder Story - Video - Retarget",
+  "LR - Product Shot - Image - TOF",
+  "LR - Ingredients Close-Up - Carousel - LAL 1%",
+  "LR - UGC Unboxing - Video - Broad",
+  "LR - Doctor Endorsement - Video - Cold",
+  "LR - Infographic - Image - Interest",
+  "LR - Customer Review - Image - Retarget",
+  "LR - How It Works - Carousel - LAL 5%",
+  "LR - Lifestyle Shot - Image - Broad",
+  "LR - 30 Day Challenge - Video - TOF",
+  "LR - Comparison Chart - Image - Interest",
+  "Brand - Our Story - Carousel - Cold",
+  "LR - Lab Results - Image - Trust",
+  "LR - Quick Tips - Video - Engagement",
+  "LR - Bundle Offer - Image - Retarget",
+  "LR - Free Shipping - Image - Cart Abandon",
+  "LR - Seasonal Detox - Video - TOF",
+  "LR - Ingredient Spotlight NAC - Video - Educational",
+  "LR - Milk Thistle Benefits - Carousel - Interest",
+  "LR - Morning Routine - Video - Lifestyle",
+  "LR - Customer Transformation - Image - Social Proof",
+  "LR - Subscribe & Save - Image - Retention",
+  "LR - Limited Time 40% Off - Image - Promo",
+  "LR - Liver Health Quiz CTA - Video - Lead Gen",
+  "LR - Award Badge - Image - Trust",
+  "LR - Side by Side Competitor - Image - Consideration",
+  "LR - Animated Explainer - Video - TOF",
+  "LR - Recipe Integration - Carousel - Content",
+  "Brand - Team Behind Product - Video - Awareness",
+  "LR - Size Comparison - Image - Education",
+  "LR - Auto-Ship Benefits - Carousel - Retention",
+  "LR - Gut-Liver Axis - Video - Science",
+  "LR - New Formula Announce - Image - Launch",
+  "LR - Holiday Gift Set - Carousel - Seasonal",
+  "LR - Fitness Recovery - Video - Athlete",
+  "LR - Senior Health - Image - 50+",
+  "LR - Womens Wellness - Video - Female",
+  "LR - Fatty Liver Facts - Carousel - Awareness",
+  "LR - Flash Sale 48hr - Image - Urgency",
+  "LR - Podcast Clip - Video - Authority",
+  "LR - Before Labs - Image - Results",
+  "LR - Money Back Promise - Image - Risk Reversal",
+  "LR - Eco Packaging - Image - Values",
+  "LR - 3 Pack Bundle - Carousel - Value",
+  "LR - Sleep & Liver - Video - Angle",
+  "LR - Keto Friendly - Image - Diet",
+  "LR - Made in USA - Image - Trust",
+  "LR - Blog Highlight - Carousel - Content",
+  "Brand - Behind the Scenes - Video - BTS",
+  "LR - Referral Program - Image - Advocacy",
+  "LR - Dosing Guide - Carousel - Education",
+  "LR - Travel Size - Image - Convenience",
+  "LR - Student Discount - Image - Audience",
+  "LR - Wholesale CTA - Image - B2B",
+  "LR - Liver Month Awareness - Video - Cause",
+  "LR - Ingredient Sourcing - Video - Transparency",
+  "LR - Year in Review - Carousel - Brand"
+];
+
+const formats = ['Image', 'Video', 'Carousel'];
+const statuses = ['Active', 'Paused'];
+
+const metaAds = metaAdNames.map((name, i) => {
+  // Determine format from name hint
+  let format;
+  if (name.includes('Video')) format = 'Video';
+  else if (name.includes('Carousel')) format = 'Carousel';
+  else format = 'Image';
+
+  const status = rand() < 0.72 ? 'Active' : 'Paused';
+
+  // Create performance buckets
+  const bucket = rand();
+  let impressions, reach, frequency, clicks, ctr, cpc, spend, purchases, cpa, roas, convRate;
+
+  if (bucket < 0.15) {
+    // Top performers
+    impressions = randInt(100000, 800000);
+    reach = Math.round(impressions / randBetween(2.5, 5));
+    frequency = impressions / reach;
+    ctr = randBetween(0.025, 0.06);
+    clicks = Math.round(impressions * ctr);
+    cpc = randBetween(0.40, 1.80);
+    spend = clicks * cpc;
+    purchases = Math.round(clicks * randBetween(0.03, 0.08));
+    cpa = purchases > 0 ? spend / purchases : null;
+    roas = purchases > 0 ? (purchases * randBetween(45, 75)) / spend : 0;
+    convRate = clicks > 0 ? purchases / clicks : 0;
+  } else if (bucket < 0.35) {
+    // Fatigued (high frequency, lower CTR)
+    impressions = randInt(200000, 600000);
+    reach = Math.round(impressions / randBetween(4, 8));
+    frequency = impressions / reach;
+    ctr = randBetween(0.008, 0.02);
+    clicks = Math.round(impressions * ctr);
+    cpc = randBetween(1.20, 3.50);
+    spend = clicks * cpc;
+    purchases = Math.max(0, Math.round(clicks * randBetween(0.005, 0.025)));
+    cpa = purchases > 0 ? spend / purchases : null;
+    roas = purchases > 0 ? (purchases * randBetween(40, 60)) / spend : 0;
+    convRate = clicks > 0 ? purchases / clicks : 0;
+  } else if (bucket < 0.55) {
+    // Low performers
+    impressions = randInt(5000, 100000);
+    reach = Math.round(impressions / randBetween(1.5, 3));
+    frequency = impressions / reach;
+    ctr = randBetween(0.005, 0.015);
+    clicks = Math.max(1, Math.round(impressions * ctr));
+    cpc = randBetween(1.50, 4.00);
+    spend = clicks * cpc;
+    purchases = rand() < 0.3 ? 0 : randInt(0, 5);
+    cpa = purchases > 0 ? spend / purchases : null;
+    roas = purchases > 0 ? (purchases * randBetween(35, 55)) / spend : 0;
+    convRate = clicks > 0 ? purchases / clicks : 0;
+  } else {
+    // Mid-range
+    impressions = randInt(30000, 400000);
+    reach = Math.round(impressions / randBetween(2, 4.5));
+    frequency = impressions / reach;
+    ctr = randBetween(0.015, 0.035);
+    clicks = Math.round(impressions * ctr);
+    cpc = randBetween(0.60, 2.50);
+    spend = clicks * cpc;
+    purchases = Math.max(0, Math.round(clicks * randBetween(0.01, 0.045)));
+    cpa = purchases > 0 ? spend / purchases : null;
+    roas = purchases > 0 ? (purchases * randBetween(42, 65)) / spend : 0;
+    convRate = clicks > 0 ? purchases / clicks : 0;
+  }
+
+  return {
+    id: i, name, format, status, impressions, reach, frequency, clicks, ctr, cpc, spend, purchases, cpa, roas, convRate,
+    // For fatigue watch: store a CTR trend indicator
+    ctrTrend: frequency > 3 && ctr < 0.02 ? 'declining' : 'stable'
+  };
+});
+
+// ==================== META SCORECARDS ====================
+const mTotalAds = metaAds.length;
+const mTotalImpr = metaAds.reduce((s,a) => s + a.impressions, 0);
+const mTotalClicks = metaAds.reduce((s,a) => s + a.clicks, 0);
+const mTotalSpend = metaAds.reduce((s,a) => s + a.spend, 0);
+const mTotalPurchases = metaAds.reduce((s,a) => s + a.purchases, 0);
+const mCtr = mTotalClicks / mTotalImpr;
+const mTotalRevenue = metaAds.reduce((s,a) => s + (a.roas * a.spend), 0);
+const mRoas = mTotalRevenue / mTotalSpend;
+const mCpa = mTotalSpend / mTotalPurchases;
+
+document.getElementById('metaMetrics').innerHTML = [
+  { label: 'Total Ads', value: fmtNum(mTotalAds) },
+  { label: 'Impressions', value: fmtNum(mTotalImpr) },
+  { label: 'Clicks', value: fmtNum(mTotalClicks) },
+  { label: 'CTR', value: fmtPctShort(mCtr) },
+  { label: 'Spend', value: fmtCurrency(mTotalSpend) },
+  { label: 'Purchases', value: fmtNum(mTotalPurchases) },
+  { label: 'ROAS', value: fmtRoas(mRoas) },
+  { label: 'CPA', value: fmtCurrency(mCpa) }
+].map(m => `<div class="metric-card"><div class="metric-label">${m.label}</div><div class="metric-value">${m.value}</div></div>`).join('');
+
+// ==================== FATIGUE WATCH & TOP CREATIVE ====================
+const fatigued = metaAds.filter(a => a.frequency > 3 && a.ctrTrend === 'declining')
+  .sort((a,b) => b.frequency - a.frequency).slice(0, 10);
+
+document.querySelector('#fatigueTable thead tr').innerHTML =
+  '<th>Ad Name</th><th>Frequency</th><th>CTR Trend</th><th>Spend</th>';
+document.querySelector('#fatigueTable tbody').innerHTML = fatigued.map(a =>
+  `<tr><td style="max-width:280px;overflow:hidden;text-overflow:ellipsis" title="${a.name}">${a.name}</td><td style="font-weight:700">${a.frequency.toFixed(1)}</td><td style="color:var(--red-bad);font-weight:600">\u2193 ${fmtPctShort(a.ctr)}</td><td>${fmtCurrency(a.spend)}</td></tr>`
+).join('');
+
+const topCreative = metaAds.filter(a => a.roas > 0)
+  .sort((a,b) => b.roas - a.roas).slice(0, 10);
+
+document.querySelector('#topCreativeTable thead tr').innerHTML =
+  '<th>Ad Name</th><th>ROAS</th><th>Purchases</th><th>Spend</th>';
+document.querySelector('#topCreativeTable tbody').innerHTML = topCreative.map(a =>
+  `<tr><td style="max-width:280px;overflow:hidden;text-overflow:ellipsis" title="${a.name}">${a.name}</td><td style="color:var(--green-good);font-weight:700">${fmtRoas(a.roas)}</td><td>${fmtNum(a.purchases)}</td><td>${fmtCurrency(a.spend)}</td></tr>`
+).join('');
+
+// ==================== META MASTER TABLE ====================
+const mColumnFilters = {};
+
+function formatBadge(f) {
+  return `<span class="badge badge-${f.toLowerCase()}">${f}</span>`;
+}
+function statusBadge(s) {
+  return `<span class="badge badge-${s.toLowerCase()}">${s}</span>`;
+}
+
+const mCols = [
+  { key: 'name', label: 'Ad Name', fmt: (v) => `<span style="max-width:280px;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${(v||'').replace(/"/g,'&quot;')}">${v}</span>` },
+  { key: 'format', label: 'Format', fmt: v => formatBadge(v) },
+  { key: 'status', label: 'Status', fmt: v => statusBadge(v) },
+  { key: 'impressions', label: 'Impr', fmt: v => fmtNum(v), numeric: true },
+  { key: 'reach', label: 'Reach', fmt: v => fmtNum(v), numeric: true },
+  { key: 'frequency', label: 'Frequency', fmt: v => v.toFixed(1), numeric: true },
+  { key: 'clicks', label: 'Clicks', fmt: v => fmtNum(v), numeric: true },
+  { key: 'ctr', label: 'CTR', fmt: v => fmtPct(v), numeric: true },
+  { key: 'cpc', label: 'CPC', fmt: v => fmtCurrency(v), numeric: true },
+  { key: 'spend', label: 'Spend', fmt: v => fmtCurrency(v), numeric: true },
+  { key: 'purchases', label: 'Purchases', fmt: v => fmtNum(v), numeric: true },
+  { key: 'cpa', label: 'CPA', fmt: v => v != null ? fmtCurrency(v) : '\u2014', numeric: true },
+  { key: 'roas', label: 'ROAS', fmt: v => fmtRoas(v), numeric: true },
+  { key: 'convRate', label: 'Conv Rate', fmt: v => fmtPct(v), numeric: true }
+];
+
+let metaFilteredForScatter = [...metaAds];
+
+function getMetaFiltered() {
+  let data = [...metaAds];
+
+  const textVal = document.getElementById('mTextFilter').value.trim().toLowerCase();
+  if (textVal) {
+    data = data.filter(r => r.name.toLowerCase().includes(textVal));
+  }
+
+  const fmtChecked = getCheckedValues('mFormatPanel');
+  if (fmtChecked.length > 0 && fmtChecked.length < formats.length) {
+    data = data.filter(r => fmtChecked.includes(r.format));
+  }
+
+  const statChecked = getCheckedValues('mStatusPanel');
+  if (statChecked.length > 0 && statChecked.length < statuses.length) {
+    data = data.filter(r => statChecked.includes(r.status));
+  }
+
+  return data;
+}
+
+function applyMetaFilters() {
+  const filtered = getMetaFiltered();
+  metaFilteredForScatter = filtered;
+  mTable.setFilteredData(filtered);
+  updateMetaScatter();
+}
+
+buildCheckboxPanel('mFormatPanel', formats);
+buildCheckboxPanel('mStatusPanel', statuses);
+setupDropdownToggle('mFormatBtn', 'mFormatPanel');
+setupDropdownToggle('mStatusBtn', 'mStatusPanel');
+
+document.getElementById('mTextFilter').addEventListener('input', applyMetaFilters);
+
+const mTable = createSortableTable({
+  tableId: 'metaMasterTable',
+  paginationId: 'metaPagination',
+  columns: mCols,
+  data: metaAds,
+  defaultSort: 'spend',
+  defaultAsc: false,
+  pageSize: 25,
+  columnFilters: mColumnFilters,
+  openColFilterDropFn: openColFilterDrop
+});
+
+// ==================== META SCATTER CHART ====================
+let metaScatterChart = null;
+
+function updateMetaScatter() {
+  const data = metaFilteredForScatter.filter(a => a.clicks > 0 && a.spend > 0);
+  if (data.length === 0) {
+    if (metaScatterChart) { metaScatterChart.destroy(); metaScatterChart = null; }
+    return;
+  }
+
+  const ctrs = data.map(d => d.ctr).sort((a,b) => a-b);
+  const roases = data.map(d => d.roas).sort((a,b) => a-b);
+  const medianCtr = ctrs[Math.floor(ctrs.length/2)];
+  const medianRoas = roases[Math.floor(roases.length/2)];
+
+  const maxSpend = Math.max(...data.map(d => d.spend));
+  const minR = 4, maxR = 25;
+
+  const points = data.map(d => {
+    const x = d.ctr * 100;
+    const y = d.roas;
+    const r = minR + (maxR - minR) * Math.sqrt(d.spend / maxSpend);
+    let color;
+    if (x >= medianCtr * 100 && y >= medianRoas) color = 'rgba(22,163,74,0.6)';
+    else if (x < medianCtr * 100 && y >= medianRoas) color = 'rgba(59,130,246,0.6)';
+    else if (x >= medianCtr * 100 && y < medianRoas) color = 'rgba(217,119,6,0.6)';
+    else color = 'rgba(220,38,38,0.6)';
+    return { x, y, r, backgroundColor: color, borderColor: color.replace('0.6', '1'), label: d.name, spend: d.spend, ctr: d.ctr, roas: d.roas, purchases: d.purchases };
+  });
+
+  const chartData = {
+    datasets: [{
+      data: points,
+      backgroundColor: points.map(p => p.backgroundColor),
+      borderColor: points.map(p => p.borderColor),
+      borderWidth: 1
+    }]
+  };
+
+  const config = {
+    type: 'bubble',
+    data: chartData,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          title: { display: true, text: 'CTR (%)', font: { family: 'Inter', weight: 600 } },
+          grid: { color: '#f0f0f0' },
+          min: 0
+        },
+        y: {
+          title: { display: true, text: 'ROAS', font: { family: 'Inter', weight: 600 } },
+          grid: { color: '#f0f0f0' },
+          min: 0
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const p = ctx.raw;
+              return [
+                p.label.substring(0, 60) + (p.label.length > 60 ? '...' : ''),
+                `CTR: ${(p.ctr*100).toFixed(2)}%`,
+                `ROAS: ${p.roas.toFixed(2)}x`,
+                `Spend: ${fmtCurrency(p.spend)}`,
+                `Purchases: ${p.purchases}`
+              ];
+            }
+          }
+        },
+        zoom: {
+          zoom: {
+            wheel: { enabled: true },
+            pinch: { enabled: true },
+            mode: 'xy'
+          },
+          pan: {
+            enabled: true,
+            mode: 'xy'
+          }
+        }
+      }
+    },
+    plugins: [{
+      id: 'quadrantLines',
+      afterDraw(chart) {
+        const { ctx, chartArea: {left, right, top, bottom}, scales: {x, y} } = chart;
+        const mx = x.getPixelForValue(medianCtr * 100);
+        const my = y.getPixelForValue(medianRoas);
+        ctx.save();
+        ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath(); ctx.moveTo(mx, top); ctx.lineTo(mx, bottom); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(left, my); ctx.lineTo(right, my); ctx.stroke();
+        ctx.restore();
+      }
+    }]
+  };
+
+  if (metaScatterChart) {
+    metaScatterChart.destroy();
+  }
+  metaScatterChart = new Chart(document.getElementById('metaScatterChart'), config);
+}
+
+updateMetaScatter();
+
+// ==================== META CSV EXPORT ====================
+document.getElementById('metaCsvBtn').addEventListener('click', () => {
+  const headers = mCols.map(c => c.label);
+  const rows = metaFilteredForScatter.map(r => mCols.map(c => {
+    const v = r[c.key];
+    if (v == null) return '';
+    if (typeof v === 'number') return c.key === 'ctr' || c.key === 'convRate' ? (v*100).toFixed(2) + '%' : v;
+    return '"' + String(v).replace(/"/g, '""') + '"';
+  }));
+  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'meta_ad_copy.csv'; a.click();
+  URL.revokeObjectURL(url);
+});
+
+// ==================== GLOBAL: Close dropdowns on outside click ====================
+document.addEventListener('click', (e) => {
+  const drop = document.getElementById('colFilterDrop');
+  if (drop.classList.contains('open') && !drop.contains(e.target) && !e.target.classList.contains('th-arrow')) {
+    drop.classList.remove('open');
+  }
+  // Close checkbox filter panels
+  document.querySelectorAll('.filter-dropdown-panel').forEach(panel => {
+    if (panel.classList.contains('open') && !panel.contains(e.target) && !e.target.closest('.filter-dropdown-wrap')?.contains(panel)) {
+      panel.classList.remove('open');
+    }
+  });
+});
+</script>
+</body>
+</html>
