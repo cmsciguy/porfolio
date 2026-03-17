@@ -163,6 +163,12 @@
 .pm-header-left{display:flex;align-items:center;gap:16px}
 .back-link{color:#888fb3;text-decoration:none;font-size:13px;font-weight:500;transition:color .2s}
 .back-link:hover{color:#2b7b31}
+.tab-bar{display:flex;gap:3px;background:#fff;border:1.5px solid #a8d5b0;border-radius:16px;padding:5px;margin-bottom:20px}
+.tab-btn{flex:1;padding:9px 16px;border:none;background:transparent;color:#888fb3;font-size:.88rem;font-weight:600;cursor:pointer;border-radius:8px;transition:all .15s;font-family:inherit}
+.tab-btn:hover:not(.active){background:#eef8ef;color:#225b3a}
+.tab-btn.active{background:#2b7b31;color:#fff}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
 .pm-header-title{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;color:#1a1a2e}
 .pm-header-dot{width:12px;height:12px;background:#2b7b31;border-radius:50%;display:inline-block}
 .pm-header-meta{font-size:12px;color:#888fb3;font-weight:500}</style>
@@ -219,6 +225,15 @@
   <div class="demo-banner"><strong>Demo Mode</strong> &mdash; This dashboard uses programmatically generated mock data for Verdant Wellness, a DTC liver-health supplement brand. All figures are illustrative.</div>
   <div id="mainContent">
     <div class="data-info-bar" id="dataInfoBar" style="display:none"><span id="infoRows"></span><span id="infoDateSpan"></span></div>
+    <!-- Tab Bar -->
+    <div class="tab-bar" id="pmTabBar">
+      <button class="tab-btn active" data-tab="overview">Overview</button>
+      <button class="tab-btn" data-tab="products">Products</button>
+      <button class="tab-btn" data-tab="subscriptions">Subscriptions</button>
+      <button class="tab-btn" data-tab="customers">Customers</button>
+    </div>
+    <!-- Overview Tab -->
+    <div class="tab-panel active" id="tabOverview">
     <!-- Metric Cards -->
     <div class="metrics-row">
       <div class="metric-card"><div class="metric-label">Gross Revenue</div><div class="metric-value" id="mRevenue">&ndash;</div></div>
@@ -241,24 +256,35 @@
     <div class="chart-section"><div class="section-title" style="border-bottom:2px solid #eef1fa;padding-bottom:10px;margin-bottom:14px;">Revenue Trend</div><div class="chart-controls" id="trendControls"></div><div style="width:100%;height:300px;position:relative;"><canvas id="trendChart"></canvas></div></div>
     <!-- New Customers Acquisition -->
     <div class="chart-section"><div class="section-title" style="border-bottom:2px solid #eef1fa;padding-bottom:10px;margin-bottom:14px;">New Customers Acquisition</div><div id="acquisitionControls" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;"></div><div style="width:100%;height:300px;position:relative;"><canvas id="acquisitionChart"></canvas></div></div>
-    <!-- New Customer Funnel Analysis -->
-    <div class="section-card"><div class="section-title">New Customer Funnel Analysis</div><div class="stat-tiles" id="upsellStats"></div></div>
-    <!-- Top Upsells -->
-    <div class="section-card"><div class="section-title">Top Upsells<div style="display:flex;align-items:center;gap:8px;"><button class="date-btn" style="font-size:.79rem;" onclick="exportTableCSV('upsellLeaderBody','top-upsells.csv')">&#8595; CSV</button><div class="filter-wrap"><button class="filter-btn" onclick="toggleFilterPanel('fp_upsell')">Filter &#9663;</button><div class="filter-panel" id="fp_upsell"></div></div></div></div><table class="data-table"><thead><tr><th data-col="name" data-tbl="upsell">Product <span class="sort-arrow">&#8597;</span></th><th data-col="count" data-tbl="upsell" class="num">Times Taken <span class="sort-arrow">&#8597;</span></th><th data-col="revenue" data-tbl="upsell" class="num">Revenue <span class="sort-arrow">&#8597;</span></th><th data-col="avg" data-tbl="upsell" class="num">Avg Price <span class="sort-arrow">&#8597;</span></th><th data-col="takeRate" data-tbl="upsell" class="pct-col">Take Rate <span class="sort-arrow">&#8597;</span></th></tr></thead><tbody id="upsellLeaderBody"></tbody></table></div>
-    <!-- Liver Restore Store Funnel -->
-    <div class="section-card"><div class="section-title">Liver Restore Store Funnel</div><div class="stat-tiles" id="storeFunnelStats"></div></div>
+    </div><!-- /tabOverview -->
+    <!-- Products Tab -->
+    <div class="tab-panel" id="tabProducts">
+    <!-- Product Mix Table -->
+    <div class="section-card"><div class="section-title">Product Mix<div style="display:flex;align-items:center;gap:8px;"><button class="date-btn" style="font-size:.79rem;" onclick="exportProductTable()">&#8595; CSV</button><div class="filter-wrap"><button class="filter-btn" onclick="toggleFilterPanel('fp_product')">Filter &#9663;</button><div class="filter-panel" id="fp_product"></div></div></div></div><input type="text" id="productSearch" placeholder="Search products..." style="width:100%;max-width:360px;padding:7px 12px;margin-bottom:12px;border:1.5px solid #c8d6e5;border-radius:8px;font-size:.88rem;font-family:inherit;"><table class="data-table" id="productTable"><thead><tr><th data-col="name">Product <span class="sort-arrow">&#8597;</span></th><th data-col="category">Category <span class="sort-arrow">&#8597;</span></th><th data-col="orders" class="num">Orders <span class="sort-arrow">&#8597;</span></th><th data-col="revenue" class="num">Revenue <span class="sort-arrow">&#8597;</span></th><th data-col="avg" class="num">Avg Price <span class="sort-arrow">&#8597;</span></th><th data-col="pct" class="pct-col">% of Rev <span class="sort-arrow">&#8597;</span></th></tr></thead><tbody id="productTableBody"></tbody></table><div class="table-pager" id="productPager"></div></div>
+    <!-- Promo Performance -->
+    <div class="section-card"><div class="section-title">Promo Performance<div style="display:flex;align-items:center;gap:8px;"><button class="date-btn" style="font-size:.79rem;" onclick="exportTableCSV('promoBody','promo-performance.csv')">&#8595; CSV</button><div class="filter-wrap"><button class="filter-btn" onclick="toggleFilterPanel('fp_promo')">Filter &#9663;</button><div class="filter-panel" id="fp_promo"></div></div></div></div><table class="data-table"><thead><tr><th data-col="ev" data-tbl="promo">Event <span class="sort-arrow">&#8597;</span></th><th data-col="orders" data-tbl="promo" class="num">Orders <span class="sort-arrow">&#8597;</span></th><th data-col="revenue" data-tbl="promo" class="num">Revenue <span class="sort-arrow">&#8597;</span></th><th data-col="avg" data-tbl="promo" class="num">Avg Order <span class="sort-arrow">&#8597;</span></th><th data-col="pct" data-tbl="promo" class="pct-col">% of Total Rev <span class="sort-arrow">&#8597;</span></th></tr></thead><tbody id="promoBody"></tbody></table></div>
     <!-- AOV by Funnel Entry Point -->
     <div class="section-card"><div class="section-title">AOV by Funnel Entry Point<button class="date-btn" style="font-size:.79rem;" onclick="exportTableCSV('aovFunnelBody','aov-by-funnel.csv')">&#8595; CSV</button></div><table class="data-table"><thead><tr><th data-col="label" data-tbl="aovFunnel">Product / Funnel <span class="sort-arrow">&#8597;</span></th><th data-col="sessions" data-tbl="aovFunnel" class="num">Orders <span class="sort-arrow">&#8597;</span></th><th data-col="avgEntry" data-tbl="aovFunnel" class="num">Avg Entry Price <span class="sort-arrow">&#8597;</span></th><th data-col="upsellRate" data-tbl="aovFunnel" class="pct-col">Upsell Take Rate <span class="sort-arrow">&#8597;</span></th><th data-col="grossAOV" data-tbl="aovFunnel" class="num">Gross AOV <span class="sort-arrow">&#8597;</span></th><th data-col="refunds" data-tbl="aovFunnel" class="num">Refunds <span class="sort-arrow">&#8597;</span></th><th data-col="netAOV" data-tbl="aovFunnel" class="num">Net AOV <span class="sort-arrow">&#8597;</span></th><th data-col="totalRev" data-tbl="aovFunnel" class="num">Total Net Rev <span class="sort-arrow">&#8597;</span></th></tr></thead><tbody id="aovFunnelBody"></tbody></table><p style="margin:12px 0 0;font-size:.82rem;color:#aab;font-style:italic;">Gross AOV = entry product + same-session upsells. Net AOV = Gross AOV minus refunds.</p></div>
+    <!-- Liver Restore Store Funnel -->
+    <div class="section-card"><div class="section-title">Liver Restore Store Funnel</div><div class="stat-tiles" id="storeFunnelStats"></div></div>
+    </div><!-- /tabProducts -->
+    <!-- Subscriptions Tab -->
+    <div class="tab-panel" id="tabSubscriptions">
     <!-- AutoShip Attach Rate -->
     <div class="section-card"><div class="section-title">AutoShip Attach Rate<button class="date-btn" style="font-size:.79rem;" onclick="exportTableCSV('attachRateProductBody','autoship-attach-rate.csv')">&#8595; CSV</button></div><div class="stat-tiles" id="attachRateTiles"></div><div style="margin-top:22px;"><div style="font-size:1em;font-weight:700;color:#225b3a;margin-bottom:10px;">Signups by Product</div><table class="data-table" style="max-width:620px;"><thead><tr><th>Product</th><th class="num">Signups</th><th class="num">Revenue</th><th class="pct-col">% of Signups</th><th class="num">Avg Price</th></tr></thead><tbody id="attachRateProductBody"></tbody></table></div></div>
     <!-- AutoShip Retention -->
     <div class="section-card"><div class="section-title">AutoShip Retention<button class="date-btn" style="font-size:.79rem;" onclick="exportTableCSV('autoshipFamilyBody','autoship-retention.csv')">&#8595; CSV</button></div><div class="stat-tiles" id="churnStats"></div><div style="margin-top:22px;"><div style="font-size:1em;font-weight:700;color:#225b3a;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">Subscribers by Product<div class="filter-wrap"><button class="filter-btn" onclick="toggleFilterPanel('fp_family')">Filter &#9663;</button><div class="filter-panel" id="fp_family"></div></div></div><table class="data-table"><thead><tr><th data-col="label" data-tbl="family">Product <span class="sort-arrow">&#8597;</span></th><th data-col="active" data-tbl="family" class="num">Active <span class="sort-arrow">&#8597;</span></th><th data-col="churned" data-tbl="family" class="num">Churned <span class="sort-arrow">&#8597;</span></th><th data-col="churnRate" data-tbl="family" class="pct-col">Churn Rate <span class="sort-arrow">&#8597;</span></th><th data-col="rev" data-tbl="family" class="num">Period Rebill Rev <span class="sort-arrow">&#8597;</span></th><th data-col="avgRebill" data-tbl="family" class="num">Avg Rebill <span class="sort-arrow">&#8597;</span></th><th data-col="avgSubLen" data-tbl="family" class="num">Avg Sub Length <span class="sort-arrow">&#8597;</span></th></tr></thead><tbody id="autoshipFamilyBody"></tbody></table></div><p style="margin:12px 0 0;font-size:.82rem;color:#aab;font-style:italic;">Churn estimated from full data history. Subscriber is churned when overdue 1.5x their typical interval.</p></div>
     <!-- Current Subscriber Breakdown -->
     <div class="section-card"><div class="section-title">Current Subscriber Breakdown<div style="display:flex;align-items:center;gap:8px;"><button class="date-btn" style="font-size:.79rem;" onclick="exportTableCSV('subBreakBody','subscriber-breakdown.csv')">&#8595; CSV</button><div class="filter-wrap"><button class="filter-btn" onclick="toggleFilterPanel('fp_subBreak')">Filter &#9663;</button><div class="filter-panel" id="fp_subBreak"></div></div></div></div><div class="stat-tiles" id="subBreakTiles"></div><div style="margin-top:22px;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div style="font-size:1em;font-weight:700;color:#225b3a;">Active Subscribers by Product Variant</div><input type="text" id="subBreakSearch" placeholder="Search product variants..." style="font-size:.85rem;padding:5px 10px;border:1px solid #d6edda;border-radius:6px;width:220px;outline:none;"></div><table class="data-table"><thead><tr><th data-col="variant" data-tbl="subBreak">Product Variant <span class="sort-arrow">&#8597;</span></th><th data-col="family" data-tbl="subBreak">Family <span class="sort-arrow">&#8597;</span></th><th data-col="qty" data-tbl="subBreak" class="num">Qty <span class="sort-arrow">&#8597;</span></th><th data-col="freqLabel" data-tbl="subBreak">Frequency <span class="sort-arrow">&#8597;</span></th><th data-col="subscribers" data-tbl="subBreak" class="num">Subscribers <span class="sort-arrow">&#8597;</span></th><th data-col="pctTotal" data-tbl="subBreak" class="pct-col">% of Total <span class="sort-arrow">&#8597;</span></th><th data-col="avgPrice" data-tbl="subBreak" class="num">Avg Price <span class="sort-arrow">&#8597;</span></th><th data-col="estMonthlyRev" data-tbl="subBreak" class="num">Est. Monthly Rev <span class="sort-arrow">&#8597;</span></th></tr></thead><tbody id="subBreakBody"></tbody></table></div><div style="margin-top:28px;"><div style="font-size:1em;font-weight:700;color:#225b3a;margin-bottom:10px;">Quantity Distribution by Family</div><div id="subBreakQtyBars"></div></div></div>
-    <!-- Product Mix Table -->
-    <div class="section-card"><div class="section-title">Product Mix<div style="display:flex;align-items:center;gap:8px;"><button class="date-btn" style="font-size:.79rem;" onclick="exportProductTable()">&#8595; CSV</button><div class="filter-wrap"><button class="filter-btn" onclick="toggleFilterPanel('fp_product')">Filter &#9663;</button><div class="filter-panel" id="fp_product"></div></div></div></div><input type="text" id="productSearch" placeholder="Search products..." style="width:100%;max-width:360px;padding:7px 12px;margin-bottom:12px;border:1.5px solid #c8d6e5;border-radius:8px;font-size:.88rem;font-family:inherit;"><table class="data-table" id="productTable"><thead><tr><th data-col="name">Product <span class="sort-arrow">&#8597;</span></th><th data-col="category">Category <span class="sort-arrow">&#8597;</span></th><th data-col="orders" class="num">Orders <span class="sort-arrow">&#8597;</span></th><th data-col="revenue" class="num">Revenue <span class="sort-arrow">&#8597;</span></th><th data-col="avg" class="num">Avg Price <span class="sort-arrow">&#8597;</span></th><th data-col="pct" class="pct-col">% of Rev <span class="sort-arrow">&#8597;</span></th></tr></thead><tbody id="productTableBody"></tbody></table><div class="table-pager" id="productPager"></div></div>
-    <!-- Promo Performance -->
-    <div class="section-card"><div class="section-title">Promo Performance<div style="display:flex;align-items:center;gap:8px;"><button class="date-btn" style="font-size:.79rem;" onclick="exportTableCSV('promoBody','promo-performance.csv')">&#8595; CSV</button><div class="filter-wrap"><button class="filter-btn" onclick="toggleFilterPanel('fp_promo')">Filter &#9663;</button><div class="filter-panel" id="fp_promo"></div></div></div></div><table class="data-table"><thead><tr><th data-col="ev" data-tbl="promo">Event <span class="sort-arrow">&#8597;</span></th><th data-col="orders" data-tbl="promo" class="num">Orders <span class="sort-arrow">&#8597;</span></th><th data-col="revenue" data-tbl="promo" class="num">Revenue <span class="sort-arrow">&#8597;</span></th><th data-col="avg" data-tbl="promo" class="num">Avg Order <span class="sort-arrow">&#8597;</span></th><th data-col="pct" data-tbl="promo" class="pct-col">% of Total Rev <span class="sort-arrow">&#8597;</span></th></tr></thead><tbody id="promoBody"></tbody></table></div>
+    <!-- Inventory -->
+    <div class="section-card"><div class="section-title">Inventory &amp; Burn Rate <span id="invPeriodNote" class="inv-period-note"></span></div><div class="inv-grid" id="invGrid"></div></div>
+    </div><!-- /tabSubscriptions -->
+    <!-- Customers Tab -->
+    <div class="tab-panel" id="tabCustomers">
+    <!-- New Customer Funnel Analysis -->
+    <div class="section-card"><div class="section-title">New Customer Funnel Analysis</div><div class="stat-tiles" id="upsellStats"></div></div>
+    <!-- Top Upsells -->
+    <div class="section-card"><div class="section-title">Top Upsells<div style="display:flex;align-items:center;gap:8px;"><button class="date-btn" style="font-size:.79rem;" onclick="exportTableCSV('upsellLeaderBody','top-upsells.csv')">&#8595; CSV</button><div class="filter-wrap"><button class="filter-btn" onclick="toggleFilterPanel('fp_upsell')">Filter &#9663;</button><div class="filter-panel" id="fp_upsell"></div></div></div></div><table class="data-table"><thead><tr><th data-col="name" data-tbl="upsell">Product <span class="sort-arrow">&#8597;</span></th><th data-col="count" data-tbl="upsell" class="num">Times Taken <span class="sort-arrow">&#8597;</span></th><th data-col="revenue" data-tbl="upsell" class="num">Revenue <span class="sort-arrow">&#8597;</span></th><th data-col="avg" data-tbl="upsell" class="num">Avg Price <span class="sort-arrow">&#8597;</span></th><th data-col="takeRate" data-tbl="upsell" class="pct-col">Take Rate <span class="sort-arrow">&#8597;</span></th></tr></thead><tbody id="upsellLeaderBody"></tbody></table></div>
     <!-- LTV Cohorts -->
     <div class="section-card"><div class="section-title">Revenue LTV by Cohort Age<span style="font-size:.75rem;font-weight:500;color:#888fb3;margin-left:8px;">all data &middot; net of refunds</span></div><div class="stat-tiles" id="ltvCohortTiles"></div></div>
     <div class="section-card"><div class="section-title">Gross Profit LTV by Cohort Age<span style="font-size:.75rem;font-weight:500;color:#888fb3;margin-left:8px;">revenue minus COGS &middot; net of refunds</span></div><div class="stat-tiles" id="gpLtvCohortTiles"></div></div>
@@ -269,11 +295,24 @@
       <div class="section-card" style="margin-bottom:0;"><div class="section-title">Customer Purchase Frequency<button class="date-btn" style="font-size:.79rem;" onclick="exportTableCSV('freqBody','purchase-frequency.csv')">&#8595; CSV</button></div><table class="data-table"><thead><tr><th>Purchase Sessions</th><th class="num">Customers</th><th class="num">% of All</th><th class="num">Revenue</th><th class="pct-col">% of Rev</th><th style="min-width:100px;"></th></tr></thead><tbody id="freqBody"></tbody></table></div>
       <div class="section-card" style="margin-bottom:0;"><div class="section-title">Order Cancellation Rate<button class="date-btn" style="font-size:.79rem;" onclick="exportTableCSV('cancelBody','cancellation-rate.csv')">&#8595; CSV</button></div><div class="stat-tiles" id="cancelTiles" style="margin-bottom:18px;"></div><table class="data-table"><thead><tr><th>Product</th><th class="num">Successful</th><th class="num">Cancelled</th><th class="pct-col">Cancel Rate</th></tr></thead><tbody id="cancelBody"></tbody></table></div>
     </div>
-    <!-- Inventory -->
-    <div class="section-card"><div class="section-title">Inventory &amp; Burn Rate <span id="invPeriodNote" class="inv-period-note"></span></div><div class="inv-grid" id="invGrid"></div></div>
+    </div><!-- /tabCustomers -->
   </div>
 </div>
 <script>
+
+// ============================================================
+// Tab Switching
+// ============================================================
+document.getElementById('pmTabBar').addEventListener('click', e => {
+  const btn = e.target.closest('.tab-btn');
+  if (!btn) return;
+  const tab = btn.dataset.tab;
+  document.querySelectorAll('#pmTabBar .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const panel = document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1));
+  if (panel) panel.classList.add('active');
+});
 
 // ============================================================
 // Seeded PRNG
