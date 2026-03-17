@@ -1,0 +1,3216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verdant Wellness — Google Ads Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --green-dark: #225b3a;
+  --green-main: #2b7b31;
+  --green-light: #e8f5e9;
+  --green-hover: #1e6b28;
+  --bg: #f6faf6;
+  --card-bg: #ffffff;
+  --text-main: #1a1a2e;
+  --text-mid: #888fb3;
+  --text-light: #b0b7d1;
+  --border: #e2e8f0;
+  --shadow: 0 1px 4px rgba(0,0,0,0.06), 0 2px 12px rgba(0,0,0,0.04);
+  --shadow-hover: 0 2px 8px rgba(0,0,0,0.10), 0 4px 16px rgba(0,0,0,0.06);
+  --radius: 16px;
+  --radius-sm: 8px;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text-main);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* Header */
+.header {
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-left { display: flex; align-items: center; gap: 16px; }
+.back-link {
+  color: var(--text-mid);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--green-main); }
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+.header-dot {
+  width: 12px; height: 12px;
+  background: var(--green-main);
+  border-radius: 50%;
+  display: inline-block;
+}
+.header-meta {
+  font-size: 12px;
+  color: var(--text-mid);
+  font-weight: 500;
+}
+
+/* Demo Banner */
+.demo-banner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 10px 32px;
+  font-size: 13px;
+  color: #5a6577;
+  background: linear-gradient(90deg, #f0f5ff, #f6faf6);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Tab Bar */
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  padding: 12px 32px 0;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+}
+.tab-btn {
+  padding: 10px 24px;
+  border: none;
+  background: transparent;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-mid);
+  cursor: pointer;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  transition: all 0.2s;
+}
+.tab-btn:hover { background: var(--green-light); color: var(--green-dark); }
+.tab-btn.active { background: var(--green-main); color: #fff; }
+.tab-content { display: none; padding: 24px 32px; max-width: 1400px; margin: 0 auto; }
+.tab-content.active { display: block; }
+
+/* Metric Cards */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.metric-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.2s;
+}
+.metric-card:hover { box-shadow: var(--shadow-hover); }
+.metric-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.metric-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+/* Section headers */
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 16px;
+  margin-top: 8px;
+}
+
+/* Chart Container */
+.chart-section {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+}
+.chart-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.chart-controls label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-mid);
+}
+.chart-controls select {
+  font-family: var(--font);
+  font-size: 13px;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--text-main);
+  cursor: pointer;
+}
+.toggle-group {
+  display: flex;
+  gap: 4px;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+}
+.toggle-btn {
+  padding: 5px 14px;
+  border: none;
+  background: transparent;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+.toggle-btn.active { background: #fff; color: var(--text-main); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.series-toggles { display: flex; gap: 8px; flex-wrap: wrap; }
+.series-toggle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  cursor: pointer;
+  border-radius: 20px;
+  transition: all 0.2s;
+}
+.series-toggle.active { border-color: currentColor; color: var(--text-main); }
+.series-dot { width: 8px; height: 8px; border-radius: 50%; }
+.chart-canvas-wrap { position: relative; height: 340px; }
+.chart-canvas-wrap canvas { width: 100% !important; }
+
+/* Tables */
+.table-section {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+.table-filters {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  align-items: center;
+}
+.table-filters input,
+.table-filters select {
+  font-family: var(--font);
+  font-size: 13px;
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--text-main);
+}
+.table-filters input { min-width: 200px; }
+.table-wrap { overflow-x: auto; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+thead th {
+  text-align: left;
+  padding: 12px 14px;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-mid);
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s;
+}
+thead th:hover { color: var(--green-main); }
+thead th .sort-indicator { margin-left: 4px; font-size: 10px; }
+tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+tbody tr:hover { background: var(--green-light); }
+tbody tr.row-paused { opacity: 0.5; }
+tfoot td {
+  padding: 12px 14px;
+  font-weight: 700;
+  border-top: 2px solid var(--border);
+  background: var(--bg);
+  white-space: nowrap;
+}
+
+/* Sticky first column */
+thead th:first-child,
+tbody td:first-child,
+tfoot td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: var(--card-bg);
+}
+thead th:first-child { background: var(--card-bg); z-index: 3; }
+tfoot td:first-child { background: var(--bg); }
+tbody tr:hover td:first-child { background: var(--green-light); }
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.badge-search { background: #e3f2fd; color: #1565c0; }
+.badge-display { background: #fce4ec; color: #c62828; }
+.badge-pmax { background: #fff3e0; color: #e65100; }
+.badge-exact { background: #e3f2fd; color: #1565c0; }
+.badge-phrase { background: #f3e5f5; color: #7b1fa2; }
+.badge-broad { background: #fff3e0; color: #e65100; }
+.badge-added { background: #e8f5e9; color: #2e7d32; }
+.badge-excluded { background: #fce4ec; color: #c62828; }
+.badge-none { background: #f5f5f5; color: #9e9e9e; }
+.badge-webpage { background: #e3f2fd; color: #1565c0; }
+.badge-mobile { background: #fff3e0; color: #e65100; }
+.badge-youtube { background: #fce4ec; color: #c62828; }
+
+.qs-cell { font-weight: 700; text-align: center; }
+.qs-green { color: #2e7d32; }
+.qs-yellow { color: #f9a825; }
+.qs-red { color: #c62828; }
+.qs-na { color: var(--text-light); font-weight: 400; }
+
+/* Signal badges (Exp CTR, Ad Relevance, LP Experience) */
+.signal-badge { display: inline-block; padding: 2px 8px; border-radius: 8px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+.signal-above { background: #e8f5e9; color: #2e7d32; }
+.signal-average { background: #fff3e0; color: #e65100; }
+.signal-below { background: #fef2f2; color: #c62828; }
+.signal-na { background: #f5f5f5; color: #9e9e9e; }
+
+/* QS Action List fix badges */
+.fix-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+.fix-badge.fix-ctr { background: #fff3e0; color: #b45309; border: 1px solid #fcd34d; }
+.fix-badge.fix-lp { background: #eff6ff; color: #1d4ed8; border: 1px solid #93c5fd; }
+.fix-badge.fix-both { background: #f3e8ff; color: #7e22ce; border: 1px solid #d8b4fe; }
+
+/* Pagination */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+}
+.pagination-info { font-size: 13px; color: var(--text-mid); }
+.pagination-btns { display: flex; gap: 4px; }
+.page-btn {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+.page-btn:hover { border-color: var(--green-main); color: var(--green-main); }
+.page-btn.active { background: var(--green-main); color: #fff; border-color: var(--green-main); }
+.page-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* Campaign Type Cards */
+.type-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.type-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+.type-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  font-size: 15px;
+  font-weight: 700;
+}
+.type-card-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 13px;
+}
+.type-card-stat .label { color: var(--text-mid); font-weight: 500; }
+.type-card-stat .value { font-weight: 700; }
+
+/* Impression Share Bars */
+.is-section {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+}
+.is-row {
+  margin-bottom: 18px;
+}
+.is-label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.is-bar-container {
+  display: flex;
+  height: 28px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #f0f0f0;
+}
+.is-bar-container > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  transition: width 0.3s;
+}
+.is-captured { background: var(--green-main); }
+.is-lost-budget { background: #f57c00; }
+.is-lost-rank { background: #e53935; }
+.is-legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--text-mid);
+}
+.is-legend span { display: flex; align-items: center; gap: 5px; }
+.is-legend-dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+
+/* QS Distribution */
+.qs-dist-section {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+}
+.qs-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.qs-bar-label {
+  width: 40px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-mid);
+}
+.qs-bar-track {
+  flex: 1;
+  height: 24px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.qs-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  padding-left: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  transition: width 0.4s;
+}
+.qs-bar-fill.qs-bar-green { background: var(--green-main); }
+.qs-bar-fill.qs-bar-yellow { background: #f9a825; }
+.qs-bar-fill.qs-bar-red { background: #e53935; }
+
+/* Date Range Picker */
+.drp-wrap { position: relative; display: inline-flex; align-items: center; gap: 6px; }
+.drp-trigger {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  background: #fff; color: var(--text-main); font-size: 13px; font-weight: 500;
+  cursor: pointer; font-family: var(--font); transition: border-color 0.15s;
+}
+.drp-trigger:hover { border-color: var(--green-main); }
+.drp-arrow { color: var(--text-mid); font-size: 10px; margin-left: 4px; }
+.drp-step-btn {
+  background: none; border: 1.5px solid var(--border); border-radius: 6px;
+  font-size: 16px; cursor: pointer; color: var(--green-main); padding: 3px 8px;
+  font-family: var(--font); transition: all 0.15s; line-height: 1;
+}
+.drp-step-btn:hover { background: var(--green-light); border-color: var(--green-main); }
+.drp-dropdown {
+  position: absolute; top: calc(100% + 4px); right: 0;
+  background: #fff; border: 1px solid var(--border); border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.14); z-index: 9999; min-width: 540px;
+  display: none;
+}
+.drp-dropdown.open { display: block; }
+.drp-body { display: flex; }
+.drp-presets {
+  width: 200px; border-right: 1px solid #eef1fa; padding: 10px 0;
+  overflow-y: auto; max-height: 370px;
+}
+.drp-preset-item {
+  padding: 7px 16px; font-size: 13px; color: #444;
+  cursor: pointer; transition: background 0.12s;
+}
+.drp-preset-item:hover { background: var(--green-light); }
+.drp-preset-item.active { background: var(--green-main); color: #fff; }
+.drp-divider { border: none; border-top: 1px solid #eef1fa; margin: 4px 0; }
+.drp-calendar-side { flex: 1; padding: 14px 16px 10px; min-width: 300px; }
+.drp-date-inputs { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.drp-date-inputs input {
+  flex: 1; padding: 5px 8px; border: 1.5px solid var(--border); border-radius: 6px;
+  font-size: 12px; font-family: var(--font); color: var(--text-main); text-align: center;
+}
+.drp-date-inputs input:focus { outline: none; border-color: var(--green-main); }
+.drp-date-sep { color: var(--text-mid); font-size: 13px; }
+.drp-cal-scroll { max-height: 350px; overflow-y: auto; overscroll-behavior: contain; }
+.drp-cal-month { margin-bottom: 6px; }
+.drp-cal-month-label {
+  font-weight: 600; font-size: 13px; color: var(--green-dark);
+  padding: 6px 0 4px; position: sticky; top: 0; background: #fff; z-index: 1;
+}
+.drp-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; }
+.drp-cal-dow { text-align: center; font-size: 11px; font-weight: 600; color: var(--text-mid); padding: 4px 0; }
+.drp-cal-day {
+  text-align: center; padding: 6px 0; font-size: 12px; cursor: pointer;
+  border-radius: 6px; transition: background 0.1s; color: #333;
+}
+.drp-cal-day:hover { background: var(--green-light); }
+.drp-cal-day.outside { color: #ccc; cursor: default; }
+.drp-cal-day.in-range { background: var(--green-light); border-radius: 0; }
+.drp-cal-day.range-start { background: var(--green-main); color: #fff; border-radius: 6px 0 0 6px; }
+.drp-cal-day.range-end { background: var(--green-main); color: #fff; border-radius: 0 6px 6px 0; }
+.drp-cal-day.range-start.range-end { border-radius: 6px; }
+.drp-cal-day.today { font-weight: 700; }
+.drp-actions {
+  display: flex; justify-content: flex-end; gap: 8px;
+  padding: 10px 16px; border-top: 1px solid #eef1fa;
+}
+.drp-btn-cancel {
+  padding: 5px 14px; border: 1.5px solid var(--border); border-radius: 6px;
+  background: #fff; color: #556; font-size: 12px; font-weight: 500;
+  cursor: pointer; font-family: var(--font);
+}
+.drp-btn-cancel:hover { border-color: #999; }
+.drp-btn-apply {
+  padding: 5px 14px; border: none; border-radius: 6px;
+  background: var(--green-main); color: #fff; font-size: 12px; font-weight: 600;
+  cursor: pointer; font-family: var(--font);
+}
+.drp-btn-apply:hover { background: var(--green-hover); }
+
+/* Normalize Button */
+.normalize-btn {
+  padding: 5px 14px; border-radius: 6px; border: 1.5px solid var(--border);
+  background: #fff; color: var(--text-mid); font-size: 12px; font-weight: 600;
+  cursor: pointer; font-family: var(--font); transition: all 0.15s; white-space: nowrap;
+}
+.normalize-btn:hover { border-color: var(--green-main); color: var(--green-main); }
+.normalize-btn.active { background: var(--green-main); color: #fff; border-color: var(--green-main); }
+
+/* Metric Trends */
+.metric-sub { font-size: 11px; color: var(--text-mid); margin-top: 4px; }
+.metric-trend { font-size: 11px; margin-top: 3px; font-weight: 600; }
+.trend-up { color: #2b7b31; }
+.trend-down { color: #e53935; }
+.trend-neutral { color: var(--text-mid); }
+
+/* Column filter dropdown */
+.th-inner { display: flex; align-items: center; justify-content: space-between; gap: 4px; white-space: nowrap; }
+.th-label { cursor: pointer; flex: 1; }
+.th-arrow {
+  background: none; border: none; padding: 1px 4px; font-size: 11px;
+  cursor: pointer; color: var(--text-light); line-height: 1; border-radius: 3px; flex-shrink: 0;
+}
+.th-arrow:hover { background: rgba(0,0,0,0.06); color: var(--text-main); }
+.th-arrow.filter-active { color: var(--green-main); background: var(--green-light); }
+.col-filtered { background: #fffbe6 !important; }
+.col-filter-drop {
+  position: fixed; background: #fff; border: 1.5px solid var(--border); border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12); padding: 8px; min-width: 180px; z-index: 9999; display: none;
+}
+.col-filter-drop.open { display: block; }
+.cfd-sort-btn {
+  display: block; width: 100%; text-align: left; padding: 6px 10px; border: none;
+  background: none; font-size: 12px; cursor: pointer; border-radius: 5px;
+  font-family: var(--font); color: var(--text-main);
+}
+.cfd-sort-btn:hover { background: var(--green-light); }
+.cfd-sort-btn.active { color: var(--green-main); font-weight: 700; }
+.cfd-divider { border: none; border-top: 1px solid #eef1fa; margin: 6px 0; }
+.cfd-label { font-size: 11px; color: var(--text-mid); padding: 0 2px 4px; }
+.cfd-filter-row { display: flex; align-items: center; gap: 5px; }
+.cfd-op {
+  padding: 4px 6px; border: 1.5px solid var(--border); border-radius: 5px;
+  font-size: 12px; font-family: var(--font); background: #fff; cursor: pointer; width: 50px;
+}
+.cfd-val {
+  padding: 4px 8px; border: 1.5px solid var(--border); border-radius: 5px;
+  font-size: 12px; font-family: var(--font); width: 90px;
+}
+.cfd-val:focus, .cfd-op:focus { outline: none; border-color: var(--green-main); }
+.cfd-clear {
+  margin-top: 8px; display: block; width: 100%; padding: 5px;
+  border: 1.5px solid var(--border); border-radius: 5px; background: none;
+  font-size: 12px; color: #e53935; cursor: pointer; font-family: var(--font);
+}
+.cfd-clear:hover { border-color: #e53935; background: #fff5f5; }
+
+/* Target CAC */
+.target-cac-bar {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+  padding: 10px 16px; background: var(--green-light); border: 1px solid #c8e6c9;
+  border-radius: var(--radius-sm); flex-wrap: wrap;
+}
+.target-cac-bar label { font-size: 12px; font-weight: 600; color: var(--green-dark); }
+.target-cac-bar input {
+  width: 80px; padding: 5px 8px; border: 1.5px solid #c8e6c9; border-radius: 6px;
+  font-size: 13px; font-family: var(--font); text-align: center;
+}
+.target-cac-bar input:focus { outline: none; border-color: var(--green-main); }
+.target-cac-hint { font-size: 11px; color: var(--text-mid); }
+.cell-great { color: #1b5e20; font-weight: 700; }
+.cell-good { color: #2b7b31; font-weight: 700; }
+.cell-ok { color: #f9a825; font-weight: 700; }
+.cell-poor { color: #e53935; font-weight: 700; }
+
+/* Insight card headers (Exclusion / Fraud) */
+.insight-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.insight-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.insight-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+.threshold-input {
+  width: 65px;
+  padding: 4px 8px;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: var(--font);
+  text-align: center;
+}
+.threshold-input:focus { outline: none; border-color: var(--green-main); }
+.insight-metrics {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.insight-metric {}
+.insight-metric-value { font-size: 32px; font-weight: 700; color: #c62828; line-height: 1.1; }
+.insight-metric-label { font-size: 12px; color: var(--text-mid); margin-top: 4px; }
+.recommendation-text { font-size: 12px; color: var(--text-mid); font-style: italic; }
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .metrics-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 768px) {
+  .header { padding: 12px 16px; flex-direction: column; align-items: flex-start; gap: 8px; }
+  .tab-bar { padding: 8px 16px 0; overflow-x: auto; }
+  .tab-content { padding: 16px; }
+  .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .metric-value { font-size: 18px; }
+  .chart-controls { gap: 8px; }
+  .type-cards-grid { grid-template-columns: 1fr; }
+  .drp-dropdown { min-width: 320px; right: auto; left: 0; }
+  .drp-presets { width: 160px; }
+  .drp-body { flex-direction: column; }
+  .drp-presets { width: 100%; border-right: none; border-bottom: 1px solid #eef1fa; max-height: 150px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <a href="../work.html" class="back-link">&larr; Back to Portfolio</a>
+    <div class="header-title">
+      <span class="header-dot"></span>
+      Verdant Wellness &mdash; Google Ads Dashboard
+    </div>
+  </div>
+  <div class="drp-wrap" id="drpWrap">
+    <button class="drp-step-btn" id="drpStepBack" type="button">&#8249;</button>
+    <button class="drp-trigger" id="drpTrigger" type="button">
+      <span id="drpText">All Time</span>
+      <span class="drp-arrow">&#9662;</span>
+    </button>
+    <button class="drp-step-btn" id="drpStepFwd" type="button">&#8250;</button>
+    <div class="drp-dropdown" id="drpDropdown">
+      <div class="drp-body">
+        <div class="drp-presets" id="drpPresets">
+          <div class="drp-preset-item" data-preset="custom">Custom</div>
+          <hr class="drp-divider"/>
+          <div class="drp-preset-item" data-preset="7">Last 7 days</div>
+          <div class="drp-preset-item" data-preset="14">Last 14 days</div>
+          <div class="drp-preset-item" data-preset="30">Last 30 days</div>
+          <div class="drp-preset-item" data-preset="60">Last 60 days</div>
+          <div class="drp-preset-item" data-preset="90">Last 90 days</div>
+          <div class="drp-preset-item" data-preset="180">Last 180 days</div>
+          <div class="drp-preset-item" data-preset="365">Last 1 year</div>
+          <hr class="drp-divider"/>
+          <div class="drp-preset-item" data-preset="thismonth">This month</div>
+          <div class="drp-preset-item" data-preset="lastmonth">Last month</div>
+          <div class="drp-preset-item" data-preset="thisquarter">This quarter</div>
+          <div class="drp-preset-item" data-preset="lastquarter">Last quarter</div>
+          <hr class="drp-divider"/>
+          <div class="drp-preset-item active" data-preset="all">All time</div>
+        </div>
+        <div class="drp-calendar-side">
+          <div class="drp-date-inputs">
+            <input type="text" id="drpStartInput" placeholder="MM/DD/YYYY">
+            <span class="drp-date-sep">&ndash;</span>
+            <input type="text" id="drpEndInput" placeholder="MM/DD/YYYY">
+          </div>
+          <div class="drp-cal-scroll" id="drpCalScroll"></div>
+        </div>
+      </div>
+      <div class="drp-actions">
+        <button class="drp-btn-cancel" id="drpCancel" type="button">Cancel</button>
+        <button class="drp-btn-apply" id="drpApply" type="button">Apply</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Demo Notice -->
+<div class="demo-banner">
+  This dashboard uses simulated data for a fictional DTC supplement brand. The structure, metrics, and functionality are real &mdash; built to be customized for any business, channel, or KPI set.
+</div>
+
+<!-- Tab Bar -->
+<div class="tab-bar">
+  <button class="tab-btn active" data-tab="campaigns">Campaigns</button>
+  <button class="tab-btn" data-tab="keywords">Keywords</button>
+  <button class="tab-btn" data-tab="searchterms">Search Terms</button>
+  <button class="tab-btn" data-tab="placements">Placements</button>
+</div>
+
+<!-- TAB 1: Campaigns -->
+<div class="tab-content active" id="tab-campaigns">
+  <div class="section-title">Overview</div>
+  <div class="metrics-grid" id="camp-metrics-row1"></div>
+  <div class="metrics-grid" id="camp-metrics-row2"></div>
+
+  <div class="section-title">Performance Trend</div>
+  <div class="chart-section">
+    <div class="chart-controls">
+      <label>Campaign:</label>
+      <select id="chart-campaign-filter"></select>
+      <div class="toggle-group" id="chart-granularity">
+        <button class="toggle-btn active" data-gran="daily">Daily</button>
+        <button class="toggle-btn" data-gran="weekly">Weekly</button>
+        <button class="toggle-btn" data-gran="monthly">Monthly</button>
+      </div>
+      <div class="series-toggles" id="chart-series-toggles"></div>
+      <button class="normalize-btn" id="btnNormalize" title="Rebase all series to 100 at first data point">⇔ Normalize</button>
+    </div>
+    <div class="chart-canvas-wrap">
+      <canvas id="perfChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Target CAC -->
+  <div class="target-cac-bar">
+    <label>Target CAC:</label>
+    <input type="number" id="targetCacInput" value="45" min="1" step="1">
+    <span class="target-cac-hint">Color-codes ROAS and Cost/Conv in the table below</span>
+  </div>
+
+  <div class="section-title">Campaign Breakdown</div>
+  <div class="table-section">
+    <div class="table-wrap">
+      <table id="campaign-table">
+        <thead><tr></tr></thead>
+        <tbody></tbody>
+        <tfoot><tr></tr></tfoot>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-title">Campaign Type Comparison</div>
+  <div class="type-cards-grid" id="type-cards"></div>
+
+  <div class="section-title">Search Impression Share</div>
+  <div class="is-section" id="impression-share"></div>
+</div>
+
+<!-- TAB 2: Keywords -->
+<div class="tab-content" id="tab-keywords">
+  <div class="section-title">Keyword Overview</div>
+  <div class="metrics-grid" id="kw-metrics-row1"></div>
+  <div class="metrics-grid" id="kw-metrics-row2"></div>
+
+  <div class="section-title">Brand vs Non-Brand Summary</div>
+  <div class="table-section">
+    <div class="table-wrap">
+      <table id="kw-brand-table">
+        <thead><tr></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-title">Keyword Performance</div>
+  <div class="table-section" id="kw-table-section">
+    <div class="table-filters" id="kw-filters"></div>
+    <div class="table-wrap">
+      <table id="keyword-table">
+        <thead><tr></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="kw-pagination"></div>
+  </div>
+
+  <div class="section-title">Quality Score Distribution</div>
+  <div class="qs-dist-section" id="qs-distribution"></div>
+
+  <div class="section-title" id="qs-action-title" style="display:none;">Quality Score Action List</div>
+  <div class="table-section" id="qs-action-section" style="display:none;">
+    <div style="padding:12px 20px;font-size:12px;color:var(--text-mid);border-bottom:1px solid var(--border);">
+      Keywords with QS &lt; 7, sorted by spend. <strong>Fix Focus</strong> shows which lever to pull.
+    </div>
+    <div class="table-wrap">
+      <table id="qs-action-table">
+        <thead><tr></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 3: Search Terms -->
+<div class="tab-content" id="tab-searchterms">
+  <div class="section-title">Search Terms Overview</div>
+  <div class="metrics-grid" id="st-metrics-row1"></div>
+
+  <div class="section-title">Search Terms</div>
+  <div class="table-section" id="st-table-section">
+    <div class="table-wrap">
+      <table id="searchterm-table">
+        <thead><tr></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="st-pagination"></div>
+  </div>
+</div>
+
+<!-- TAB 4: Placements -->
+<div class="tab-content" id="tab-placements">
+  <div class="section-title">Placements Overview</div>
+  <div class="metrics-grid" id="pl-metrics-row1"></div>
+  <div class="metrics-grid" id="pl-metrics-row2"></div>
+
+  <div class="section-title">Placement Type Breakdown</div>
+  <div class="type-cards-grid" id="pl-type-cards"></div>
+
+  <div class="section-title">Campaign Type Breakdown</div>
+  <div class="type-cards-grid" id="pl-camp-type-cards"></div>
+
+  <div class="section-title">Placement Performance</div>
+  <div class="table-section" id="pl-table-section">
+    <div class="table-filters" id="pl-filters"></div>
+    <div class="table-wrap">
+      <table id="placement-table">
+        <thead><tr></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="pl-pagination"></div>
+  </div>
+
+  <!-- Exclusion Candidates -->
+  <div class="table-section" id="excl-table-section">
+    <div class="insight-header">
+      <div class="insight-header-top">
+        <div class="insight-title">Exclusion Candidates</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:12px;color:var(--text-mid);font-weight:500;">CPA threshold: $</span>
+          <input type="number" id="exclusionCpaThreshold" value="100" min="1" step="1" class="threshold-input">
+        </div>
+      </div>
+      <div class="insight-metrics" id="excl-metrics"></div>
+    </div>
+    <div class="table-wrap">
+      <table id="excl-table">
+        <thead><tr></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Fraud Detection -->
+  <div class="table-section" id="fraud-table-section">
+    <div class="insight-header">
+      <div class="insight-header-top">
+        <div class="insight-title">Fraud Detection <span class="badge badge-excluded" id="fraud-count-badge" style="margin-left:6px;">0</span></div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="display:flex;align-items:center;gap:4px;">
+            <span style="font-size:12px;color:var(--text-mid);font-weight:500;">CTR threshold:</span>
+            <input type="number" id="fraudCtrThreshold" value="50" min="1" step="1" class="threshold-input" style="width:55px;">
+            <span style="font-size:12px;color:var(--text-mid);">%</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;">
+            <span style="font-size:12px;color:var(--text-mid);font-weight:500;">$/ATC threshold: $</span>
+            <input type="number" id="fraudAtcThreshold" value="5" min="0.01" step="0.5" class="threshold-input" style="width:55px;">
+          </div>
+        </div>
+      </div>
+      <div class="insight-metrics" id="fraud-metrics"></div>
+    </div>
+    <div class="table-wrap">
+      <table id="fraud-table">
+        <thead><tr></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="col-filter-drop" id="colFilterDrop"></div>
+
+<script>
+// ==================== SEEDED RANDOM ====================
+function seededRandom(seed) {
+  let s = seed;
+  return function() {
+    s = (s * 16807 + 0) % 2147483647;
+    return (s - 1) / 2147483646;
+  };
+}
+const rand = seededRandom(42);
+
+// ==================== HELPERS ====================
+function fmtCurrency(v) {
+  if (Math.abs(v) >= 100000) return '$' + (v/1000).toFixed(1) + 'K';
+  return '$' + v.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function fmtCurrencyShort(v) {
+  return '$' + v.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function fmtPct(v) { return (v*100).toFixed(2) + '%'; }
+function fmtNum(v) { return Math.round(v).toLocaleString('en-US'); }
+function fmtRoas(v) { return v.toFixed(2) + 'x'; }
+
+function randVariance(base, pct) {
+  return base * (1 + (rand() * 2 - 1) * pct);
+}
+
+// ==================== DATE RANGE ====================
+const startDate = new Date(2025, 0, 1);
+const endDate = new Date(2026, 2, 15);
+const days = [];
+for (let d = new Date(startDate); d <= endDate; d = new Date(d.getTime() + 86400000)) {
+  days.push(new Date(d));
+}
+
+// ==================== CAMPAIGN DEFINITIONS ====================
+const campaignDefs = [
+  { name: 'VW | Display - Health Topics', type: 'Display', status: 'Eligible', dailySpend: 132, dailyImpr: 64000, dailyClicks: 896, dailyConv: 1.1, convValue: 55 },
+  { name: 'VW | Search - Core Supplements', type: 'Search', status: 'Eligible', dailySpend: 97, dailyImpr: 2030, dailyClicks: 224, dailyConv: 1.85, convValue: 55 },
+  { name: 'VW | Search - Branded', type: 'Search', status: 'Eligible', dailySpend: 42, dailyImpr: 565, dailyClicks: 189, dailyConv: 2.85, convValue: 55 },
+  { name: 'VW | PMax - Product Feed', type: 'Performance Max', status: 'Eligible', dailySpend: 81, dailyImpr: 2830, dailyClicks: 283, dailyConv: 1.15, convValue: 55 },
+  { name: 'VW | Search - Liver Health', type: 'Search', status: 'Eligible', dailySpend: 51, dailyImpr: 975, dailyClicks: 127, dailyConv: 0.88, convValue: 55 },
+  { name: 'VW | Display - Retargeting', type: 'Display', status: 'Eligible', dailySpend: 15, dailyImpr: 11200, dailyClicks: 168, dailyConv: 0.72, convValue: 55 },
+  { name: 'z_VW | Search - Liver Long Tail', type: 'Search', status: 'Paused', dailySpend: 18, dailyImpr: 420, dailyClicks: 58, dailyConv: 0.35, convValue: 55 }
+];
+
+// ==================== SEASONAL MULTIPLIERS ====================
+// Returns a multiplier (0.3 – 2.2) based on date for realistic DTC supplement patterns
+function getSeasonalMultiplier(date) {
+  const m = date.getMonth(); // 0-11
+  const d = date.getDate();
+  const y = date.getFullYear();
+
+  // Specific date overrides (highest priority)
+  const mmdd = (m + 1) * 100 + d;
+
+  // Christmas shutdown: Dec 24-26 — massive dip
+  if (m === 11 && d >= 24 && d <= 26) return 0.25;
+  // Christmas Eve/Day adjacent
+  if (m === 11 && d === 23) return 0.5;
+  if (m === 11 && d === 27) return 0.6;
+
+  // Thanksgiving Day (4th Thursday of Nov) — dip
+  const thanksgivingDay = (function() {
+    let count = 0;
+    for (let i = 1; i <= 30; i++) {
+      if (new Date(y, 10, i).getDay() === 4) { count++; if (count === 4) return i; }
+    }
+    return 28;
+  })();
+  if (m === 10 && d === thanksgivingDay) return 0.4;
+  if (m === 10 && d === thanksgivingDay - 1) return 0.65; // Wed before
+
+  // Black Friday & Cyber Monday — huge spike
+  const blackFriday = thanksgivingDay + 1;
+  const cyberMonday = thanksgivingDay + 4;
+  if (m === 10 && d === blackFriday) return 2.2;
+  if (m === 10 && d === blackFriday + 1) return 1.9; // Small Biz Saturday
+  if (m === 10 && d === cyberMonday) return 2.1;
+  if (m === 10 && d === cyberMonday + 1) return 1.6; // Giving Tuesday / residual
+
+  // BFCM lead-up week (Mon before Thanksgiving)
+  if (m === 10 && d >= thanksgivingDay - 5 && d < thanksgivingDay - 1) return 1.3;
+
+  // New Year's Day
+  if (m === 0 && d === 1) return 1.8;
+
+  // July 4th
+  if (m === 6 && d >= 3 && d <= 5) return 0.55;
+
+  // Valentine's Day area
+  if (m === 1 && d >= 13 && d <= 15) return 1.15;
+
+  // Memorial Day weekend (last Mon of May)
+  if (m === 4 && d >= 25 && date.getDay() >= 0 && date.getDay() <= 1) return 0.7;
+
+  // Labor Day weekend (first Mon of Sep)
+  if (m === 8 && d <= 7 && (date.getDay() === 0 || date.getDay() === 1 || date.getDay() === 6)) return 0.75;
+
+  // Monthly seasonal curves
+  // Jan: "New Year, New Me" — big health/wellness spike
+  if (m === 0) {
+    if (d <= 7) return 1.6 + (7 - d) * 0.03; // First week strongest
+    if (d <= 15) return 1.4;
+    if (d <= 21) return 1.25;
+    return 1.15; // Late Jan still elevated
+  }
+  // Feb: Gradual decline from Jan
+  if (m === 1) {
+    if (d <= 10) return 1.1;
+    return 1.0;
+  }
+  // Mar: Stable / slight spring energy
+  if (m === 2) return 1.0 + (d > 15 ? 0.05 : 0);
+  // Apr: Spring stable
+  if (m === 3) return 1.0;
+  // May: Starts dipping — outdoor season begins
+  if (m === 4) return 0.95 - (d / 31) * 0.08;
+  // Jun: Summer dip
+  if (m === 5) return 0.85;
+  // Jul: Deepest summer trough
+  if (m === 6) return 0.78;
+  // Aug: Slow recovery
+  if (m === 7) {
+    if (d <= 15) return 0.82;
+    return 0.88;
+  }
+  // Sep: Back to routine — recovery
+  if (m === 8) return 0.95 + (d / 30) * 0.1;
+  // Oct: Steady, building toward holiday
+  if (m === 9) {
+    if (d <= 15) return 1.05;
+    return 1.1 + (d - 15) / 16 * 0.1; // Ramp up late Oct
+  }
+  // Nov: Pre-holiday buildup (BFCM handled above)
+  if (m === 10) {
+    if (d <= 10) return 1.15;
+    return 1.25; // General Nov elevation
+  }
+  // Dec: Holiday season
+  if (m === 11) {
+    if (d <= 10) return 1.35; // Gift buying + year-end health
+    if (d <= 20) return 1.2;
+    if (d <= 22) return 1.0; // Pre-Christmas wind-down
+    if (d >= 28) return 1.1 + (d - 28) * 0.12; // Dec 28-31 ramp to New Year
+    return 0.8; // 23-27 handled above for specific days
+  }
+  return 1.0;
+}
+
+// Campaign-specific seasonal sensitivity
+// Display campaigns are less seasonal; Search/PMax more reactive to intent surges
+function getCampSeasonalFactor(camp, baseMult, dayIndex, totalDays) {
+  if (camp.name.includes('Retargeting')) {
+    // Retargeting has wild variance — pool size depends on prospecting traffic,
+    // budget changes, audience list refreshes, and seasonal site traffic.
+    // Use a layered approach: base seasonal + slow "wave" cycles + high noise
+
+    // Slow sine waves at different frequencies to create organic-looking cycles
+    const wave1 = Math.sin(dayIndex * 0.035) * 0.35;       // ~180-day cycle
+    const wave2 = Math.sin(dayIndex * 0.09 + 1.2) * 0.2;   // ~70-day cycle
+    const wave3 = Math.sin(dayIndex * 0.22 + 3.1) * 0.12;  // ~28-day cycle
+
+    // Simulate budget changes: occasional step-function shifts
+    let budgetShift = 1.0;
+    if (dayIndex > 60 && dayIndex <= 120) budgetShift = 1.4;    // Q1 budget increase
+    if (dayIndex > 180 && dayIndex <= 210) budgetShift = 0.5;   // Summer budget cut
+    if (dayIndex > 300 && dayIndex <= 380) budgetShift = 1.6;   // Holiday budget boost
+    if (dayIndex > 380 && dayIndex <= 400) budgetShift = 0.7;   // Post-holiday pullback
+
+    // Retargeting spikes AFTER big prospecting pushes (lagged response)
+    // BFCM traffic fills the retargeting pool → spike in early Dec
+    const m = new Date(startDate.getTime() + dayIndex * 86400000).getMonth();
+    const d = new Date(startDate.getTime() + dayIndex * 86400000).getDate();
+    let lagSpike = 1.0;
+    if (m === 11 && d >= 1 && d <= 15) lagSpike = 1.8;  // Post-BFCM pool flush
+    if (m === 0 && d >= 5 && d <= 20) lagSpike = 1.5;   // Post-NYE pool flush
+
+    const combined = (1 + wave1 + wave2 + wave3) * budgetShift * lagSpike;
+    // Clamp to reasonable range
+    return Math.max(0.25, Math.min(combined, 2.8));
+  }
+  if (camp.type === 'Display') {
+    // Prospecting display is dampened — less reactive to seasonal shifts
+    return 1 + (baseMult - 1) * 0.6;
+  }
+  if (camp.name.includes('Branded')) {
+    // Branded search spikes harder during promotions (people searching the brand)
+    return baseMult > 1.3 ? baseMult * 1.15 : baseMult;
+  }
+  if (camp.type === 'Performance Max') {
+    // PMax has moderate seasonality + Shopping picks up in holiday
+    return baseMult > 1.2 ? baseMult * 1.1 : baseMult;
+  }
+  return baseMult; // Non-brand search follows base curve
+}
+
+// Gradual growth trend: slight upward slope over time (brand growing)
+function getGrowthMultiplier(dayIndex, totalDays) {
+  // ~20% growth over the full period
+  return 1.0 + (dayIndex / totalDays) * 0.2;
+}
+
+// ==================== GENERATE DAILY DATA ====================
+const dailyData = [];
+const campTotals = {};
+campaignDefs.forEach(c => { campTotals[c.name] = { spend:0, impr:0, clicks:0, conv:0, revenue:0, allConv:0, atc:0, type:c.type, status:c.status }; });
+
+const totalDayCount = days.length;
+
+days.forEach((date, dayIndex) => {
+  const dow = date.getDay();
+  const isWeekend = dow === 0 || dow === 6;
+  const weekendFactor = isWeekend ? 0.82 : 1.0;
+  // Fridays slightly elevated (payday/weekend prep)
+  const fridayBump = dow === 5 ? 1.06 : 1.0;
+  // Monday slightly elevated (start-of-week intent)
+  const mondayBump = dow === 1 ? 1.04 : 1.0;
+
+  const baseSeasonal = getSeasonalMultiplier(date);
+  const growth = getGrowthMultiplier(dayIndex, totalDayCount);
+
+  campaignDefs.forEach(camp => {
+    // Paused campaign only has data for first ~200 days
+    if (camp.status === 'Paused' && dayIndex > 200) return;
+
+    const campSeasonal = getCampSeasonalFactor(camp, baseSeasonal, dayIndex, totalDayCount);
+    const totalMult = campSeasonal * weekendFactor * fridayBump * mondayBump * growth;
+
+    // Retargeting gets much higher day-to-day noise (pool size fluctuates)
+    const isRetargeting = camp.name.includes('Retargeting');
+    const noiseLevel = isRetargeting ? 0.40 : 0.18;
+
+    const spend = randVariance(camp.dailySpend, noiseLevel) * totalMult;
+    const impr = Math.round(randVariance(camp.dailyImpr, isRetargeting ? 0.45 : 0.20) * totalMult);
+    const clicks = Math.round(randVariance(camp.dailyClicks, isRetargeting ? 0.45 : 0.20) * totalMult);
+    // Conversion rate improves during high-intent periods (seasonal > 1.2)
+    const convBoost = campSeasonal > 1.2 ? 1 + (campSeasonal - 1.2) * 0.3 : 1.0;
+    const conv = Math.max(0, randVariance(camp.dailyConv, 0.25) * totalMult * convBoost);
+    const revenue = conv * camp.convValue;
+    const allConv = conv * (2.8 + rand() * 0.8); // Slight variance in ATC ratio
+    const atc = allConv - conv;
+
+    const row = { date: new Date(date), campaign: camp.name, spend, impr, clicks, conv, revenue, allConv, atc };
+    dailyData.push(row);
+
+    campTotals[camp.name].spend += spend;
+    campTotals[camp.name].impr += impr;
+    campTotals[camp.name].clicks += clicks;
+    campTotals[camp.name].conv += conv;
+    campTotals[camp.name].revenue += revenue;
+    campTotals[camp.name].allConv += allConv;
+    campTotals[camp.name].atc += atc;
+  });
+});
+
+// ==================== IMPRESSION SHARE DATA ====================
+const impressionShareData = [
+  { campaign: 'VW | Search - Branded', captured: 65, lostBudget: 5, lostRank: 30 },
+  { campaign: 'VW | Search - Core Supplements', captured: 8, lostBudget: 0, lostRank: 92 },
+  { campaign: 'VW | Search - Liver Health', captured: 12, lostBudget: 2, lostRank: 86 }
+];
+
+// ==================== DATE RANGE STATE ====================
+let currentRange = [null, null]; // [startISO, endISO] e.g. ['2025-06-01', '2025-06-30']
+
+// ==================== DATE FILTERING ====================
+function getFilteredDailyData() {
+  if (!currentRange[0] || !currentRange[1]) return dailyData;
+  return dailyData.filter(row => {
+    const iso = row.date.toISOString().slice(0, 10);
+    return iso >= currentRange[0] && iso <= currentRange[1];
+  });
+}
+
+function computeCampTotals(filtered) {
+  const totals = {};
+  campaignDefs.forEach(c => { totals[c.name] = { spend:0, impr:0, clicks:0, conv:0, revenue:0, allConv:0, atc:0, type:c.type, status:c.status }; });
+  filtered.forEach(row => {
+    const t = totals[row.campaign];
+    if (!t) return;
+    t.spend += row.spend;
+    t.impr += row.impr;
+    t.clicks += row.clicks;
+    t.conv += row.conv;
+    t.revenue += row.revenue;
+    t.allConv += row.allConv;
+    t.atc += row.atc;
+  });
+  return totals;
+}
+
+// ==================== KEYWORDS DATA ====================
+function kwRow(keyword, matchType, adGroup, campaign, status, qs, expCtr, adRel, lpExp, costMult, convMult, clickMult, imprMult) {
+  const ct = campTotals[campaign];
+  if (!ct) return null;
+  const cost = ct.spend * costMult;
+  const clicks = Math.round(ct.clicks * clickMult);
+  const impr = Math.round(ct.impr * imprMult);
+  const conv = ct.conv * convMult;
+  const convValue = conv * 55;
+  const allConv = conv * 3.2;
+  return { keyword, matchType, adGroup, campaign, status, qualityScore: qs, expCtr, adRelevance: adRel, landingPageExp: lpExp, cost, conversions: conv, convValue, clicks, impressions: impr, allConv };
+}
+
+const keywordsData = [
+  // Branded
+  kwRow('verdant wellness', 'Exact', 'Branded - Core', 'VW | Search - Branded', 'Eligible', 10, 'Above average', 'Above average', 'Above average', 0.35, 0.38, 0.33, 0.30),
+  kwRow('verdant wellness liver support', 'Exact', 'Branded - Products', 'VW | Search - Branded', 'Eligible', 10, 'Above average', 'Above average', 'Above average', 0.22, 0.24, 0.22, 0.20),
+  kwRow('verdant liver restore', 'Exact', 'Branded - Products', 'VW | Search - Branded', 'Eligible', 9, 'Above average', 'Above average', 'Average', 0.16, 0.18, 0.17, 0.18),
+  kwRow('verdant wellness reviews', 'Exact', 'Branded - Core', 'VW | Search - Branded', 'Eligible', 8, 'Average', 'Above average', 'Above average', 0.14, 0.10, 0.15, 0.17),
+  kwRow('verdant daily greens', 'Exact', 'Branded - Products', 'VW | Search - Branded', 'Eligible', 10, 'Above average', 'Above average', 'Above average', 0.13, 0.12, 0.13, 0.15),
+
+  // Core Supplements
+  kwRow('liver supplements', 'Broad', 'Liver - General', 'VW | Search - Core Supplements', 'Eligible', 7, 'Average', 'Above average', 'Average', 0.18, 0.16, 0.17, 0.18),
+  kwRow('liver support supplements', 'Broad', 'Liver - Support', 'VW | Search - Core Supplements', 'Eligible', 7, 'Average', 'Average', 'Above average', 0.14, 0.12, 0.14, 0.14),
+  kwRow('liver health supplements', 'Broad', 'Liver Health - General', 'VW | Search - Core Supplements', 'Eligible', 8, 'Above average', 'Average', 'Above average', 0.16, 0.15, 0.16, 0.16),
+  kwRow('best liver supplement', 'Exact', 'Liver - Best', 'VW | Search - Core Supplements', 'Eligible', 8, 'Above average', 'Above average', 'Average', 0.15, 0.18, 0.15, 0.13),
+  kwRow('liver detox pills', 'Exact', 'Liver - Detox Products', 'VW | Search - Core Supplements', 'Eligible', 7, 'Average', 'Above average', 'Average', 0.12, 0.13, 0.12, 0.11),
+  kwRow('milk thistle extract', 'Broad', 'Milk Thistle - Extract', 'VW | Search - Core Supplements', 'Eligible', 8, 'Above average', 'Above average', 'Average', 0.13, 0.11, 0.14, 0.15),
+  kwRow('natural liver support', 'Phrase', 'Liver - Natural', 'VW | Search - Core Supplements', 'Eligible', 6, 'Average', 'Average', 'Below average', 0.12, 0.10, 0.12, 0.13),
+
+  // Liver Health
+  kwRow('how to improve liver health', 'Broad', 'Liver Health - Informational', 'VW | Search - Liver Health', 'Eligible', 5, 'Below average', 'Average', 'Below average', 0.20, 0.15, 0.20, 0.22),
+  kwRow('liver detox diet', 'Phrase', 'Liver Health - Diet', 'VW | Search - Liver Health', 'Eligible', 7, 'Average', 'Average', 'Average', 0.15, 0.12, 0.15, 0.16),
+  kwRow('fatty liver supplements', 'Exact', 'Liver Health - Conditions', 'VW | Search - Liver Health', 'Eligible', 6, 'Average', 'Average', 'Below average', 0.18, 0.20, 0.18, 0.15),
+  kwRow('liver detox supplements', 'Broad', 'Liver Health - Detox', 'VW | Search - Liver Health', 'Eligible', 7, 'Average', 'Above average', 'Average', 0.14, 0.13, 0.14, 0.14),
+  kwRow('milk thistle supplement', 'Exact', 'Liver Health - Milk Thistle', 'VW | Search - Liver Health', 'Eligible', 8, 'Above average', 'Above average', 'Average', 0.17, 0.22, 0.17, 0.16),
+  kwRow('liver inflammation supplement', 'Phrase', 'Liver Health - Conditions', 'VW | Search - Liver Health', 'Eligible', 6, 'Below average', 'Average', 'Average', 0.16, 0.18, 0.16, 0.17),
+
+  // Paused
+  kwRow('best foods for liver health', 'Broad', 'Long Tail - Foods', 'z_VW | Search - Liver Long Tail', 'Not eligible', null, null, null, null, 0.38, 0.30, 0.38, 0.40),
+  kwRow('natural liver detox remedies', 'Broad', 'Long Tail - Remedies', 'z_VW | Search - Liver Long Tail', 'Not eligible', null, null, null, null, 0.35, 0.38, 0.35, 0.35),
+  kwRow('supplements for liver damage', 'Phrase', 'Long Tail - Conditions', 'z_VW | Search - Liver Long Tail', 'Not eligible', null, null, null, null, 0.27, 0.32, 0.27, 0.25),
+
+  // Additional keywords to reach ~35
+  kwRow('liver care capsules', 'Phrase', 'Liver - Products', 'VW | Search - Core Supplements', 'Eligible', 7, 'Average', 'Average', 'Above average', 0.05, 0.04, 0.05, 0.05),
+  kwRow('best liver supplement 2025', 'Broad', 'Liver Health - General', 'VW | Search - Core Supplements', 'Eligible', 6, 'Average', 'Below average', 'Average', 0.04, 0.03, 0.04, 0.04),
+  kwRow('buy liver supplements online', 'Exact', 'Liver - Purchase', 'VW | Search - Core Supplements', 'Eligible', 7, 'Average', 'Above average', 'Average', 0.03, 0.04, 0.03, 0.02),
+  kwRow('verdant supplements', 'Exact', 'Branded - Core', 'VW | Search - Branded', 'Eligible', 9, 'Above average', 'Above average', 'Above average', 0.06, 0.07, 0.06, 0.05),
+  kwRow('verdant wellness coupon', 'Exact', 'Branded - Coupon', 'VW | Search - Branded', 'Eligible', 8, 'Average', 'Above average', 'Average', 0.04, 0.03, 0.04, 0.04),
+  kwRow('liver repair supplement', 'Phrase', 'Liver Health - Conditions', 'VW | Search - Liver Health', 'Eligible', 7, 'Average', 'Above average', 'Average', 0.08, 0.08, 0.08, 0.08),
+  kwRow('liver supplement for women', 'Broad', 'Liver - Demographic', 'VW | Search - Core Supplements', 'Eligible', 7, 'Average', 'Average', 'Above average', 0.06, 0.05, 0.06, 0.06),
+  kwRow('restore liver health', 'Phrase', 'Liver Health - General', 'VW | Search - Liver Health', 'Eligible', 6, 'Below average', 'Average', 'Below average', 0.07, 0.07, 0.07, 0.07),
+  kwRow('tudca supplement', 'Broad', 'Liver - TUDCA', 'VW | Search - Core Supplements', 'Eligible', 8, 'Above average', 'Above average', 'Average', 0.03, 0.02, 0.03, 0.03),
+  kwRow('liver health vitamins', 'Broad', 'Liver - Vitamins', 'VW | Search - Core Supplements', 'Eligible', 5, 'Below average', 'Average', 'Below average', 0.04, 0.02, 0.04, 0.05),
+  kwRow('liver cleanse supplement', 'Exact', 'Liver Health - Cleanse', 'VW | Search - Liver Health', 'Eligible', 6, 'Average', 'Below average', 'Average', 0.05, 0.05, 0.05, 0.05),
+  kwRow('best greens powder', 'Broad', 'Greens - General', 'VW | Search - Core Supplements', 'Eligible', 7, 'Average', 'Above average', 'Average', 0.05, 0.03, 0.05, 0.05),
+  kwRow('daily liver supplement', 'Phrase', 'Liver - Daily', 'VW | Search - Core Supplements', 'Eligible', 7, 'Average', 'Average', 'Above average', 0.04, 0.04, 0.04, 0.04),
+].filter(Boolean);
+
+// ==================== SEARCH TERMS DATA ====================
+function stRow(searchTerm, matchType, addedExcluded, campaign, adGroup, costMult, convMult, clickMult, imprMult) {
+  const ct = campTotals[campaign];
+  if (!ct) return null;
+  const cost = ct.spend * costMult;
+  const clicks = Math.round(ct.clicks * clickMult);
+  const impr = Math.round(ct.impr * imprMult);
+  const conv = ct.conv * convMult;
+  const convValue = conv * 55;
+  const allConv = conv * 3.2;
+  return { searchTerm, matchType, addedExcluded, campaign, adGroup, cost, conversions: conv, convValue, clicks, impressions: impr, allConv };
+}
+
+const searchTermsData = [
+  // Branded terms - high conversion
+  stRow('verdant wellness liver support', 'Exact', 'Added', 'VW | Search - Branded', 'Branded - Products', 0.18, 0.20, 0.18, 0.16),
+  stRow('verdant liver restore', 'Exact', 'Added', 'VW | Search - Branded', 'Branded - Products', 0.14, 0.16, 0.14, 0.14),
+  stRow('verdant wellness reviews', 'Exact', 'Added', 'VW | Search - Branded', 'Branded - Core', 0.12, 0.10, 0.13, 0.15),
+  stRow('verdant wellness liver restore', 'Exact', 'Added', 'VW | Search - Branded', 'Branded - Products', 0.10, 0.12, 0.10, 0.10),
+  stRow('verdant daily greens supplement', 'Exact', 'Added', 'VW | Search - Branded', 'Branded - Products', 0.09, 0.10, 0.09, 0.09),
+  stRow('verdant wellness discount', 'Exact', 'Added', 'VW | Search - Branded', 'Branded - Coupon', 0.07, 0.05, 0.07, 0.06),
+  stRow('verdant wellness order', 'Exact', 'Added', 'VW | Search - Branded', 'Branded - Core', 0.06, 0.08, 0.06, 0.05),
+  stRow('verdant liver capsules', 'Exact', 'Added', 'VW | Search - Branded', 'Branded - Products', 0.05, 0.06, 0.05, 0.05),
+
+  // Non-brand informational/commercial
+  stRow('best liver supplement 2025', 'Phrase', 'None', 'VW | Search - Core Supplements', 'Liver - Best', 0.08, 0.06, 0.08, 0.07),
+  stRow('supplements for liver health', 'Exact', 'Added', 'VW | Search - Core Supplements', 'Liver - General', 0.09, 0.10, 0.09, 0.08),
+  stRow('liver support supplements that work', 'Phrase', 'None', 'VW | Search - Core Supplements', 'Liver - Support', 0.06, 0.05, 0.06, 0.06),
+  stRow('how to improve liver health naturally', 'Phrase', 'None', 'VW | Search - Liver Health', 'Liver Health - Informational', 0.10, 0.06, 0.10, 0.12),
+  stRow('liver supplement reviews', 'Phrase', 'None', 'VW | Search - Core Supplements', 'Liver - Best', 0.05, 0.04, 0.05, 0.06),
+  stRow('best milk thistle supplement', 'Phrase', 'None', 'VW | Search - Core Supplements', 'Milk Thistle - Extract', 0.06, 0.05, 0.06, 0.06),
+  stRow('liver health supplements for women', 'Phrase', 'None', 'VW | Search - Core Supplements', 'Liver - Demographic', 0.05, 0.04, 0.05, 0.05),
+  stRow('natural liver detox supplement', 'Exact', 'Added', 'VW | Search - Core Supplements', 'Liver - Natural', 0.05, 0.06, 0.05, 0.04),
+  stRow('fatty liver supplement', 'Exact', 'Added', 'VW | Search - Liver Health', 'Liver Health - Conditions', 0.08, 0.10, 0.08, 0.07),
+  stRow('milk thistle for fatty liver', 'Phrase', 'None', 'VW | Search - Core Supplements', 'Milk Thistle - Extract', 0.06, 0.05, 0.06, 0.06),
+  stRow('supplement for liver inflammation', 'Phrase', 'None', 'VW | Search - Liver Health', 'Liver Health - Conditions', 0.07, 0.06, 0.07, 0.07),
+  stRow('milk thistle and tudca combo', 'Phrase', 'None', 'VW | Search - Liver Health', 'Liver Health - Milk Thistle', 0.06, 0.07, 0.06, 0.05),
+  stRow('best greens supplement 2025', 'Phrase', 'None', 'VW | Search - Core Supplements', 'Greens - General', 0.04, 0.03, 0.04, 0.04),
+  stRow('tudca supplement benefits', 'Phrase', 'None', 'VW | Search - Core Supplements', 'Liver - TUDCA', 0.04, 0.03, 0.04, 0.05),
+  stRow('liver support complex', 'Phrase', 'None', 'VW | Search - Liver Health', 'Liver Health - Detox', 0.05, 0.05, 0.05, 0.05),
+  stRow('daily greens powder', 'Phrase', 'None', 'VW | Search - Core Supplements', 'Greens - General', 0.03, 0.02, 0.03, 0.03),
+  stRow('best supplement for liver repair', 'Phrase', 'None', 'VW | Search - Core Supplements', 'Liver - Best', 0.04, 0.04, 0.04, 0.04),
+  stRow('liver regeneration supplement', 'Phrase', 'None', 'VW | Search - Liver Health', 'Liver Health - Conditions', 0.05, 0.05, 0.05, 0.04),
+  stRow('organic liver supplement', 'Phrase', 'None', 'VW | Search - Core Supplements', 'Liver - Natural', 0.03, 0.03, 0.03, 0.03),
+  stRow('what is the best liver supplement', 'Phrase', 'None', 'VW | Search - Core Supplements', 'Liver - Best', 0.04, 0.03, 0.04, 0.04),
+  stRow('liver health tips', 'Phrase', 'None', 'VW | Search - Liver Health', 'Liver Health - Informational', 0.06, 0.02, 0.06, 0.08),
+  stRow('liver supplements amazon', 'Phrase', 'None', 'VW | Search - Core Supplements', 'Liver - General', 0.03, 0.01, 0.03, 0.03),
+
+  // Excluded terms
+  stRow('free liver supplement samples', 'Phrase', 'Excluded', 'VW | Search - Core Supplements', 'Liver - General', 0.02, 0.001, 0.03, 0.04),
+  stRow('liver detox juice recipe', 'Phrase', 'Excluded', 'VW | Search - Core Supplements', 'Liver - General', 0.015, 0.0005, 0.02, 0.03),
+  stRow('homemade liver cleanse', 'Phrase', 'Excluded', 'VW | Search - Core Supplements', 'Liver - Natural', 0.01, 0.0003, 0.015, 0.025),
+  stRow('liver cleanse foods list', 'Phrase', 'Excluded', 'VW | Search - Core Supplements', 'Liver - Vitamins', 0.012, 0.0002, 0.018, 0.03),
+  stRow('diy liver cleanse', 'Phrase', 'Excluded', 'VW | Search - Liver Health', 'Liver Health - Informational', 0.01, 0.0001, 0.015, 0.02),
+].filter(Boolean);
+
+// ==================== PLACEMENTS DATA ====================
+function plRow(placement, placementType, campaign, adGroup, costMult, convMult, clickMult, imprMult) {
+  const ct = campTotals[campaign];
+  if (!ct) return null;
+  const cost = ct.spend * costMult;
+  const clicks = Math.round(ct.clicks * clickMult);
+  const impr = Math.round(ct.impr * imprMult);
+  const conv = ct.conv * convMult;
+  const convValue = conv * 55;
+  const allConv = conv * 3.2;
+  return { placement, placementType, campaign, adGroup, cost, conversions: conv, convValue, clicks, impressions: impr, allConv };
+}
+
+const placementsData = [
+  // Display - Health Topics
+  plRow('healthline.com', 'Webpage', 'VW | Display - Health Topics', 'Health - Top Sites', 0.18, 0.22, 0.18, 0.15),
+  plRow('webmd.com', 'Webpage', 'VW | Display - Health Topics', 'Health - Top Sites', 0.14, 0.16, 0.14, 0.12),
+  plRow('verywellhealth.com', 'Webpage', 'VW | Display - Health Topics', 'Health - Top Sites', 0.12, 0.14, 0.12, 0.10),
+  plRow('mayoclinic.org', 'Webpage', 'VW | Display - Health Topics', 'Health - Top Sites', 0.10, 0.10, 0.10, 0.09),
+  plRow('medicalnewstoday.com', 'Webpage', 'VW | Display - Health Topics', 'Health - Top Sites', 0.09, 0.08, 0.09, 0.08),
+  plRow('mindbodygreen.com', 'Webpage', 'VW | Display - Health Topics', 'Health - Wellness', 0.07, 0.06, 0.07, 0.07),
+  plRow('everydayhealth.com', 'Webpage', 'VW | Display - Health Topics', 'Health - Top Sites', 0.06, 0.05, 0.06, 0.06),
+  plRow('health.com', 'Webpage', 'VW | Display - Health Topics', 'Health - Wellness', 0.05, 0.04, 0.05, 0.06),
+  plRow('prevention.com', 'Webpage', 'VW | Display - Health Topics', 'Health - Wellness', 0.04, 0.03, 0.04, 0.05),
+  plRow('self.com', 'Webpage', 'VW | Display - Health Topics', 'Health - Wellness', 0.04, 0.03, 0.04, 0.05),
+  plRow('livestrong.com', 'Webpage', 'VW | Display - Health Topics', 'Health - Fitness', 0.03, 0.02, 0.03, 0.04),
+  plRow('draxe.com', 'Webpage', 'VW | Display - Health Topics', 'Health - Natural', 0.03, 0.03, 0.03, 0.04),
+  plRow('youtube.com/channel/health-tips', 'YouTube Channel', 'VW | Display - Health Topics', 'Health - YouTube', 0.03, 0.02, 0.03, 0.05),
+  plRow('youtube.com/channel/nutrition-facts', 'YouTube Channel', 'VW | Display - Health Topics', 'Health - YouTube', 0.02, 0.02, 0.02, 0.04),
+
+  // Retargeting
+  plRow('healthline.com', 'Webpage', 'VW | Display - Retargeting', 'Retargeting - Health', 0.15, 0.20, 0.15, 0.12),
+  plRow('webmd.com', 'Webpage', 'VW | Display - Retargeting', 'Retargeting - Health', 0.12, 0.16, 0.12, 0.10),
+  plRow('verywellhealth.com', 'Webpage', 'VW | Display - Retargeting', 'Retargeting - Health', 0.10, 0.12, 0.10, 0.09),
+  plRow('MyFitnessPal', 'Mobile App', 'VW | Display - Retargeting', 'Retargeting - Apps', 0.12, 0.14, 0.12, 0.14),
+  plRow('Calm', 'Mobile App', 'VW | Display - Retargeting', 'Retargeting - Apps', 0.08, 0.06, 0.08, 0.10),
+  plRow('medicalnewstoday.com', 'Webpage', 'VW | Display - Retargeting', 'Retargeting - Health', 0.08, 0.08, 0.08, 0.08),
+  plRow('mindbodygreen.com', 'Webpage', 'VW | Display - Retargeting', 'Retargeting - Wellness', 0.07, 0.06, 0.07, 0.08),
+  plRow('everydayhealth.com', 'Webpage', 'VW | Display - Retargeting', 'Retargeting - Health', 0.06, 0.04, 0.06, 0.07),
+  plRow('prevention.com', 'Webpage', 'VW | Display - Retargeting', 'Retargeting - Wellness', 0.05, 0.04, 0.05, 0.05),
+  plRow('self.com', 'Webpage', 'VW | Display - Retargeting', 'Retargeting - Wellness', 0.05, 0.03, 0.05, 0.05),
+  plRow('youtube.com/channel/wellness-daily', 'YouTube Channel', 'VW | Display - Retargeting', 'Retargeting - YouTube', 0.04, 0.03, 0.04, 0.06),
+  plRow('livestrong.com', 'Webpage', 'VW | Display - Retargeting', 'Retargeting - Fitness', 0.04, 0.02, 0.04, 0.04),
+  plRow('draxe.com', 'Webpage', 'VW | Display - Retargeting', 'Retargeting - Natural', 0.04, 0.03, 0.04, 0.04),
+
+  // Low-quality / high-CPA placements (exclusion candidates)
+  plRow('healthywellbeing.net', 'Webpage', 'VW | Display - Health Topics', 'Health - Wellness', 0.025, 0.003, 0.02, 0.035),
+  plRow('dailycatchers.com', 'Webpage', 'VW | Display - Health Topics', 'Health - Top Sites', 0.022, 0.002, 0.018, 0.03),
+  plRow('naturalcureshub.com', 'Webpage', 'VW | Display - Health Topics', 'Health - Natural', 0.018, 0.001, 0.015, 0.028),
+  plRow('topwellnessguide.com', 'Webpage', 'VW | Display - Health Topics', 'Health - Wellness', 0.016, 0.002, 0.016, 0.032),
+  plRow('bodymindcentral.com', 'Webpage', 'VW | Display - Health Topics', 'Health - Wellness', 0.014, 0.001, 0.012, 0.025),
+  plRow('healthfactsdaily.net', 'Webpage', 'VW | Display - Health Topics', 'Health - Top Sites', 0.013, 0.0008, 0.011, 0.022),
+  plRow('vitaminworldnews.com', 'Webpage', 'VW | Display - Retargeting', 'Retargeting - Health', 0.02, 0.004, 0.015, 0.02),
+  plRow('supplementscience.org', 'Webpage', 'VW | Display - Retargeting', 'Retargeting - Health', 0.015, 0.002, 0.012, 0.018),
+  plRow('theepochtimes.com', 'Webpage', 'VW | Display - Health Topics', 'Health - Top Sites', 0.012, 0.0005, 0.009, 0.02),
+  plRow('eatstoheal.com', 'Webpage', 'VW | Display - Health Topics', 'Health - Natural', 0.011, 0.0, 0.008, 0.018),
+
+  // Suspicious/fraudulent placements (high CTR, no conversions)
+  { placement: 'click-rewards-app.com', placementType: 'Webpage', campaign: 'VW | Display - Health Topics', adGroup: 'Health - Top Sites', cost: 245.80, conversions: 0, convValue: 0, clicks: 312, impressions: 315, allConv: 0 },
+  { placement: 'freepoints-daily.com', placementType: 'Webpage', campaign: 'VW | Display - Health Topics', adGroup: 'Health - Wellness', cost: 198.50, conversions: 0, convValue: 0, clicks: 267, impressions: 280, allConv: 0 },
+  { placement: 'game-clicker-pro', placementType: 'Mobile App', campaign: 'VW | Display - Retargeting', adGroup: 'Retargeting - Apps', cost: 156.20, conversions: 0, convValue: 0, clicks: 445, impressions: 890, allConv: 0 },
+  { placement: 'reward-spinner-2025', placementType: 'Mobile App', campaign: 'VW | Display - Health Topics', adGroup: 'Health - Top Sites', cost: 134.90, conversions: 0, convValue: 0, clicks: 389, impressions: 420, allConv: 0 },
+  { placement: 'cashgames-mobile', placementType: 'Mobile App', campaign: 'VW | Display - Retargeting', adGroup: 'Retargeting - Apps', cost: 112.40, conversions: 0, convValue: 0, clicks: 298, impressions: 310, allConv: 0 },
+  { placement: 'quizbuzz-trivia', placementType: 'Mobile App', campaign: 'VW | Display - Health Topics', adGroup: 'Health - Top Sites', cost: 89.60, conversions: 0, convValue: 0, clicks: 178, impressions: 210, allConv: 0 },
+  { placement: 'puzzlemania-free', placementType: 'Mobile App', campaign: 'VW | Display - Retargeting', adGroup: 'Retargeting - Apps', cost: 76.30, conversions: 0, convValue: 0, clicks: 203, impressions: 245, allConv: 0 },
+  { placement: 'youtube.com/channel/random-compilations', placementType: 'YouTube Channel', campaign: 'VW | Display - Health Topics', adGroup: 'Health - YouTube', cost: 67.40, conversions: 0, convValue: 0, clicks: 142, impressions: 168, allConv: 0 },
+  { placement: 'ad-click-booster.net', placementType: 'Webpage', campaign: 'VW | Display - Health Topics', adGroup: 'Health - Wellness', cost: 54.20, conversions: 0, convValue: 0, clicks: 108, impressions: 112, allConv: 0 },
+  { placement: 'free-health-quiz.com', placementType: 'Webpage', campaign: 'VW | Display - Retargeting', adGroup: 'Retargeting - Health', cost: 42.80, conversions: 0, convValue: 0, clicks: 95, impressions: 102, allConv: 0 },
+].filter(Boolean);
+
+// ==================== TAB SWITCHING ====================
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    // Hide date picker on tabs without daily data
+    const drp = document.getElementById('drpWrap');
+    const tab = btn.dataset.tab;
+    drp.style.display = (tab === 'keywords' || tab === 'searchterms') ? 'none' : '';
+  });
+});
+
+// ==================== RENDER METRIC CARDS ====================
+function renderMetrics(containerId, metrics) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = metrics.map(m => {
+    let trendHtml = '';
+    if (m.trend !== undefined && m.trend !== null) {
+      const pct = m.trend;
+      const cls = m.trendInvert
+        ? (pct > 0 ? 'trend-down' : pct < 0 ? 'trend-up' : 'trend-neutral')
+        : (pct > 0 ? 'trend-up' : pct < 0 ? 'trend-down' : 'trend-neutral');
+      const arrow = pct > 0 ? '▲' : pct < 0 ? '▼' : '—';
+      trendHtml = `<div class="metric-trend ${cls}">${arrow} ${Math.abs(pct).toFixed(1)}% vs prev period</div>`;
+    }
+    let subHtml = m.sub ? `<div class="metric-sub">${m.sub}</div>` : '';
+    return `<div class="metric-card">
+      <div class="metric-label">${m.label}</div>
+      <div class="metric-value">${m.value}</div>
+      ${subHtml}${trendHtml}
+    </div>`;
+  }).join('');
+}
+
+// ==================== CAMPAIGN TAB ====================
+let campSortCol = 'spend', campSortAsc = false;
+let campColumnFilters = {};
+let kwColumnFilters = {};
+let plColumnFilters = {};
+
+function pctChange(cur, prev) {
+  if (prev === 0 || prev === undefined || prev === null) return null;
+  return ((cur - prev) / Math.abs(prev)) * 100;
+}
+
+function fmtRoasColored(roas, targetCAC) {
+  const targetROAS = 55 / targetCAC;
+  let cls = 'cell-poor';
+  if (roas >= targetROAS) cls = 'cell-great';
+  else if (roas >= targetROAS * 0.7) cls = 'cell-ok';
+  return `<span class="${cls}">${fmtRoas(roas)}</span>`;
+}
+
+function fmtCppColored(cpp, targetCAC) {
+  if (cpp <= 0) return '—';
+  let cls = 'cell-poor';
+  if (cpp <= targetCAC) cls = 'cell-great';
+  else if (cpp <= targetCAC * 1.3) cls = 'cell-ok';
+  return `<span class="${cls}">${fmtCurrencyShort(cpp)}</span>`;
+}
+
+function renderCampaignsTab() {
+  const filteredDaily = getFilteredDailyData();
+  const filteredTotals = computeCampTotals(filteredDaily);
+
+  // Compute totals
+  let totalSpend=0, totalConv=0, totalClicks=0, totalImpr=0, totalRevenue=0, totalAllConv=0, totalAtc=0;
+  Object.values(filteredTotals).forEach(c => {
+    totalSpend += c.spend; totalConv += c.conv; totalClicks += c.clicks;
+    totalImpr += c.impr; totalRevenue += c.revenue; totalAllConv += c.allConv; totalAtc += c.atc;
+  });
+
+  const cvr = totalClicks > 0 ? totalConv / totalClicks : 0;
+  const roas = totalSpend > 0 ? totalRevenue / totalSpend : 0;
+  const cpp = totalConv > 0 ? totalSpend / totalConv : 0;
+  const ctr = totalImpr > 0 ? totalClicks / totalImpr : 0;
+  const avgCpc = totalClicks > 0 ? totalSpend / totalClicks : 0;
+  const costPerAtc = totalAtc > 0 ? totalSpend / totalAtc : 0;
+
+  // Compute previous period
+  let prevTotals = null;
+  if (currentRange[0] && currentRange[1]) {
+    const curStart = new Date(currentRange[0] + 'T00:00:00');
+    const curEnd = new Date(currentRange[1] + 'T00:00:00');
+    const span = Math.round((curEnd - curStart) / 86400000) + 1;
+    const prevEnd = new Date(curStart);
+    prevEnd.setDate(prevEnd.getDate() - 1);
+    const prevStart = new Date(prevEnd);
+    prevStart.setDate(prevStart.getDate() - span + 1);
+    const prevStartISO = toISO(prevStart);
+    const prevEndISO = toISO(prevEnd);
+
+    if (prevStartISO >= DATA_MIN_ISO) {
+      const prevFiltered = dailyData.filter(row => {
+        const iso = row.date.toISOString().slice(0, 10);
+        return iso >= prevStartISO && iso <= prevEndISO;
+      });
+      const pt = computeCampTotals(prevFiltered);
+      let pSpend=0, pConv=0, pClicks=0, pImpr=0, pRevenue=0, pAllConv=0, pAtc=0;
+      Object.values(pt).forEach(c => {
+        pSpend += c.spend; pConv += c.conv; pClicks += c.clicks;
+        pImpr += c.impr; pRevenue += c.revenue; pAllConv += c.allConv; pAtc += c.atc;
+      });
+      prevTotals = {
+        spend: pSpend, conv: pConv, clicks: pClicks, impr: pImpr,
+        revenue: pRevenue, allConv: pAllConv, atc: pAtc,
+        cvr: pClicks > 0 ? pConv / pClicks : 0,
+        roas: pSpend > 0 ? pRevenue / pSpend : 0,
+        cpp: pConv > 0 ? pSpend / pConv : 0,
+        ctr: pImpr > 0 ? pClicks / pImpr : 0,
+        avgCpc: pClicks > 0 ? pSpend / pClicks : 0,
+        costPerAtc: pAtc > 0 ? pSpend / pAtc : 0,
+      };
+    }
+  }
+
+  renderMetrics('camp-metrics-row1', [
+    { label: 'Total Spend', value: fmtCurrency(totalSpend), trend: prevTotals ? pctChange(totalSpend, prevTotals.spend) : undefined },
+    { label: 'Purchases', value: fmtNum(totalConv), trend: prevTotals ? pctChange(totalConv, prevTotals.conv) : undefined },
+    { label: 'CVR', value: fmtPct(cvr), trend: prevTotals ? pctChange(cvr, prevTotals.cvr) : undefined },
+    { label: 'Revenue', value: fmtCurrency(totalRevenue), trend: prevTotals ? pctChange(totalRevenue, prevTotals.revenue) : undefined },
+    { label: 'ROAS', value: fmtRoas(roas), trend: prevTotals ? pctChange(roas, prevTotals.roas) : undefined },
+    { label: 'Cost / Purchase', value: fmtCurrencyShort(cpp), trend: prevTotals ? pctChange(cpp, prevTotals.cpp) : undefined, trendInvert: true },
+  ]);
+  renderMetrics('camp-metrics-row2', [
+    { label: 'Add to Carts', value: fmtNum(totalAtc), trend: prevTotals ? pctChange(totalAtc, prevTotals.atc) : undefined },
+    { label: 'Clicks', value: fmtNum(totalClicks), trend: prevTotals ? pctChange(totalClicks, prevTotals.clicks) : undefined },
+    { label: 'Impressions', value: fmtNum(totalImpr), trend: prevTotals ? pctChange(totalImpr, prevTotals.impr) : undefined },
+    { label: 'CTR', value: fmtPct(ctr), trend: prevTotals ? pctChange(ctr, prevTotals.ctr) : undefined },
+    { label: 'Avg CPC', value: fmtCurrencyShort(avgCpc), trend: prevTotals ? pctChange(avgCpc, prevTotals.avgCpc) : undefined, trendInvert: true },
+    { label: 'Cost / ATC', value: fmtCurrencyShort(costPerAtc), trend: prevTotals ? pctChange(costPerAtc, prevTotals.costPerAtc) : undefined, trendInvert: true },
+  ]);
+
+  // Campaign table - campCols built as function to read live targetCAC
+  function getCampCols() {
+    const tCAC = parseFloat(document.getElementById('targetCacInput').value) || 45;
+    return [
+      { key: 'name', label: 'Campaign', fmt: v => v },
+      { key: 'type', label: 'Type', fmt: v => { const cls = v === 'Search' ? 'badge-search' : v === 'Display' ? 'badge-display' : 'badge-pmax'; return `<span class="badge ${cls}">${v === 'Performance Max' ? 'PMax' : v}</span>`; } },
+      { key: 'spend', label: 'Spend', fmt: fmtCurrency, numeric: true },
+      { key: 'conv', label: 'Purchases', fmt: v => fmtNum(v), numeric: true },
+      { key: 'revenue', label: 'Revenue', fmt: fmtCurrency, numeric: true },
+      { key: 'roas', label: 'ROAS', fmt: v => fmtRoasColored(v, tCAC), numeric: true },
+      { key: 'cpp', label: 'Cost/Conv', fmt: v => fmtCppColored(v, tCAC), numeric: true },
+      { key: 'clicks', label: 'Clicks', fmt: fmtNum, numeric: true },
+      { key: 'impr', label: 'Impr', fmt: fmtNum, numeric: true },
+      { key: 'ctr', label: 'CTR', fmt: fmtPct, numeric: true },
+      { key: 'avgCpc', label: 'Avg CPC', fmt: fmtCurrencyShort, numeric: true },
+      { key: 'atc', label: 'ATC', fmt: v => fmtNum(v), numeric: true },
+      { key: 'costPerAtc', label: 'Cost/ATC', fmt: v => v > 0 && v < Infinity ? fmtCurrencyShort(v) : '—', numeric: true },
+    ];
+  }
+
+  const campRows = campaignDefs.map(c => {
+    const t = filteredTotals[c.name];
+    return {
+      name: c.name, type: c.type, status: c.status,
+      spend: t.spend, conv: t.conv, revenue: t.revenue,
+      roas: t.spend > 0 ? t.revenue / t.spend : 0,
+      cpp: t.conv > 0 ? t.spend / t.conv : 0,
+      clicks: t.clicks, impr: t.impr,
+      ctr: t.impr > 0 ? t.clicks / t.impr : 0,
+      avgCpc: t.clicks > 0 ? t.spend / t.clicks : 0,
+      atc: t.atc,
+      costPerAtc: t.atc > 0 ? t.spend / t.atc : Infinity,
+    };
+  });
+
+  function renderCampTable() {
+    const campCols = getCampCols();
+
+    // Apply column filters
+    let filteredRows = [...campRows];
+    Object.entries(campColumnFilters).forEach(([col, f]) => {
+      const val = parseFloat(f.val);
+      if (!isNaN(val)) {
+        filteredRows = filteredRows.filter(r => {
+          const cv = r[col] || 0;
+          if (f.op === 'gt')  return cv > val;
+          if (f.op === 'gte') return cv >= val;
+          if (f.op === 'lt')  return cv < val;
+          if (f.op === 'lte') return cv <= val;
+          if (f.op === 'eq')  return Math.abs(cv - val) < 0.001;
+          return true;
+        });
+      }
+    });
+
+    const sorted = [...filteredRows].sort((a,b) => {
+      let av = a[campSortCol], bv = b[campSortCol];
+      if (typeof av === 'string') { av = av.toLowerCase(); bv = bv.toLowerCase(); }
+      return campSortAsc ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
+    });
+
+    const thead = document.querySelector('#campaign-table thead tr');
+    thead.innerHTML = campCols.map(c => {
+      if (c.numeric) {
+        const hasFilter = campColumnFilters[c.key] && campColumnFilters[c.key].val !== '';
+        const arrowCls = hasFilter ? 'th-arrow filter-active' : 'th-arrow';
+        const sortInd = campSortCol === c.key ? (campSortAsc ? ' \u25B2' : ' \u25BC') : '';
+        return `<th data-col="${c.key}" class="${hasFilter ? 'col-filtered' : ''}"><div class="th-inner"><span class="th-label">${c.label}<span class="sort-indicator">${sortInd}</span></span><button class="${arrowCls}" data-col="${c.key}">▾</button></div></th>`;
+      }
+      return `<th data-col="${c.key}">${c.label}<span class="sort-indicator">${campSortCol === c.key ? (campSortAsc ? ' \u25B2' : ' \u25BC') : ''}</span></th>`;
+    }).join('');
+
+    const tbody = document.querySelector('#campaign-table tbody');
+    tbody.innerHTML = sorted.map(r => {
+      const pausedClass = r.status === 'Paused' ? ' class="row-paused"' : '';
+      return `<tr${pausedClass}>${campCols.map(c => `<td>${c.fmt(r[c.key])}</td>`).join('')}</tr>`;
+    }).join('');
+
+    // Totals row
+    const totals = { name: 'Total', type: '', spend: totalSpend, conv: totalConv, revenue: totalRevenue, roas, cpp, clicks: totalClicks, impr: totalImpr, ctr, avgCpc, atc: totalAtc, costPerAtc: costPerAtc };
+    const tfoot = document.querySelector('#campaign-table tfoot tr');
+    tfoot.innerHTML = campCols.map(c => {
+      if (c.key === 'name') return '<td>Total</td>';
+      if (c.key === 'type') return '<td></td>';
+      return `<td>${c.fmt(totals[c.key])}</td>`;
+    }).join('');
+
+    // Wire up label clicks for sorting
+    thead.querySelectorAll('.th-label').forEach(lbl => {
+      lbl.addEventListener('click', () => {
+        const col = lbl.closest('th').dataset.col;
+        if (campSortCol === col) campSortAsc = !campSortAsc;
+        else { campSortCol = col; campSortAsc = false; }
+        renderCampTable();
+      });
+    });
+    // Wire up non-numeric th clicks for sorting
+    thead.querySelectorAll('th').forEach(th => {
+      if (!th.querySelector('.th-inner')) {
+        th.addEventListener('click', () => {
+          const col = th.dataset.col;
+          if (campSortCol === col) campSortAsc = !campSortAsc;
+          else { campSortCol = col; campSortAsc = false; }
+          renderCampTable();
+        });
+      }
+    });
+
+    // Wire up arrow buttons for filter dropdown
+    thead.querySelectorAll('.th-arrow').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openColFilterDrop(btn.dataset.col, btn);
+      });
+    });
+  }
+
+  // Column filter dropdown logic
+  function openColFilterDrop(col, anchorBtn) {
+    const drop = document.getElementById('colFilterDrop');
+    const rect = anchorBtn.getBoundingClientRect();
+    drop.style.top = (rect.bottom + 4) + 'px';
+    drop.style.left = Math.max(0, rect.left - 80) + 'px';
+
+    const existing = campColumnFilters[col] || { op: 'gt', val: '' };
+    const sortAscActive = campSortCol === col && campSortAsc;
+    const sortDescActive = campSortCol === col && !campSortAsc;
+
+    drop.innerHTML = `
+      <button class="cfd-sort-btn ${sortAscActive ? 'active' : ''}" data-action="sort-asc">Sort ascending ↑</button>
+      <button class="cfd-sort-btn ${sortDescActive ? 'active' : ''}" data-action="sort-desc">Sort descending ↓</button>
+      <hr class="cfd-divider">
+      <div class="cfd-label">Filter where value is:</div>
+      <div class="cfd-filter-row">
+        <select class="cfd-op" id="cfdOp">
+          <option value="gt" ${existing.op === 'gt' ? 'selected' : ''}>&gt;</option>
+          <option value="gte" ${existing.op === 'gte' ? 'selected' : ''}>&gt;=</option>
+          <option value="lt" ${existing.op === 'lt' ? 'selected' : ''}>&lt;</option>
+          <option value="lte" ${existing.op === 'lte' ? 'selected' : ''}>&lt;=</option>
+          <option value="eq" ${existing.op === 'eq' ? 'selected' : ''}>=</option>
+        </select>
+        <input type="number" class="cfd-val" id="cfdVal" value="${existing.val}" placeholder="value">
+      </div>
+      <button class="cfd-clear" data-action="clear">Clear filter</button>
+    `;
+
+    drop.classList.add('open');
+
+    drop.querySelector('[data-action="sort-asc"]').addEventListener('click', () => {
+      campSortCol = col; campSortAsc = true;
+      drop.classList.remove('open');
+      renderCampTable();
+    });
+    drop.querySelector('[data-action="sort-desc"]').addEventListener('click', () => {
+      campSortCol = col; campSortAsc = false;
+      drop.classList.remove('open');
+      renderCampTable();
+    });
+
+    const applyFilter = () => {
+      const op = document.getElementById('cfdOp').value;
+      const val = document.getElementById('cfdVal').value;
+      if (val !== '') {
+        campColumnFilters[col] = { op, val };
+      } else {
+        delete campColumnFilters[col];
+      }
+      drop.classList.remove('open');
+      renderCampTable();
+    };
+
+    document.getElementById('cfdVal').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') applyFilter();
+    });
+    document.getElementById('cfdOp').addEventListener('change', () => {
+      if (document.getElementById('cfdVal').value !== '') applyFilter();
+    });
+
+    drop.querySelector('[data-action="clear"]').addEventListener('click', () => {
+      delete campColumnFilters[col];
+      drop.classList.remove('open');
+      renderCampTable();
+    });
+  }
+
+  renderCampTable();
+
+  // Store renderCampTable reference for target CAC input
+  window._campTableRender = renderCampTable;
+
+  // Type comparison cards
+  const types = {};
+  campaignDefs.forEach(c => {
+    const t = filteredTotals[c.name];
+    const label = c.type === 'Performance Max' ? 'PMax' : c.type;
+    if (!types[label]) types[label] = { spend:0, conv:0, revenue:0, clicks:0, impr:0 };
+    types[label].spend += t.spend;
+    types[label].conv += t.conv;
+    types[label].revenue += t.revenue;
+    types[label].clicks += t.clicks;
+    types[label].impr += t.impr;
+  });
+  const typeColors = { Search: '#1565c0', Display: '#c62828', PMax: '#e65100' };
+  document.getElementById('type-cards').innerHTML = Object.entries(types).map(([label, d]) => {
+    const roas = d.spend > 0 ? d.revenue / d.spend : 0;
+    const cpc = d.clicks > 0 ? d.spend / d.clicks : 0;
+    const ctr = d.impr > 0 ? d.clicks / d.impr : 0;
+    return `<div class="type-card">
+      <div class="type-card-header"><span class="badge" style="background:${typeColors[label]}22;color:${typeColors[label]}">${label}</span></div>
+      <div class="type-card-stat"><span class="label">Spend</span><span class="value">${fmtCurrency(d.spend)}</span></div>
+      <div class="type-card-stat"><span class="label">Purchases</span><span class="value">${fmtNum(d.conv)}</span></div>
+      <div class="type-card-stat"><span class="label">Revenue</span><span class="value">${fmtCurrency(d.revenue)}</span></div>
+      <div class="type-card-stat"><span class="label">ROAS</span><span class="value">${fmtRoas(roas)}</span></div>
+      <div class="type-card-stat"><span class="label">Avg CPC</span><span class="value">${fmtCurrencyShort(cpc)}</span></div>
+      <div class="type-card-stat"><span class="label">CTR</span><span class="value">${fmtPct(ctr)}</span></div>
+    </div>`;
+  }).join('');
+
+  // Impression share
+  const isContainer = document.getElementById('impression-share');
+  isContainer.innerHTML = impressionShareData.map(d =>
+    `<div class="is-row">
+      <div class="is-label">${d.campaign}</div>
+      <div class="is-bar-container">
+        <div class="is-captured" style="width:${d.captured}%">${d.captured}%</div>
+        ${d.lostBudget > 0 ? `<div class="is-lost-budget" style="width:${d.lostBudget}%">${d.lostBudget > 3 ? d.lostBudget+'%' : ''}</div>` : ''}
+        <div class="is-lost-rank" style="width:${d.lostRank}%">${d.lostRank}%</div>
+      </div>
+    </div>`
+  ).join('') + `<div class="is-legend">
+    <span><span class="is-legend-dot" style="background:var(--green-main)"></span> Captured</span>
+    <span><span class="is-legend-dot" style="background:#f57c00"></span> Lost (Budget)</span>
+    <span><span class="is-legend-dot" style="background:#e53935"></span> Lost (Rank)</span>
+  </div>`;
+}
+
+// ==================== CHART ====================
+let updateChart; // global reference for date range changes
+(function initChart() {
+  const seriesDefs = [
+    { key: 'spend', label: 'Spend', color: '#2b7b31', yAxis: 'y' },
+    { key: 'clicks', label: 'Clicks', color: '#1565c0', yAxis: 'y' },
+    { key: 'conv', label: 'Conversions', color: '#e65100', yAxis: 'y' },
+    { key: 'roas', label: 'ROAS', color: '#7b1fa2', yAxis: 'y1' },
+  ];
+  const activeSeriesSet = new Set(['spend', 'conv']);
+  let granularity = 'daily';
+  let filterCampaign = 'all';
+  let trendNormalize = false;
+
+  // Populate campaign filter
+  const sel = document.getElementById('chart-campaign-filter');
+  sel.innerHTML = '<option value="all">All Campaigns</option>' +
+    campaignDefs.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+
+  // Series toggles
+  const togglesContainer = document.getElementById('chart-series-toggles');
+  togglesContainer.innerHTML = seriesDefs.map(s =>
+    `<button class="series-toggle ${activeSeriesSet.has(s.key) ? 'active' : ''}" data-series="${s.key}">
+      <span class="series-dot" style="background:${s.color}"></span>${s.label}
+    </button>`
+  ).join('');
+
+  togglesContainer.querySelectorAll('.series-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.series;
+      if (activeSeriesSet.has(key)) activeSeriesSet.delete(key);
+      else activeSeriesSet.add(key);
+      btn.classList.toggle('active');
+      updateChart();
+    });
+  });
+
+  // Granularity toggles
+  document.querySelectorAll('#chart-granularity .toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#chart-granularity .toggle-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      granularity = btn.dataset.gran;
+      updateChart();
+    });
+  });
+
+  sel.addEventListener('change', () => { filterCampaign = sel.value; updateChart(); });
+
+  // Normalize toggle
+  document.getElementById('btnNormalize').addEventListener('click', () => {
+    trendNormalize = !trendNormalize;
+    document.getElementById('btnNormalize').classList.toggle('active', trendNormalize);
+    updateChart();
+  });
+
+  const ctx = document.getElementById('perfChart').getContext('2d');
+  let chart = null;
+
+  function aggregateData() {
+    let filtered = getFilteredDailyData();
+    if (filterCampaign !== 'all') filtered = filtered.filter(d => d.campaign === filterCampaign);
+
+    // Group by date
+    const byDate = {};
+    filtered.forEach(r => {
+      const dk = r.date.toISOString().slice(0,10);
+      if (!byDate[dk]) byDate[dk] = { date: r.date, spend:0, clicks:0, conv:0, revenue:0 };
+      byDate[dk].spend += r.spend;
+      byDate[dk].clicks += r.clicks;
+      byDate[dk].conv += r.conv;
+      byDate[dk].revenue += r.revenue;
+    });
+
+    let entries = Object.values(byDate).sort((a,b) => a.date - b.date);
+
+    if (granularity === 'weekly') {
+      const weeks = {};
+      entries.forEach(e => {
+        const d = e.date;
+        const jan1 = new Date(d.getFullYear(), 0, 1);
+        const weekNum = Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+        const key = d.getFullYear() + '-W' + String(weekNum).padStart(2,'0');
+        if (!weeks[key]) weeks[key] = { label: key, spend:0, clicks:0, conv:0, revenue:0 };
+        weeks[key].spend += e.spend;
+        weeks[key].clicks += e.clicks;
+        weeks[key].conv += e.conv;
+        weeks[key].revenue += e.revenue;
+      });
+      entries = Object.values(weeks);
+    } else if (granularity === 'monthly') {
+      const months = {};
+      entries.forEach(e => {
+        const key = e.date.getFullYear() + '-' + String(e.date.getMonth()+1).padStart(2,'0');
+        if (!months[key]) months[key] = { label: key, spend:0, clicks:0, conv:0, revenue:0 };
+        months[key].spend += e.spend;
+        months[key].clicks += e.clicks;
+        months[key].conv += e.conv;
+        months[key].revenue += e.revenue;
+      });
+      entries = Object.values(months);
+    }
+
+    return entries.map(e => ({
+      label: e.label || e.date.toISOString().slice(0,10),
+      spend: e.spend,
+      clicks: e.clicks,
+      conv: e.conv,
+      roas: e.spend > 0 ? e.revenue / e.spend : 0
+    }));
+  }
+
+  updateChart = function() {
+    const data = aggregateData();
+    const labels = data.map(d => d.label);
+    const hasRoas = activeSeriesSet.has('roas');
+
+    const datasets = seriesDefs.filter(s => activeSeriesSet.has(s.key)).map(s => ({
+      label: s.label,
+      data: data.map(d => s.key === 'roas' ? parseFloat(d[s.key].toFixed(2)) : Math.round(d[s.key] * 100) / 100),
+      borderColor: s.color,
+      backgroundColor: s.color + '20',
+      borderWidth: 2,
+      pointRadius: granularity === 'daily' ? 0 : 3,
+      pointHoverRadius: 5,
+      tension: 0.3,
+      fill: false,
+      yAxisID: s.yAxis,
+    }));
+
+    // Normalize: rebase each series so first non-zero = 100
+    if (trendNormalize) {
+      datasets.forEach(ds => {
+        const firstNonZero = ds.data.find(v => v !== 0 && v !== null && v !== undefined);
+        if (firstNonZero) {
+          ds.data = ds.data.map(v => v !== null && v !== undefined ? (v / firstNonZero) * 100 : null);
+        }
+        ds.yAxisID = 'y'; // All use left axis when normalized
+      });
+    }
+
+    // Tooltip and axis config based on normalize state
+    const tooltipCallbacks = trendNormalize ? {
+      label: function(ctx) {
+        return ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) + ' (index)';
+      }
+    } : {};
+
+    const yAxisTitle = trendNormalize ? { display: true, text: 'Index (first = 100)', font: { family: 'Inter', size: 11 }, color: '#888fb3' } : { display: false };
+
+    if (chart) chart.destroy();
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: { labels, datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#fff',
+            titleColor: '#1a1a2e',
+            bodyColor: '#1a1a2e',
+            borderColor: '#e2e8f0',
+            borderWidth: 1,
+            padding: 12,
+            titleFont: { family: 'Inter', weight: '600' },
+            bodyFont: { family: 'Inter' },
+            callbacks: tooltipCallbacks,
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { font: { family: 'Inter', size: 11 }, color: '#888fb3', maxTicksLimit: granularity === 'daily' ? 15 : 30 }
+          },
+          y: {
+            position: 'left',
+            grid: { color: '#f0f0f0' },
+            ticks: {
+              font: { family: 'Inter', size: 11 },
+              color: '#888fb3',
+              callback: trendNormalize ? (v => v.toFixed(0)) : undefined,
+            },
+            title: yAxisTitle,
+          },
+          y1: {
+            position: 'right',
+            display: hasRoas && !trendNormalize,
+            grid: { drawOnChartArea: false },
+            ticks: { font: { family: 'Inter', size: 11 }, color: '#7b1fa2', callback: v => v.toFixed(1) + 'x' },
+          }
+        }
+      }
+    });
+  };
+
+  updateChart();
+})();
+
+// ==================== SORTABLE + PAGINATED TABLE UTILITY ====================
+function createSortableTable({ tableId, paginationId, columns, data, defaultSort, defaultAsc, pageSize, rowClass, columnFilters, openColFilterDropFn }) {
+  let sortCol = defaultSort || columns[0].key;
+  let sortAsc = defaultAsc !== undefined ? defaultAsc : false;
+  let currentPage = 1;
+  let filteredData = data;
+  const perPage = pageSize || 25;
+  const hasColFilters = !!columnFilters;
+
+  function getFilteredData() { return filteredData; }
+  function setFilteredData(d) { filteredData = d; currentPage = 1; render(); }
+
+  function render() {
+    // Apply column filters if present
+    let working = [...filteredData];
+    if (hasColFilters) {
+      Object.entries(columnFilters).forEach(([col, f]) => {
+        const val = parseFloat(f.val);
+        if (!isNaN(val)) {
+          working = working.filter(r => {
+            const cv = r[col] || 0;
+            if (f.op === 'gt')  return cv > val;
+            if (f.op === 'gte') return cv >= val;
+            if (f.op === 'lt')  return cv < val;
+            if (f.op === 'lte') return cv <= val;
+            if (f.op === 'eq')  return Math.abs(cv - val) < 0.001;
+            return true;
+          });
+        }
+      });
+    }
+
+    const sorted = [...working].sort((a,b) => {
+      let av = a[sortCol], bv = b[sortCol];
+      if (av == null) av = -Infinity;
+      if (bv == null) bv = -Infinity;
+      if (typeof av === 'string') { av = av.toLowerCase(); bv = (bv||'').toLowerCase(); }
+      return sortAsc ? (av > bv ? 1 : av < bv ? -1 : 0) : (av < bv ? 1 : av > bv ? -1 : 0);
+    });
+
+    const totalPages = Math.ceil(sorted.length / perPage);
+    if (currentPage > totalPages) currentPage = totalPages || 1;
+    const start = (currentPage - 1) * perPage;
+    const pageData = sorted.slice(start, start + perPage);
+
+    const thead = document.querySelector(`#${tableId} thead tr`);
+    thead.innerHTML = columns.map(c => {
+      if (hasColFilters && c.numeric) {
+        const hf = columnFilters[c.key] && columnFilters[c.key].val !== '';
+        const arrowCls = hf ? 'th-arrow filter-active' : 'th-arrow';
+        const sortInd = sortCol === c.key ? (sortAsc ? ' \u25B2' : ' \u25BC') : '';
+        return `<th data-col="${c.key}" class="${hf ? 'col-filtered' : ''}"><div class="th-inner"><span class="th-label">${c.label}<span class="sort-indicator">${sortInd}</span></span><button class="${arrowCls}" data-col="${c.key}">▾</button></div></th>`;
+      }
+      return `<th data-col="${c.key}">${c.label}<span class="sort-indicator">${sortCol === c.key ? (sortAsc ? ' \u25B2' : ' \u25BC') : ''}</span></th>`;
+    }).join('');
+
+    const tbody = document.querySelector(`#${tableId} tbody`);
+    tbody.innerHTML = pageData.map(r => {
+      const cls = rowClass ? rowClass(r) : '';
+      return `<tr${cls ? ' class="'+cls+'"' : ''}>${columns.map(c => `<td>${c.fmt(r[c.key], r)}</td>`).join('')}</tr>`;
+    }).join('');
+
+    // Wire up sorting for th-label (numeric columns with filters)
+    if (hasColFilters) {
+      thead.querySelectorAll('.th-label').forEach(lbl => {
+        lbl.addEventListener('click', () => {
+          const col = lbl.closest('th').dataset.col;
+          if (sortCol === col) sortAsc = !sortAsc;
+          else { sortCol = col; sortAsc = false; }
+          render();
+        });
+      });
+      // Wire up non-numeric th clicks for sorting
+      thead.querySelectorAll('th').forEach(th => {
+        if (!th.querySelector('.th-inner')) {
+          th.addEventListener('click', () => {
+            const col = th.dataset.col;
+            if (sortCol === col) sortAsc = !sortAsc;
+            else { sortCol = col; sortAsc = false; }
+            render();
+          });
+        }
+      });
+      // Wire up arrow buttons for filter dropdown
+      thead.querySelectorAll('.th-arrow').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (openColFilterDropFn) openColFilterDropFn(btn.dataset.col, btn, columnFilters, sortCol, sortAsc, (col, asc) => { sortCol = col; sortAsc = asc; render(); }, render);
+        });
+      });
+    } else {
+      thead.querySelectorAll('th').forEach(th => {
+        th.addEventListener('click', () => {
+          const col = th.dataset.col;
+          if (sortCol === col) sortAsc = !sortAsc;
+          else { sortCol = col; sortAsc = false; }
+          render();
+        });
+      });
+    }
+
+    // Pagination
+    if (paginationId) {
+      const pag = document.getElementById(paginationId);
+      if (sorted.length <= perPage) { pag.innerHTML = ''; return; }
+      const end = Math.min(start + perPage, sorted.length);
+      let btnsHtml = `<button class="page-btn" ${currentPage <= 1 ? 'disabled' : ''} data-page="${currentPage-1}">&laquo;</button>`;
+      for (let i = 1; i <= totalPages; i++) {
+        if (totalPages > 7 && Math.abs(i - currentPage) > 2 && i !== 1 && i !== totalPages) {
+          if (i === 2 || i === totalPages - 1) btnsHtml += '<span style="padding:0 4px;color:var(--text-light)">...</span>';
+          continue;
+        }
+        btnsHtml += `<button class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+      }
+      btnsHtml += `<button class="page-btn" ${currentPage >= totalPages ? 'disabled' : ''} data-page="${currentPage+1}">&raquo;</button>`;
+      pag.innerHTML = `<div class="pagination-info">Showing ${start+1}&ndash;${end} of ${sorted.length}</div><div class="pagination-btns">${btnsHtml}</div>`;
+      pag.querySelectorAll('.page-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const p = parseInt(btn.dataset.page);
+          if (p >= 1 && p <= totalPages) { currentPage = p; render(); }
+        });
+      });
+    }
+  }
+
+  render();
+  return { render, setFilteredData, getFilteredData };
+}
+
+// ==================== KEYWORDS TAB ====================
+(function renderKeywordsTab() {
+  // Signal badge helper
+  function signalBadge(val) {
+    if (!val) return '<span class="signal-badge signal-na">--</span>';
+    const cls = val === 'Above average' ? 'signal-above' : val === 'Average' ? 'signal-average' : 'signal-below';
+    const label = val === 'Above average' ? 'Above' : val === 'Average' ? 'Avg' : 'Below';
+    return `<span class="signal-badge ${cls}">${label}</span>`;
+  }
+
+  // Metrics
+  let tSpend=0, tConv=0, tRev=0, tClicks=0, tImpr=0, tAllConv=0, tAtc=0;
+  keywordsData.forEach(k => {
+    tSpend += k.cost; tConv += k.conversions; tRev += k.convValue;
+    tClicks += k.clicks; tImpr += k.impressions; tAllConv += k.allConv;
+    tAtc += k.allConv - k.conversions;
+  });
+
+  renderMetrics('kw-metrics-row1', [
+    { label: 'Total Spend', value: fmtCurrency(tSpend) },
+    { label: 'Purchases', value: fmtNum(tConv) },
+    { label: 'Revenue', value: fmtCurrency(tRev) },
+    { label: 'ROAS', value: fmtRoas(tSpend > 0 ? tRev/tSpend : 0) },
+    { label: 'Cost / Purchase', value: fmtCurrencyShort(tConv > 0 ? tSpend/tConv : 0) },
+    { label: 'Add to Carts', value: fmtNum(tAtc) },
+  ]);
+  renderMetrics('kw-metrics-row2', [
+    { label: 'Clicks', value: fmtNum(tClicks) },
+    { label: 'Impressions', value: fmtNum(tImpr) },
+    { label: 'CTR', value: fmtPct(tImpr > 0 ? tClicks/tImpr : 0) },
+    { label: 'Avg CPC', value: fmtCurrencyShort(tClicks > 0 ? tSpend/tClicks : 0) },
+    { label: 'Cost / ATC', value: fmtCurrencyShort(tAtc > 0 ? tSpend/tAtc : 0) },
+  ]);
+
+  // ---- Enhancement 1: Brand vs Non-Brand Summary ----
+  let brandSpend=0, brandConv=0, brandRev=0, brandClicks=0, brandImpr=0, brandAtc=0;
+  let nbSpend=0, nbConv=0, nbRev=0, nbClicks=0, nbImpr=0, nbAtc=0;
+  keywordsData.forEach(k => {
+    const isBranded = k.campaign.includes('Branded');
+    const kwAtc = k.allConv - k.conversions;
+    if (isBranded) {
+      brandSpend += k.cost; brandConv += k.conversions; brandRev += k.convValue;
+      brandClicks += k.clicks; brandImpr += k.impressions; brandAtc += kwAtc;
+    } else {
+      nbSpend += k.cost; nbConv += k.conversions; nbRev += k.convValue;
+      nbClicks += k.clicks; nbImpr += k.impressions; nbAtc += kwAtc;
+    }
+  });
+
+  const brandSummaryRows = [
+    { segment: 'Branded', spend: brandSpend, conv: brandConv, rev: brandRev, clicks: brandClicks, impr: brandImpr, atc: brandAtc },
+    { segment: 'Non-Branded', spend: nbSpend, conv: nbConv, rev: nbRev, clicks: nbClicks, impr: nbImpr, atc: nbAtc },
+    { segment: 'Total', spend: tSpend, conv: tConv, rev: tRev, clicks: tClicks, impr: tImpr, atc: tAtc },
+  ];
+
+  const brandCols = ['Segment','Spend','Purchases','Revenue','ROAS','CAC','ATC','Cost/ATC','Clicks','Impr','CTR','Avg CPC'];
+  const brandThead = document.querySelector('#kw-brand-table thead tr');
+  brandThead.innerHTML = brandCols.map(c => `<th>${c}</th>`).join('');
+  const brandTbody = document.querySelector('#kw-brand-table tbody');
+  brandTbody.innerHTML = brandSummaryRows.map(r => {
+    const roas = r.spend > 0 ? r.rev / r.spend : 0;
+    const cac = r.conv > 0 ? r.spend / r.conv : 0;
+    const ctr = r.impr > 0 ? r.clicks / r.impr : 0;
+    const avgCpc = r.clicks > 0 ? r.spend / r.clicks : 0;
+    const costPerAtc = r.atc > 0 ? r.spend / r.atc : 0;
+    const isTotalRow = r.segment === 'Total';
+    const style = isTotalRow ? ' style="font-weight:700;border-top:2px solid var(--border);background:var(--bg);"' : '';
+    return `<tr${style}>
+      <td${isTotalRow ? ' style="font-weight:700;"' : ''}>${r.segment}</td>
+      <td>${fmtCurrency(r.spend)}</td>
+      <td>${fmtNum(r.conv)}</td>
+      <td>${fmtCurrency(r.rev)}</td>
+      <td>${fmtRoasColored(roas, parseFloat(document.getElementById('targetCacInput').value) || 45)}</td>
+      <td>${r.conv > 0 ? fmtCurrencyShort(cac) : '--'}</td>
+      <td>${fmtNum(r.atc)}</td>
+      <td>${r.atc > 0 ? fmtCurrencyShort(costPerAtc) : '—'}</td>
+      <td>${fmtNum(r.clicks)}</td>
+      <td>${fmtNum(r.impr)}</td>
+      <td>${fmtPct(ctr)}</td>
+      <td>${fmtCurrencyShort(avgCpc)}</td>
+    </tr>`;
+  }).join('');
+
+  // ---- Filters ----
+  const campaigns = [...new Set(keywordsData.map(k => k.campaign))];
+  const matchTypes = [...new Set(keywordsData.map(k => k.matchType))];
+  const statuses = [...new Set(keywordsData.map(k => k.status))];
+
+  const filtersContainer = document.getElementById('kw-filters');
+  filtersContainer.innerHTML = `
+    <input type="text" id="kw-search" placeholder="Search keywords...">
+    <select id="kw-filter-campaign"><option value="">All Campaigns</option>${campaigns.map(c => `<option value="${c}">${c}</option>`).join('')}</select>
+    <select id="kw-filter-match"><option value="">All Match Types</option>${matchTypes.map(m => `<option value="${m}">${m}</option>`).join('')}</select>
+    <select id="kw-filter-status"><option value="">All Statuses</option>${statuses.map(s => `<option value="${s}">${s}</option>`).join('')}</select>
+  `;
+
+  function matchBadge(mt) {
+    const cls = mt === 'Exact' ? 'badge-exact' : mt === 'Phrase' ? 'badge-phrase' : 'badge-broad';
+    return `<span class="badge ${cls}">${mt}</span>`;
+  }
+  function qsFmt(v) {
+    if (v === null || v === undefined) return '<span class="qs-cell qs-na">--</span>';
+    const cls = v >= 8 ? 'qs-green' : v >= 6 ? 'qs-yellow' : 'qs-red';
+    return `<span class="qs-cell ${cls}">${v}</span>`;
+  }
+
+  // ---- Enhancement 2 + 3 + 4: Column filter dropdowns, signal columns, colored ROAS ----
+  // Generic column filter dropdown opener for the keywords table (reuses shared #colFilterDrop)
+  function openKwColFilterDrop(col, anchorBtn, filters, curSortCol, curSortAsc, setSort, rerender) {
+    const drop = document.getElementById('colFilterDrop');
+    const rect = anchorBtn.getBoundingClientRect();
+    drop.style.top = (rect.bottom + 4) + 'px';
+    drop.style.left = Math.max(0, rect.left - 80) + 'px';
+
+    const existing = filters[col] || { op: 'gt', val: '' };
+    const sortAscActive = curSortCol === col && curSortAsc;
+    const sortDescActive = curSortCol === col && !curSortAsc;
+
+    drop.innerHTML = `
+      <button class="cfd-sort-btn ${sortAscActive ? 'active' : ''}" data-action="sort-asc">Sort ascending &#8593;</button>
+      <button class="cfd-sort-btn ${sortDescActive ? 'active' : ''}" data-action="sort-desc">Sort descending &#8595;</button>
+      <hr class="cfd-divider">
+      <div class="cfd-label">Filter where value is:</div>
+      <div class="cfd-filter-row">
+        <select class="cfd-op" id="cfdOp">
+          <option value="gt" ${existing.op === 'gt' ? 'selected' : ''}>&gt;</option>
+          <option value="gte" ${existing.op === 'gte' ? 'selected' : ''}>&gt;=</option>
+          <option value="lt" ${existing.op === 'lt' ? 'selected' : ''}>&lt;</option>
+          <option value="lte" ${existing.op === 'lte' ? 'selected' : ''}>&lt;=</option>
+          <option value="eq" ${existing.op === 'eq' ? 'selected' : ''}>=</option>
+        </select>
+        <input type="number" class="cfd-val" id="cfdVal" value="${existing.val}" placeholder="value">
+      </div>
+      <button class="cfd-clear" data-action="clear">Clear filter</button>
+    `;
+
+    drop.classList.add('open');
+
+    drop.querySelector('[data-action="sort-asc"]').addEventListener('click', () => {
+      setSort(col, true);
+      drop.classList.remove('open');
+    });
+    drop.querySelector('[data-action="sort-desc"]').addEventListener('click', () => {
+      setSort(col, false);
+      drop.classList.remove('open');
+    });
+
+    const applyFilter = () => {
+      const op = document.getElementById('cfdOp').value;
+      const val = document.getElementById('cfdVal').value;
+      if (val !== '') {
+        filters[col] = { op, val };
+      } else {
+        delete filters[col];
+      }
+      drop.classList.remove('open');
+      rerender();
+    };
+
+    document.getElementById('cfdVal').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') applyFilter();
+    });
+    document.getElementById('cfdOp').addEventListener('change', () => {
+      if (document.getElementById('cfdVal').value !== '') applyFilter();
+    });
+
+    drop.querySelector('[data-action="clear"]').addEventListener('click', () => {
+      delete filters[col];
+      drop.classList.remove('open');
+      rerender();
+    });
+  }
+
+  const kwCols = [
+    { key: 'keyword', label: 'Keyword', fmt: v => v },
+    { key: 'matchType', label: 'Match Type', fmt: v => matchBadge(v) },
+    { key: 'adGroup', label: 'Ad Group', fmt: v => v },
+    { key: 'campaign', label: 'Campaign', fmt: v => v },
+    { key: 'status', label: 'Status', fmt: v => v },
+    { key: 'qualityScore', label: 'QS', fmt: v => qsFmt(v) },
+    { key: 'expCtr', label: 'Exp. CTR', fmt: v => signalBadge(v) },
+    { key: 'adRelevance', label: 'Ad Rel.', fmt: v => signalBadge(v) },
+    { key: 'landingPageExp', label: 'LP Exp.', fmt: v => signalBadge(v) },
+    { key: 'cost', label: 'Spend', fmt: v => fmtCurrency(v), numeric: true },
+    { key: 'conversions', label: 'Purchases', fmt: v => fmtNum(v), numeric: true },
+    { key: 'convValue', label: 'Revenue', fmt: v => fmtCurrency(v), numeric: true },
+    { key: 'roas', label: 'ROAS', fmt: (v,r) => {
+      const tCAC = parseFloat(document.getElementById('targetCacInput').value) || 45;
+      return r.cost > 0 ? fmtRoasColored(r.convValue/r.cost, tCAC) : '0.00x';
+    }, numeric: true },
+    { key: 'cac', label: 'CAC', fmt: (v,r) => r.conversions > 0 ? fmtCurrencyShort(r.cost/r.conversions) : '--', numeric: true },
+    { key: 'clicks', label: 'Clicks', fmt: v => fmtNum(v), numeric: true },
+    { key: 'impressions', label: 'Impr', fmt: v => fmtNum(v), numeric: true },
+    { key: 'ctr', label: 'CTR', fmt: (v,r) => r.impressions > 0 ? fmtPct(r.clicks/r.impressions) : '0.00%', numeric: true },
+    { key: 'avgCpc', label: 'Avg CPC', fmt: (v,r) => r.clicks > 0 ? fmtCurrencyShort(r.cost/r.clicks) : '--', numeric: true },
+    { key: 'atc', label: 'ATC', fmt: v => fmtNum(v), numeric: true },
+    { key: 'costPerAtc', label: 'Cost/ATC', fmt: (v,r) => r.atc > 0 ? fmtCurrencyShort(r.cost/r.atc) : '—', numeric: true },
+  ];
+
+  // Enrich keywords with computed fields for sorting
+  const enrichedKw = keywordsData.map(k => ({
+    ...k,
+    roas: k.cost > 0 ? k.convValue / k.cost : 0,
+    cac: k.conversions > 0 ? k.cost / k.conversions : Infinity,
+    ctr: k.impressions > 0 ? k.clicks / k.impressions : 0,
+    avgCpc: k.clicks > 0 ? k.cost / k.clicks : 0,
+    atc: k.allConv - k.conversions,
+    costPerAtc: (k.allConv - k.conversions) > 0 ? k.cost / (k.allConv - k.conversions) : Infinity,
+  }));
+
+  const kwTable = createSortableTable({
+    tableId: 'keyword-table',
+    paginationId: 'kw-pagination',
+    columns: kwCols,
+    data: enrichedKw,
+    defaultSort: 'cost',
+    pageSize: 25,
+    rowClass: r => r.status === 'Not eligible' ? 'row-paused' : '',
+    columnFilters: kwColumnFilters,
+    openColFilterDropFn: openKwColFilterDrop,
+  });
+
+  // Store render reference so target CAC input can re-render
+  window._kwTableRender = kwTable.render;
+
+  function applyKwFilters() {
+    let filtered = enrichedKw;
+    const search = document.getElementById('kw-search').value.toLowerCase();
+    const camp = document.getElementById('kw-filter-campaign').value;
+    const match = document.getElementById('kw-filter-match').value;
+    const status = document.getElementById('kw-filter-status').value;
+    if (search) filtered = filtered.filter(k => k.keyword.toLowerCase().includes(search));
+    if (camp) filtered = filtered.filter(k => k.campaign === camp);
+    if (match) filtered = filtered.filter(k => k.matchType === match);
+    if (status) filtered = filtered.filter(k => k.status === status);
+    kwTable.setFilteredData(filtered);
+  }
+
+  document.getElementById('kw-search').addEventListener('input', applyKwFilters);
+  document.getElementById('kw-filter-campaign').addEventListener('change', applyKwFilters);
+  document.getElementById('kw-filter-match').addEventListener('change', applyKwFilters);
+  document.getElementById('kw-filter-status').addEventListener('change', applyKwFilters);
+
+  // QS Distribution
+  const qsDist = {};
+  for (let i = 1; i <= 10; i++) qsDist[i] = 0;
+  keywordsData.forEach(k => { if (k.qualityScore !== null) qsDist[k.qualityScore]++; });
+  const maxQs = Math.max(...Object.values(qsDist), 1);
+  const qsContainer = document.getElementById('qs-distribution');
+  qsContainer.innerHTML = Array.from({length:10}, (_,i) => {
+    const qs = 10 - i;
+    const count = qsDist[qs];
+    const pct = (count / maxQs) * 100;
+    const barClass = qs >= 8 ? 'qs-bar-green' : qs >= 6 ? 'qs-bar-yellow' : 'qs-bar-red';
+    return `<div class="qs-bar-row">
+      <div class="qs-bar-label">QS ${qs}</div>
+      <div class="qs-bar-track"><div class="qs-bar-fill ${barClass}" style="width:${pct}%">${count > 0 ? count : ''}</div></div>
+    </div>`;
+  }).join('');
+
+  // ---- Enhancement 5: Quality Score Action List ----
+  const lowQsKws = keywordsData
+    .filter(k => k.qualityScore !== null && k.qualityScore < 7)
+    .sort((a, b) => b.cost - a.cost);
+
+  if (lowQsKws.length > 0) {
+    document.getElementById('qs-action-title').style.display = '';
+    document.getElementById('qs-action-section').style.display = '';
+
+    function getFixFocus(k) {
+      const issues = [];
+      let hasCtrIssue = false;
+      let hasAdRelIssue = false;
+      let hasLpIssue = false;
+
+      if (k.expCtr === 'Below average' || k.expCtr === 'Average') hasCtrIssue = true;
+      if (k.adRelevance === 'Below average' || k.adRelevance === 'Average') hasAdRelIssue = true;
+      if (k.landingPageExp === 'Below average') hasLpIssue = true;
+
+      // Determine label
+      const labels = [];
+      if (k.expCtr === 'Below average') labels.push('Expected CTR');
+      if (k.adRelevance === 'Below average') labels.push('Ad Relevance');
+      if (k.landingPageExp === 'Below average') labels.push('Landing Page');
+
+      // If nothing is "Below average", check for "Average" on below-7 QS
+      if (labels.length === 0) {
+        if (k.expCtr === 'Average') labels.push('Expected CTR');
+        if (k.adRelevance === 'Average') labels.push('Ad Relevance');
+        if (k.landingPageExp === 'Average') labels.push('Landing Page');
+      }
+
+      const hasAdIssue = hasCtrIssue || hasAdRelIssue;
+      let badgeCls = 'fix-ctr';
+      if (hasAdIssue && hasLpIssue) badgeCls = 'fix-both';
+      else if (hasLpIssue) badgeCls = 'fix-lp';
+      else if (hasAdIssue) badgeCls = 'fix-ctr';
+
+      const label = labels.length > 0 ? labels.join(' + ') : 'Review All';
+      return `<span class="fix-badge ${badgeCls}">${label}</span>`;
+    }
+
+    const actionCols = ['Keyword','Match','QS','Fix Focus','Exp CTR','Ad Rel','LP Exp','Spend','Purchases'];
+    const actionThead = document.querySelector('#qs-action-table thead tr');
+    actionThead.innerHTML = actionCols.map(c => `<th>${c}</th>`).join('');
+    const actionTbody = document.querySelector('#qs-action-table tbody');
+    actionTbody.innerHTML = lowQsKws.map(k => `<tr>
+      <td>${k.keyword}</td>
+      <td>${matchBadge(k.matchType)}</td>
+      <td>${qsFmt(k.qualityScore)}</td>
+      <td>${getFixFocus(k)}</td>
+      <td>${signalBadge(k.expCtr)}</td>
+      <td>${signalBadge(k.adRelevance)}</td>
+      <td>${signalBadge(k.landingPageExp)}</td>
+      <td>${fmtCurrency(k.cost)}</td>
+      <td>${fmtNum(k.conversions)}</td>
+    </tr>`).join('');
+  } else {
+    document.getElementById('qs-action-title').style.display = 'none';
+    document.getElementById('qs-action-section').style.display = 'none';
+  }
+})();
+
+// ==================== SEARCH TERMS TAB ====================
+(function renderSearchTermsTab() {
+  let tSpend=0, tConv=0, tRev=0, tClicks=0, tImpr=0;
+  searchTermsData.forEach(s => { tSpend += s.cost; tConv += s.conversions; tRev += s.convValue; tClicks += s.clicks; tImpr += s.impressions; });
+
+  renderMetrics('st-metrics-row1', [
+    { label: 'Total Spend', value: fmtCurrency(tSpend) },
+    { label: 'Purchases', value: fmtNum(tConv) },
+    { label: 'Revenue', value: fmtCurrency(tRev) },
+    { label: 'ROAS', value: fmtRoas(tSpend > 0 ? tRev/tSpend : 0) },
+    { label: 'Cost / Purchase', value: fmtCurrencyShort(tConv > 0 ? tSpend/tConv : 0) },
+    { label: 'Clicks', value: fmtNum(tClicks) },
+  ]);
+
+  function addedBadge(v) {
+    if (v === 'Added') return '<span class="badge badge-added">Added</span>';
+    if (v === 'Excluded') return '<span class="badge badge-excluded">Excluded</span>';
+    return '<span class="badge badge-none">None</span>';
+  }
+
+  const stCols = [
+    { key: 'searchTerm', label: 'Search Term', fmt: v => v },
+    { key: 'matchType', label: 'Match Type', fmt: v => v },
+    { key: 'addedExcluded', label: 'Added/Excluded', fmt: v => addedBadge(v) },
+    { key: 'campaign', label: 'Campaign', fmt: v => v },
+    { key: 'adGroup', label: 'Ad Group', fmt: v => v },
+    { key: 'cost', label: 'Spend', fmt: v => fmtCurrency(v), numeric: true },
+    { key: 'conversions', label: 'Purchases', fmt: v => fmtNum(v), numeric: true },
+    { key: 'convValue', label: 'Revenue', fmt: v => fmtCurrency(v), numeric: true },
+    { key: 'clicks', label: 'Clicks', fmt: v => fmtNum(v), numeric: true },
+    { key: 'impressions', label: 'Impr', fmt: v => fmtNum(v), numeric: true },
+    { key: 'ctr', label: 'CTR', fmt: (v,r) => r.impressions > 0 ? fmtPct(r.clicks/r.impressions) : '0.00%', numeric: true },
+    { key: 'avgCpc', label: 'Avg CPC', fmt: (v,r) => r.clicks > 0 ? fmtCurrencyShort(r.cost/r.clicks) : '--', numeric: true },
+    { key: 'atc', label: 'ATC', fmt: v => fmtNum(v), numeric: true },
+    { key: 'costPerAtc', label: 'Cost/ATC', fmt: (v,r) => r.atc > 0 ? fmtCurrencyShort(r.cost/r.atc) : '—', numeric: true },
+  ];
+
+  const enrichedSt = searchTermsData.map(s => ({
+    ...s,
+    ctr: s.impressions > 0 ? s.clicks / s.impressions : 0,
+    avgCpc: s.clicks > 0 ? s.cost / s.clicks : 0,
+    atc: s.allConv - s.conversions,
+    costPerAtc: (s.allConv - s.conversions) > 0 ? s.cost / (s.allConv - s.conversions) : Infinity,
+  }));
+
+  createSortableTable({
+    tableId: 'searchterm-table',
+    paginationId: 'st-pagination',
+    columns: stCols,
+    data: enrichedSt,
+    defaultSort: 'cost',
+    pageSize: 25,
+  });
+})();
+
+// ==================== PLACEMENTS TAB ====================
+(function renderPlacementsTab() {
+  // --- Compute full metrics ---
+  let tSpend=0, tConv=0, tRev=0, tClicks=0, tImpr=0, tAtc=0;
+  placementsData.forEach(p => {
+    tSpend += p.cost; tConv += p.conversions; tRev += p.convValue;
+    tClicks += p.clicks; tImpr += p.impressions; tAtc += p.allConv;
+  });
+  const tRoas = tSpend > 0 ? tRev / tSpend : 0;
+  const tCpp = tConv > 0 ? tSpend / tConv : 0;
+  const tConvRate = tClicks > 0 ? tConv / tClicks : 0;
+  const tAvgCpc = tClicks > 0 ? tSpend / tClicks : 0;
+  const tCtr = tImpr > 0 ? tClicks / tImpr : 0;
+  const tCostAtc = tAtc > 0 ? tSpend / tAtc : 0;
+
+  // --- Row 1 metrics ---
+  renderMetrics('pl-metrics-row1', [
+    { label: 'Total Spend', value: fmtCurrency(tSpend) },
+    { label: 'Purchases', value: fmtNum(tConv) },
+    { label: 'Revenue', value: fmtCurrency(tRev) },
+    { label: 'ROAS', value: fmtRoas(tRoas) },
+    { label: 'Cost/Purchase', value: tConv > 0 ? fmtCurrencyShort(tCpp) : '--' },
+    { label: 'Conv Rate', value: fmtPct(tConvRate) },
+  ]);
+
+  // --- Row 2 metrics ---
+  renderMetrics('pl-metrics-row2', [
+    { label: 'Clicks', value: fmtNum(tClicks) },
+    { label: 'Impressions', value: fmtNum(tImpr) },
+    { label: 'CTR', value: fmtPct(tCtr) },
+    { label: 'Avg CPC', value: fmtCurrencyShort(tAvgCpc) },
+    { label: 'Add to Carts', value: fmtNum(tAtc) },
+    { label: 'Cost/ATC', value: tAtc > 0 ? fmtCurrencyShort(tCostAtc) : '--' },
+  ]);
+
+  // --- Placement Type Breakdown cards ---
+  const plTypeColors = { Webpage: '#1565c0', 'Mobile App': '#e65100', 'YouTube Channel': '#c62828' };
+  const plTypes = {};
+  placementsData.forEach(p => {
+    if (!plTypes[p.placementType]) plTypes[p.placementType] = { spend:0, conv:0, revenue:0, clicks:0, impr:0 };
+    plTypes[p.placementType].spend += p.cost;
+    plTypes[p.placementType].conv += p.conversions;
+    plTypes[p.placementType].revenue += p.convValue;
+    plTypes[p.placementType].clicks += p.clicks;
+    plTypes[p.placementType].impr += p.impressions;
+  });
+  document.getElementById('pl-type-cards').innerHTML = Object.entries(plTypes).map(([label, d]) => {
+    const roas = d.spend > 0 ? d.revenue / d.spend : 0;
+    const cpc = d.clicks > 0 ? d.spend / d.clicks : 0;
+    const ctr = d.impr > 0 ? d.clicks / d.impr : 0;
+    return `<div class="type-card">
+      <div class="type-card-header"><span class="badge" style="background:${(plTypeColors[label] || '#555')}22;color:${plTypeColors[label] || '#555'}">${label}</span></div>
+      <div class="type-card-stat"><span class="label">Spend</span><span class="value">${fmtCurrency(d.spend)}</span></div>
+      <div class="type-card-stat"><span class="label">Purchases</span><span class="value">${fmtNum(d.conv)}</span></div>
+      <div class="type-card-stat"><span class="label">Revenue</span><span class="value">${fmtCurrency(d.revenue)}</span></div>
+      <div class="type-card-stat"><span class="label">ROAS</span><span class="value">${fmtRoas(roas)}</span></div>
+      <div class="type-card-stat"><span class="label">Avg CPC</span><span class="value">${fmtCurrencyShort(cpc)}</span></div>
+      <div class="type-card-stat"><span class="label">CTR</span><span class="value">${fmtPct(ctr)}</span></div>
+    </div>`;
+  }).join('');
+
+  // --- Campaign Type Breakdown cards ---
+  const plCampColors = { 'VW | Display - Health Topics': '#1565c0', 'VW | Display - Retargeting': '#e65100', 'VW | PMax - Product Feed': '#c62828' };
+  const plCampTypes = {};
+  placementsData.forEach(p => {
+    if (!plCampTypes[p.campaign]) plCampTypes[p.campaign] = { spend:0, conv:0, revenue:0, clicks:0, impr:0 };
+    plCampTypes[p.campaign].spend += p.cost;
+    plCampTypes[p.campaign].conv += p.conversions;
+    plCampTypes[p.campaign].revenue += p.convValue;
+    plCampTypes[p.campaign].clicks += p.clicks;
+    plCampTypes[p.campaign].impr += p.impressions;
+  });
+  document.getElementById('pl-camp-type-cards').innerHTML = Object.entries(plCampTypes).map(([label, d]) => {
+    const roas = d.spend > 0 ? d.revenue / d.spend : 0;
+    const cpc = d.clicks > 0 ? d.spend / d.clicks : 0;
+    const ctr = d.impr > 0 ? d.clicks / d.impr : 0;
+    return `<div class="type-card">
+      <div class="type-card-header"><span class="badge" style="background:${(plCampColors[label] || '#555')}22;color:${plCampColors[label] || '#555'}">${label}</span></div>
+      <div class="type-card-stat"><span class="label">Spend</span><span class="value">${fmtCurrency(d.spend)}</span></div>
+      <div class="type-card-stat"><span class="label">Purchases</span><span class="value">${fmtNum(d.conv)}</span></div>
+      <div class="type-card-stat"><span class="label">Revenue</span><span class="value">${fmtCurrency(d.revenue)}</span></div>
+      <div class="type-card-stat"><span class="label">ROAS</span><span class="value">${fmtRoas(roas)}</span></div>
+      <div class="type-card-stat"><span class="label">Avg CPC</span><span class="value">${fmtCurrencyShort(cpc)}</span></div>
+      <div class="type-card-stat"><span class="label">CTR</span><span class="value">${fmtPct(ctr)}</span></div>
+    </div>`;
+  }).join('');
+
+  // --- Placement badge helper ---
+  function placementBadge(v) {
+    if (v === 'Webpage') return '<span class="badge badge-webpage">Webpage</span>';
+    if (v === 'Mobile App') return '<span class="badge badge-mobile">Mobile App</span>';
+    return '<span class="badge badge-youtube">YouTube</span>';
+  }
+
+  // --- Enrich placement data ---
+  const enrichedPl = placementsData.map(p => ({
+    ...p,
+    roas: p.cost > 0 ? p.convValue / p.cost : 0,
+    cac: p.conversions > 0 ? p.cost / p.conversions : Infinity,
+    ctr: p.impressions > 0 ? p.clicks / p.impressions : 0,
+    avgCpc: p.clicks > 0 ? p.cost / p.clicks : 0,
+    atc: p.allConv - p.conversions,
+    costPerAtc: (p.allConv - p.conversions) > 0 ? p.cost / (p.allConv - p.conversions) : Infinity,
+    convRate: p.clicks > 0 ? p.conversions / p.clicks : 0,
+  }));
+
+  // --- Filters ---
+  const plTypesList = [...new Set(placementsData.map(p => p.placementType))];
+  const plCampList = [...new Set(placementsData.map(p => p.campaign))];
+
+  const plFiltersContainer = document.getElementById('pl-filters');
+  plFiltersContainer.innerHTML = `
+    <input type="text" id="pl-filter-text" placeholder="Search placements...">
+    <select id="pl-filter-type"><option value="">All Types</option>${plTypesList.map(t => `<option value="${t}">${t}</option>`).join('')}</select>
+    <select id="pl-filter-campaign"><option value="">All Campaigns</option>${plCampList.map(c => `<option value="${c}">${c}</option>`).join('')}</select>
+    <button id="pl-filter-clear" style="padding:6px 14px;border:1px solid var(--border);border-radius:6px;background:var(--card-bg);cursor:pointer;font-size:12px;">Clear</button>
+    <span id="pl-filter-count" style="font-size:12px;color:var(--text-mid);margin-left:4px;"></span>
+  `;
+
+  // --- Column filter dropdown opener (same pattern as keywords) ---
+  function openPlColFilterDrop(col, anchorBtn, filters, curSortCol, curSortAsc, setSort, rerender) {
+    const drop = document.getElementById('colFilterDrop');
+    const rect = anchorBtn.getBoundingClientRect();
+    drop.style.top = (rect.bottom + 4) + 'px';
+    drop.style.left = Math.max(0, rect.left - 80) + 'px';
+
+    const existing = filters[col] || { op: 'gt', val: '' };
+    const sortAscActive = curSortCol === col && curSortAsc;
+    const sortDescActive = curSortCol === col && !curSortAsc;
+
+    drop.innerHTML = `
+      <button class="cfd-sort-btn ${sortAscActive ? 'active' : ''}" data-action="sort-asc">Sort ascending &#8593;</button>
+      <button class="cfd-sort-btn ${sortDescActive ? 'active' : ''}" data-action="sort-desc">Sort descending &#8595;</button>
+      <hr class="cfd-divider">
+      <div class="cfd-label">Filter where value is:</div>
+      <div class="cfd-filter-row">
+        <select class="cfd-op" id="cfdOp">
+          <option value="gt" ${existing.op === 'gt' ? 'selected' : ''}>&gt;</option>
+          <option value="gte" ${existing.op === 'gte' ? 'selected' : ''}>&gt;=</option>
+          <option value="lt" ${existing.op === 'lt' ? 'selected' : ''}>&lt;</option>
+          <option value="lte" ${existing.op === 'lte' ? 'selected' : ''}>&lt;=</option>
+          <option value="eq" ${existing.op === 'eq' ? 'selected' : ''}>=</option>
+        </select>
+        <input type="number" class="cfd-val" id="cfdVal" value="${existing.val}" placeholder="value">
+      </div>
+      <button class="cfd-clear" data-action="clear">Clear filter</button>
+    `;
+
+    drop.classList.add('open');
+
+    drop.querySelector('[data-action="sort-asc"]').addEventListener('click', () => {
+      setSort(col, true);
+      drop.classList.remove('open');
+    });
+    drop.querySelector('[data-action="sort-desc"]').addEventListener('click', () => {
+      setSort(col, false);
+      drop.classList.remove('open');
+    });
+
+    const applyColFilter = () => {
+      const op = document.getElementById('cfdOp').value;
+      const val = document.getElementById('cfdVal').value;
+      if (val !== '') {
+        filters[col] = { op, val };
+      } else {
+        delete filters[col];
+      }
+      drop.classList.remove('open');
+      applyPlFilters();
+    };
+
+    document.getElementById('cfdVal').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') applyColFilter();
+    });
+    document.getElementById('cfdOp').addEventListener('change', () => {
+      if (document.getElementById('cfdVal').value !== '') applyColFilter();
+    });
+
+    drop.querySelector('[data-action="clear"]').addEventListener('click', () => {
+      delete filters[col];
+      drop.classList.remove('open');
+      applyPlFilters();
+    });
+  }
+
+  // --- Column definitions ---
+  const plCols = [
+    { key: 'placement', label: 'Placement', fmt: v => v },
+    { key: 'placementType', label: 'Type', fmt: v => placementBadge(v) },
+    { key: 'campaign', label: 'Campaign', fmt: v => v },
+    { key: 'cost', label: 'Spend', fmt: v => fmtCurrency(v), numeric: true },
+    { key: 'conversions', label: 'Purchases', fmt: v => fmtNum(v), numeric: true },
+    { key: 'convValue', label: 'Revenue', fmt: v => fmtCurrency(v), numeric: true },
+    { key: 'roas', label: 'ROAS', fmt: v => fmtRoasColored(v, parseFloat(document.getElementById('targetCacInput').value) || 45), numeric: true },
+    { key: 'cac', label: 'Cost/Conv', fmt: v => v > 0 && v < Infinity ? fmtCurrencyShort(v) : '--', numeric: true },
+    { key: 'clicks', label: 'Clicks', fmt: v => fmtNum(v), numeric: true },
+    { key: 'impressions', label: 'Impr', fmt: v => fmtNum(v), numeric: true },
+    { key: 'ctr', label: 'CTR', fmt: (v,r) => r.impressions > 0 ? fmtPct(r.clicks/r.impressions) : '0.00%', numeric: true },
+    { key: 'avgCpc', label: 'Avg CPC', fmt: (v,r) => r.clicks > 0 ? fmtCurrencyShort(r.cost/r.clicks) : '--', numeric: true },
+    { key: 'atc', label: 'ATC', fmt: v => fmtNum(v), numeric: true },
+    { key: 'costPerAtc', label: 'Cost/ATC', fmt: (v,r) => r.atc > 0 ? fmtCurrencyShort(r.cost/r.atc) : '—', numeric: true },
+    { key: 'convRate', label: 'Conv Rate', fmt: (v,r) => r.clicks > 0 ? fmtPct(r.conversions/r.clicks) : '0.00%', numeric: true },
+  ];
+
+  // --- Create sortable/filterable table ---
+  const plTable = createSortableTable({
+    tableId: 'placement-table',
+    paginationId: 'pl-pagination',
+    columns: plCols,
+    data: enrichedPl,
+    defaultSort: 'cost',
+    pageSize: 25,
+    columnFilters: plColumnFilters,
+    openColFilterDropFn: openPlColFilterDrop,
+  });
+
+  // --- Filter logic ---
+  function applyPlFilters() {
+    let filtered = enrichedPl;
+    const typeVal = document.getElementById('pl-filter-type').value;
+    const campVal = document.getElementById('pl-filter-campaign').value;
+    const textVal = document.getElementById('pl-filter-text').value.toLowerCase();
+    if (typeVal) filtered = filtered.filter(p => p.placementType === typeVal);
+    if (campVal) filtered = filtered.filter(p => p.campaign === campVal);
+    if (textVal) filtered = filtered.filter(p => p.placement.toLowerCase().includes(textVal));
+    plTable.setFilteredData(filtered);
+    const countEl = document.getElementById('pl-filter-count');
+    const total = enrichedPl.length;
+    countEl.textContent = filtered.length < total ? `${filtered.length} of ${total}` : '';
+  }
+
+  document.getElementById('pl-filter-text').addEventListener('input', applyPlFilters);
+  document.getElementById('pl-filter-type').addEventListener('change', applyPlFilters);
+  document.getElementById('pl-filter-campaign').addEventListener('change', applyPlFilters);
+  document.getElementById('pl-filter-clear').addEventListener('click', () => {
+    document.getElementById('pl-filter-text').value = '';
+    document.getElementById('pl-filter-type').value = '';
+    document.getElementById('pl-filter-campaign').value = '';
+    plColumnFilters = {};
+    applyPlFilters();
+  });
+})();
+
+// ==================== EXCLUSION CANDIDATES & FRAUD DETECTION ====================
+let exclColumnFilters = {};
+let fraudColumnFilters = {};
+
+(function renderExclusionAndFraud() {
+  const allPl = placementsData.map(p => ({
+    ...p,
+    cpa: p.conversions > 0 ? p.cost / p.conversions : Infinity,
+    ctr: p.impressions > 0 ? p.clicks / p.impressions : 0,
+    avgCpc: p.clicks > 0 ? p.cost / p.clicks : 0,
+    atc: Math.max(0, (p.allConv || 0) - p.conversions),
+    costPerAtc: (p.allConv - p.conversions) > 0 ? p.cost / (p.allConv - p.conversions) : Infinity,
+  }));
+
+  let totalPlSpend = 0;
+  allPl.forEach(p => totalPlSpend += p.cost);
+
+  function placementBadge(v) {
+    if (v === 'Webpage') return '<span class="badge badge-webpage">Webpage</span>';
+    if (v === 'Mobile App') return '<span class="badge badge-mobile">Mobile App</span>';
+    return '<span class="badge badge-youtube">YouTube</span>';
+  }
+
+  // ── Exclusion Candidates ──
+  let exclTable = null;
+  function renderExclusionCandidates() {
+    const threshold = parseFloat(document.getElementById('exclusionCpaThreshold').value) || 100;
+    const candidates = allPl.filter(p => p.cost > 0 && (p.conversions === 0 || p.cpa > threshold));
+
+    let exclSpend = 0, exclClicks = 0;
+    candidates.forEach(p => { exclSpend += p.cost; exclClicks += p.clicks; });
+    const exclPct = totalPlSpend > 0 ? (exclSpend / totalPlSpend) : 0;
+
+    document.getElementById('excl-metrics').innerHTML = [
+      { val: fmtCurrency(exclSpend), label: 'exclusion candidate spend' },
+      { val: candidates.length.toLocaleString(), label: `placements with CPA > $${threshold}` },
+      { val: fmtPct(exclPct), label: 'of total placement spend' },
+      { val: fmtNum(exclClicks), label: 'total clicks' },
+    ].map(m => `<div class="insight-metric">
+      <div class="insight-metric-value">${m.val}</div>
+      <div class="insight-metric-label">${m.label}</div>
+    </div>`).join('');
+
+    const exclCols = [
+      { key: 'placement', label: 'Placement', fmt: v => v },
+      { key: 'placementType', label: 'Type', fmt: v => placementBadge(v) },
+      { key: 'impressions', label: 'Impr', fmt: v => fmtNum(v), numeric: true },
+      { key: 'clicks', label: 'Clicks', fmt: v => fmtNum(v), numeric: true },
+      { key: 'avgCpc', label: 'Avg. CPC', fmt: v => fmtCurrencyShort(v), numeric: true },
+      { key: 'conversions', label: 'Conv.', fmt: v => fmtNum(v), numeric: true },
+      { key: 'cpa', label: 'CPA', fmt: v => v < Infinity && v > 0 ? `<span class="cell-poor">${fmtCurrencyShort(v)}</span>` : '—', numeric: true },
+      { key: 'atc', label: 'ATC', fmt: v => fmtNum(v), numeric: true },
+      { key: 'costPerAtc', label: 'Cost/ATC', fmt: v => v < Infinity && v > 0 ? fmtCurrencyShort(v) : '—', numeric: true },
+      { key: 'cost', label: 'Spend', fmt: v => `<span class="cell-poor">${fmtCurrency(v)}</span>`, numeric: true },
+    ];
+
+    if (exclTable) {
+      exclTable.setFilteredData(candidates);
+    } else {
+      exclTable = createSortableTable({
+        tableId: 'excl-table',
+        columns: exclCols,
+        data: candidates,
+        defaultSort: 'cost',
+        pageSize: 50,
+        columnFilters: exclColumnFilters,
+      });
+    }
+  }
+
+  // ── Fraud Detection ──
+  let fraudTable = null;
+  function renderFraudDetection() {
+    const ctrThreshold = (parseFloat(document.getElementById('fraudCtrThreshold').value) || 50) / 100;
+
+    const flagged = allPl.filter(p => {
+      if (p.clicks === 0) return false;
+      const ctr = p.impressions > 0 ? p.clicks / p.impressions : 0;
+      return ctr >= ctrThreshold || (p.cost > 20 && p.conversions === 0 && p.atc === 0 && ctr > 0.15);
+    });
+
+    let flaggedSpend = 0, totalCtr = 0;
+    flagged.forEach(p => { flaggedSpend += p.cost; totalCtr += p.ctr; });
+    const avgCtr = flagged.length > 0 ? totalCtr / flagged.length : 0;
+    const flaggedPct = totalPlSpend > 0 ? flaggedSpend / totalPlSpend : 0;
+
+    document.getElementById('fraud-count-badge').textContent = flagged.length;
+
+    document.getElementById('fraud-metrics').innerHTML = [
+      { val: fmtCurrency(flaggedSpend), label: 'flagged spend' },
+      { val: fmtPct(flaggedPct), label: 'of total placement spend' },
+      { val: flagged.length.toString(), label: 'flagged placements' },
+      { val: fmtPct(avgCtr), label: 'avg CTR of flagged' },
+    ].map(m => `<div class="insight-metric">
+      <div class="insight-metric-value">${m.val}</div>
+      <div class="insight-metric-label">${m.label}</div>
+    </div>`).join('');
+
+    function getRecommendation(p) {
+      const ctr = p.impressions > 0 ? p.clicks / p.impressions : 0;
+      if (ctr >= 0.5) return 'Exclude — abnormally high CTR on display placement';
+      if (ctr >= ctrThreshold) return 'Investigate — elevated CTR suggests invalid clicks';
+      if (p.conversions === 0 && p.atc === 0) return 'Exclude — high spend with zero conversions';
+      return 'Monitor — suspicious activity pattern';
+    }
+
+    // Enrich with recommendation for sorting
+    const enriched = flagged.map(p => ({ ...p, recommendation: getRecommendation(p) }));
+
+    const fraudCols = [
+      { key: 'placement', label: 'Placement', fmt: (v, r) => placementBadge(r.placementType) + ' ' + v },
+      { key: 'campaign', label: 'Campaign', fmt: v => v },
+      { key: 'ctr', label: 'CTR %', fmt: v => `<span class="cell-poor" style="font-weight:700;">${(v * 100).toFixed(1)}%</span>`, numeric: true },
+      { key: 'cost', label: 'Spend', fmt: v => fmtCurrency(v), numeric: true },
+      { key: 'clicks', label: 'Clicks', fmt: v => fmtNum(v), numeric: true },
+      { key: 'impressions', label: 'Impr', fmt: v => fmtNum(v), numeric: true },
+      { key: 'atc', label: 'ATC', fmt: v => v > 0 ? fmtNum(v) : '—', numeric: true },
+      { key: 'costPerAtc', label: 'Cost/ATC', fmt: v => v < Infinity && v > 0 ? fmtCurrencyShort(v) : '—', numeric: true },
+      { key: 'conversions', label: 'Conv.', fmt: v => fmtNum(v), numeric: true },
+      { key: 'recommendation', label: 'Recommendation', fmt: v => `<span class="recommendation-text">${v}</span>` },
+    ];
+
+    if (fraudTable) {
+      fraudTable.setFilteredData(enriched);
+    } else {
+      fraudTable = createSortableTable({
+        tableId: 'fraud-table',
+        columns: fraudCols,
+        data: enriched,
+        defaultSort: 'cost',
+        pageSize: 50,
+        columnFilters: fraudColumnFilters,
+      });
+    }
+  }
+
+  renderExclusionCandidates();
+  renderFraudDetection();
+
+  document.getElementById('exclusionCpaThreshold').addEventListener('input', () => {
+    exclColumnFilters = {};
+    exclTable = null;
+    renderExclusionCandidates();
+  });
+  document.getElementById('fraudCtrThreshold').addEventListener('input', () => {
+    fraudColumnFilters = {};
+    fraudTable = null;
+    renderFraudDetection();
+  });
+  document.getElementById('fraudAtcThreshold').addEventListener('input', () => {
+    fraudColumnFilters = {};
+    fraudTable = null;
+    renderFraudDetection();
+  });
+})();
+
+// ==================== DATE RANGE PICKER ====================
+const DATA_MIN_ISO = '2025-01-01';
+const DATA_MAX_ISO = '2026-03-15';
+
+function toISO(d) { return d.toISOString().slice(0, 10); }
+
+function fmtDateDisplay(iso) {
+  const d = new Date(iso + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function fmtDateInput(iso) {
+  const [y, m, d] = iso.split('-');
+  return `${m}/${d}/${y}`;
+}
+
+function parseDateInput(str) {
+  const parts = str.trim().split('/');
+  if (parts.length !== 3) return null;
+  const [m, d, y] = parts;
+  const iso = `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+  const dt = new Date(iso + 'T00:00:00');
+  if (isNaN(dt.getTime())) return null;
+  return iso;
+}
+
+function getPresetDates(key) {
+  const maxDt = new Date(DATA_MAX_ISO + 'T00:00:00');
+  const now = new Date(DATA_MAX_ISO + 'T00:00:00');
+  switch (key) {
+    case 'all': return [null, null];
+    case 'thismonth': {
+      const start = new Date(now.getFullYear(), now.getMonth(), 1);
+      return [toISO(start), DATA_MAX_ISO];
+    }
+    case 'lastmonth': {
+      const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const end = new Date(now.getFullYear(), now.getMonth(), 0);
+      return [toISO(start), toISO(end)];
+    }
+    case 'thisquarter': {
+      const qStart = Math.floor(now.getMonth() / 3) * 3;
+      const start = new Date(now.getFullYear(), qStart, 1);
+      return [toISO(start), DATA_MAX_ISO];
+    }
+    case 'lastquarter': {
+      const qStart = Math.floor(now.getMonth() / 3) * 3;
+      const start = new Date(now.getFullYear(), qStart - 3, 1);
+      const end = new Date(now.getFullYear(), qStart, 0);
+      return [toISO(start), toISO(end)];
+    }
+    default: {
+      const days = parseInt(key);
+      if (!days || isNaN(days)) return null;
+      const end = new Date(maxDt);
+      const start = new Date(end);
+      start.setDate(start.getDate() - days + 1);
+      const startISO = toISO(start);
+      return [startISO < DATA_MIN_ISO ? DATA_MIN_ISO : startISO, DATA_MAX_ISO];
+    }
+  }
+}
+
+function drpUpdateTrigger() {
+  const el = document.getElementById('drpText');
+  if (!currentRange[0] || !currentRange[1]) {
+    el.textContent = 'All Time';
+    return;
+  }
+  if (currentRange[0] === currentRange[1]) {
+    el.textContent = fmtDateDisplay(currentRange[0]);
+  } else {
+    el.textContent = fmtDateDisplay(currentRange[0]) + ' \u2013 ' + fmtDateDisplay(currentRange[1]);
+  }
+}
+
+let _drpStart = null, _drpEnd = null, _drpPick = 'start';
+
+function drpRenderCal() {
+  const scroll = document.getElementById('drpCalScroll');
+  scroll.innerHTML = '';
+  const todayISO = toISO(new Date());
+  const startMonth = new Date(DATA_MIN_ISO + 'T00:00:00');
+  startMonth.setDate(1);
+  const endMonth = new Date(DATA_MAX_ISO + 'T00:00:00');
+  endMonth.setDate(1);
+
+  let scrollTarget = null;
+  let cur = new Date(startMonth);
+
+  while (cur <= endMonth) {
+    const mb = document.createElement('div');
+    mb.className = 'drp-cal-month';
+
+    const lbl = document.createElement('div');
+    lbl.className = 'drp-cal-month-label';
+    lbl.textContent = cur.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    mb.appendChild(lbl);
+
+    const grid = document.createElement('div');
+    grid.className = 'drp-cal-grid';
+
+    ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d => {
+      const el = document.createElement('div');
+      el.className = 'drp-cal-dow';
+      el.textContent = d;
+      grid.appendChild(el);
+    });
+
+    const firstDow = new Date(cur.getFullYear(), cur.getMonth(), 1).getDay();
+    for (let i = 0; i < firstDow; i++) {
+      const b = document.createElement('div');
+      b.className = 'drp-cal-day outside';
+      grid.appendChild(b);
+    }
+
+    const daysInMonth = new Date(cur.getFullYear(), cur.getMonth() + 1, 0).getDate();
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dt = new Date(cur.getFullYear(), cur.getMonth(), d);
+      const iso = toISO(dt);
+      const el = document.createElement('div');
+      el.className = 'drp-cal-day';
+      el.textContent = d;
+      el.dataset.iso = iso;
+
+      if (iso < DATA_MIN_ISO || iso > DATA_MAX_ISO) {
+        el.classList.add('outside');
+      }
+
+      if (iso === todayISO) el.classList.add('today');
+      if (_drpStart && iso === _drpStart) el.classList.add('range-start');
+      if (_drpEnd && iso === _drpEnd) el.classList.add('range-end');
+      if (_drpStart && _drpEnd && iso > _drpStart && iso < _drpEnd) el.classList.add('in-range');
+
+      grid.appendChild(el);
+    }
+
+    mb.appendChild(grid);
+    scroll.appendChild(mb);
+
+    const targetISO = _drpEnd || DATA_MAX_ISO;
+    const targetMonth = targetISO.slice(0, 7);
+    const curMonth = `${cur.getFullYear()}-${String(cur.getMonth() + 1).padStart(2, '0')}`;
+    if (curMonth === targetMonth) scrollTarget = mb;
+
+    cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1);
+  }
+
+  if (scrollTarget) scrollTarget.scrollIntoView({ block: 'end' });
+  else scroll.scrollTop = scroll.scrollHeight;
+}
+
+function drpSyncInputs() {
+  document.getElementById('drpStartInput').value = _drpStart ? fmtDateInput(_drpStart) : '';
+  document.getElementById('drpEndInput').value = _drpEnd ? fmtDateInput(_drpEnd) : '';
+}
+
+function drpParseInputs() {
+  const s = parseDateInput(document.getElementById('drpStartInput').value);
+  const e = parseDateInput(document.getElementById('drpEndInput').value);
+  if (s) _drpStart = s;
+  if (e) _drpEnd = e;
+  if (_drpStart && _drpEnd && _drpStart > _drpEnd) {
+    const t = _drpStart; _drpStart = _drpEnd; _drpEnd = t;
+  }
+  _drpPick = 'start';
+  drpSyncInputs();
+  drpRenderCal();
+  drpHighlight('custom');
+}
+
+function drpOnDay(iso) {
+  if (iso < DATA_MIN_ISO || iso > DATA_MAX_ISO) return;
+  if (_drpPick === 'start') {
+    _drpStart = iso;
+    _drpEnd = null;
+    _drpPick = 'end';
+  } else {
+    if (iso >= _drpStart) {
+      _drpEnd = iso;
+    } else {
+      _drpStart = iso;
+      _drpEnd = null;
+      _drpPick = 'end';
+      drpSyncInputs();
+      drpRenderCal();
+      drpHighlight('custom');
+      return;
+    }
+    _drpPick = 'start';
+  }
+  drpSyncInputs();
+  drpRenderCal();
+  drpHighlight('custom');
+}
+
+function drpOpen() {
+  const dd = document.getElementById('drpDropdown');
+  if (dd.classList.contains('open')) { drpClose(); return; }
+  _drpStart = currentRange[0];
+  _drpEnd = currentRange[1];
+  _drpPick = 'start';
+  dd.classList.add('open');
+  drpSyncInputs();
+  drpRenderCal();
+  drpUpdateHighlight();
+}
+
+function drpClose() {
+  document.getElementById('drpDropdown').classList.remove('open');
+}
+
+function drpApply() {
+  if (_drpStart && _drpEnd) {
+    currentRange = [_drpStart, _drpEnd];
+  }
+  drpUpdateTrigger();
+  drpClose();
+  onDateRangeChange();
+}
+
+function drpSelectPreset(key) {
+  if (key === 'custom') { drpHighlight('custom'); return; }
+  const dates = getPresetDates(key);
+  if (!dates) return;
+  currentRange = dates;
+  drpUpdateTrigger();
+  drpClose();
+  onDateRangeChange();
+}
+
+function drpStep(dir) {
+  if (!currentRange[0] || !currentRange[1]) return;
+  const s = new Date(currentRange[0] + 'T00:00:00');
+  const e = new Date(currentRange[1] + 'T00:00:00');
+  const span = Math.round((e - s) / 86400000) + 1;
+  const ns = new Date(s); ns.setDate(ns.getDate() + dir * span);
+  const ne = new Date(e); ne.setDate(ne.getDate() + dir * span);
+  let nsISO = toISO(ns), neISO = toISO(ne);
+  if (nsISO < DATA_MIN_ISO) nsISO = DATA_MIN_ISO;
+  if (neISO > DATA_MAX_ISO) neISO = DATA_MAX_ISO;
+  if (nsISO > neISO) return;
+  currentRange = [nsISO, neISO];
+  drpUpdateTrigger();
+  onDateRangeChange();
+}
+
+function drpHighlight(key) {
+  document.querySelectorAll('#drpPresets .drp-preset-item').forEach(el =>
+    el.classList.toggle('active', el.dataset.preset === key)
+  );
+}
+
+function drpUpdateHighlight() {
+  if (!_drpStart && !_drpEnd) { drpHighlight('all'); return; }
+  const presets = ['7','14','30','60','90','180','365','thismonth','lastmonth','thisquarter','lastquarter','all'];
+  for (const key of presets) {
+    const d = getPresetDates(key);
+    if (!d) continue;
+    if (d[0] === _drpStart && d[1] === _drpEnd) { drpHighlight(key); return; }
+    if (d[0] === null && _drpStart === null) { drpHighlight(key); return; }
+  }
+  drpHighlight('custom');
+}
+
+// Wire up the date picker
+document.getElementById('drpTrigger').addEventListener('click', drpOpen);
+document.getElementById('drpWrap').addEventListener('click', e => e.stopPropagation());
+document.getElementById('drpApply').addEventListener('click', drpApply);
+document.getElementById('drpCancel').addEventListener('click', drpClose);
+document.getElementById('drpCalScroll').addEventListener('click', e => {
+  const d = e.target.closest('.drp-cal-day');
+  if (d && d.dataset.iso && !d.classList.contains('outside')) drpOnDay(d.dataset.iso);
+});
+document.getElementById('drpPresets').addEventListener('click', e => {
+  const item = e.target.closest('.drp-preset-item');
+  if (item && item.dataset.preset) drpSelectPreset(item.dataset.preset);
+});
+document.getElementById('drpStartInput').addEventListener('blur', drpParseInputs);
+document.getElementById('drpEndInput').addEventListener('blur', drpParseInputs);
+document.getElementById('drpStartInput').addEventListener('keydown', e => { if (e.key === 'Enter') drpParseInputs(); });
+document.getElementById('drpEndInput').addEventListener('keydown', e => { if (e.key === 'Enter') drpParseInputs(); });
+document.getElementById('drpStepBack').addEventListener('click', () => drpStep(-1));
+document.getElementById('drpStepFwd').addEventListener('click', () => drpStep(1));
+document.addEventListener('click', () => drpClose());
+
+// ==================== DATE RANGE CHANGE HANDLER ====================
+function onDateRangeChange() {
+  renderCampaignsTab();
+  updateChart();
+}
+
+// ==================== INITIAL RENDER ====================
+renderCampaignsTab();
+drpUpdateTrigger();
+
+// Wire up target CAC input (once)
+document.getElementById('targetCacInput').addEventListener('input', () => {
+  if (window._campTableRender) window._campTableRender();
+  if (window._kwTableRender) window._kwTableRender();
+});
+
+// Close column filter dropdown on outside click
+document.addEventListener('click', (e) => {
+  const drop = document.getElementById('colFilterDrop');
+  if (drop.classList.contains('open') && !drop.contains(e.target) && !e.target.classList.contains('th-arrow')) {
+    drop.classList.remove('open');
+  }
+});
+</script>
+</body>
+</html>

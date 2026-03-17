@@ -3,9 +3,373 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Work</title>
+    <title>Work — Chris Mitchell | Performance Marketing & Analytics</title>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a25;
+            --accent: #00e5cc;
+            --accent-dim: rgba(0, 229, 204, 0.12);
+            --accent2: #2bb5e0;
+            --accent3: #f5a623;
+            --accent4: #e05cb8;
+            --accent5: #7c6cf0;
+            --text-primary: #e8e8ed;
+            --text-secondary: #9494a3;
+            --text-muted: #7e7e92;
+            --border: #2a2a38;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        a { color: var(--accent); text-decoration: none; transition: opacity 0.2s; }
+        a:hover { opacity: 0.8; }
+
+        /* ── Nav ── */
+        nav {
+            position: fixed; top: 0; width: 100%;
+            background: rgba(10,10,15,0.85); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border); z-index: 100; padding: 0 2rem;
+        }
+        .nav-inner {
+            max-width: 1100px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: space-between; height: 60px;
+        }
+        .nav-logo {
+            font-family: var(--font-mono); font-size: 0.95rem; font-weight: 600;
+            color: var(--text-primary); letter-spacing: -0.02em;
+        }
+        .nav-logo span { color: var(--accent); }
+        a.nav-logo { color: var(--text-primary); text-decoration: none; }
+        a.nav-logo:hover { opacity: 0.8; }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a {
+            color: var(--text-secondary); font-size: 0.875rem; font-weight: 500;
+            letter-spacing: 0.02em; transition: color 0.2s;
+        }
+        .nav-links a:hover, .nav-links a.active { color: var(--text-primary); opacity: 1; }
+
+        /* ── Page Header / Hero ── */
+        .page-header {
+            padding: 8rem 2rem 4rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .page-header-inner { max-width: 1100px; margin: 0 auto; }
+        .page-label {
+            font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent);
+            text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 1rem;
+            display: flex; align-items: center; gap: 0.75rem;
+        }
+        .page-label::before { content: ''; display: block; width: 24px; height: 1px; background: var(--accent); }
+        .page-header h1 {
+            font-size: clamp(2.4rem, 5vw, 3.5rem); font-weight: 700;
+            line-height: 1.15; letter-spacing: -0.03em; margin-bottom: 1.25rem;
+        }
+        .page-header p {
+            font-size: 1.05rem; color: var(--text-secondary); max-width: 640px; line-height: 1.75;
+        }
+
+        /* ── Dashboard Gallery ── */
+        .dashboard-gallery {
+            padding: 4rem 2rem;
+        }
+        .gallery-inner { max-width: 1100px; margin: 0 auto; }
+        .gallery-section-label {
+            font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 2rem;
+        }
+
+        .dashboard-card {
+            display: block;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            color: inherit;
+            margin-bottom: 2rem;
+        }
+        .dashboard-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 229, 204, 0.08);
+            opacity: 1;
+        }
+
+        .card-preview {
+            position: relative;
+            background: linear-gradient(135deg, #f6faf6, #eef8ef);
+            padding: 2rem 2rem 0;
+            overflow: hidden;
+            min-height: 280px;
+        }
+        .card-preview-inner {
+            background: #fff;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 -2px 20px rgba(0,0,0,0.08);
+            padding: 20px 24px 0;
+            transform: translateY(12px);
+        }
+
+        /* Mini dashboard preview */
+        .preview-header {
+            display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+        }
+        .preview-dot { width: 10px; height: 10px; border-radius: 50%; background: #00b3a0; }
+        .preview-title { font-size: 0.85rem; font-weight: 700; color: #225b3a; }
+        .preview-tabs {
+            display: flex; gap: 2px; margin-bottom: 16px;
+        }
+        .preview-tab {
+            padding: 5px 12px; border-radius: 6px; font-size: 0.65rem; font-weight: 600;
+            background: #eef8ef; color: #888fb3;
+        }
+        .preview-tab.active { background: #00b3a0; color: #fff; }
+        .preview-metrics {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px;
+        }
+        .preview-metric {
+            background: #f9fbf9; border-radius: 8px; padding: 10px 8px; text-align: center;
+        }
+        .preview-metric-val { font-size: 0.9rem; font-weight: 700; color: #225b3a; }
+        .preview-metric-label { font-size: 0.55rem; color: #888fb3; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+        .preview-chart {
+            height: 80px; display: flex; align-items: flex-end; gap: 3px; padding-bottom: 4px;
+        }
+        .preview-bar {
+            flex: 1; background: linear-gradient(to top, #00b3a0, #00e5cc); border-radius: 3px 3px 0 0;
+            min-height: 8px;
+        }
+
+        .card-info { padding: 2rem; }
+        .card-platform {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            font-family: var(--font-mono); font-size: 0.7rem;
+            color: var(--accent); background: var(--accent-dim);
+            padding: 0.2rem 0.6rem; border-radius: 4px;
+            text-transform: uppercase; letter-spacing: 0.08em;
+            margin-bottom: 0.75rem;
+        }
+        .card-info h3 {
+            font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em;
+            margin-bottom: 0.6rem; color: var(--text-primary);
+        }
+        .card-info p {
+            font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7;
+            margin-bottom: 1.25rem;
+        }
+        .card-features {
+            display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.5rem;
+        }
+        .card-feature {
+            font-size: 0.72rem; color: var(--text-muted); background: var(--bg-secondary);
+            padding: 0.3rem 0.7rem; border-radius: 4px; border: 1px solid var(--border);
+            font-weight: 500;
+        }
+        .card-cta {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            font-size: 0.85rem; font-weight: 600; color: var(--accent);
+        }
+        .card-cta svg { width: 16px; height: 16px; transition: transform 0.2s; }
+        .dashboard-card:hover .card-cta svg { transform: translateX(4px); }
+
+        /* ── Coming Soon Cards ── */
+        .coming-soon-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;
+            margin-top: 3rem;
+        }
+        .coming-soon-card {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+            padding: 1.5rem; opacity: 0.5;
+        }
+        .coming-soon-card .card-platform { margin-bottom: 0.5rem; }
+        .coming-soon-card h4 { font-size: 1rem; margin-bottom: 0.4rem; }
+        .coming-soon-card p { font-size: 0.82rem; color: var(--text-muted); }
+        .coming-soon-badge {
+            font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted);
+            border: 1px solid var(--border); padding: 0.15rem 0.5rem; border-radius: 4px;
+            display: inline-block; margin-top: 0.75rem;
+        }
+
+        /* ── Footer ── */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 2rem;
+        }
+        .footer-inner {
+            max-width: 1100px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .footer-copy { font-size: 0.8rem; color: var(--text-muted); }
+        .footer-links { display: flex; gap: 1.5rem; list-style: none; }
+        .footer-links a {
+            color: var(--text-muted); font-size: 0.8rem; transition: color 0.2s;
+        }
+        .footer-links a:hover { color: var(--text-primary); }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .nav-links { gap: 1.2rem; }
+            .page-header { padding: 7rem 1.5rem 3rem; }
+            .dashboard-gallery { padding: 2.5rem 1.5rem; }
+            .preview-metrics { grid-template-columns: repeat(2, 1fr); }
+            .card-preview { min-height: 220px; }
+            .footer-inner { flex-direction: column; gap: 1rem; text-align: center; }
+            .coming-soon-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">chris<span>.</span>mitchell</a>
+            <ul class="nav-links">
+                <li><a href="work.html" class="active">Work</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero / Page Header -->
+    <section class="page-header">
+        <div class="page-header-inner">
+            <div class="page-label">Portfolio</div>
+            <h1>Work</h1>
+            <p>A selection of custom dashboards and reporting tools I've built to analyze campaign performance, creative effectiveness, and customer value. Every build is tailored to the metrics that actually drive decisions, built fast using AI-assisted development.</p>
+        </div>
+    </section>
+
+    <!-- Dashboard Gallery -->
+    <section class="dashboard-gallery">
+        <div class="gallery-inner">
+            <div class="gallery-section-label">Dashboards</div>
+
+            <!-- Google Ads Dashboard Card -->
+            <a href="dashboards/google-ads.html" class="dashboard-card">
+                <div class="card-preview">
+                    <div class="card-preview-inner">
+                        <div class="preview-header">
+                            <div class="preview-dot"></div>
+                            <div class="preview-title">Google Ads Dashboard</div>
+                        </div>
+                        <div class="preview-tabs">
+                            <div class="preview-tab active">Campaigns</div>
+                            <div class="preview-tab">Keywords</div>
+                            <div class="preview-tab">Search Terms</div>
+                            <div class="preview-tab">Placements</div>
+                        </div>
+                        <div class="preview-metrics">
+                            <div class="preview-metric">
+                                <div class="preview-metric-val">$214.8K</div>
+                                <div class="preview-metric-label">Spend</div>
+                            </div>
+                            <div class="preview-metric">
+                                <div class="preview-metric-val">4,620</div>
+                                <div class="preview-metric-label">Purchases</div>
+                            </div>
+                            <div class="preview-metric">
+                                <div class="preview-metric-val">$46.49</div>
+                                <div class="preview-metric-label">Cost / Conv.</div>
+                            </div>
+                            <div class="preview-metric">
+                                <div class="preview-metric-val">1.18x</div>
+                                <div class="preview-metric-label">ROAS</div>
+                            </div>
+                        </div>
+                        <div class="preview-chart">
+                            <div class="preview-bar" style="height:45%"></div>
+                            <div class="preview-bar" style="height:52%"></div>
+                            <div class="preview-bar" style="height:48%"></div>
+                            <div class="preview-bar" style="height:61%"></div>
+                            <div class="preview-bar" style="height:55%"></div>
+                            <div class="preview-bar" style="height:70%"></div>
+                            <div class="preview-bar" style="height:65%"></div>
+                            <div class="preview-bar" style="height:58%"></div>
+                            <div class="preview-bar" style="height:72%"></div>
+                            <div class="preview-bar" style="height:68%"></div>
+                            <div class="preview-bar" style="height:78%"></div>
+                            <div class="preview-bar" style="height:82%"></div>
+                            <div class="preview-bar" style="height:75%"></div>
+                            <div class="preview-bar" style="height:88%"></div>
+                            <div class="preview-bar" style="height:85%"></div>
+                            <div class="preview-bar" style="height:92%"></div>
+                            <div class="preview-bar" style="height:80%"></div>
+                            <div class="preview-bar" style="height:95%"></div>
+                            <div class="preview-bar" style="height:90%"></div>
+                            <div class="preview-bar" style="height:100%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-info">
+                    <div class="card-platform">Google Ads</div>
+                    <h3>Google Ads Performance Dashboard</h3>
+                    <p>Multi-tab campaign analytics built to centralize Google Ads reporting across Search, Display, and Performance Max. Includes trend visualization, keyword quality analysis, search term mining, and placement performance tracking.</p>
+                    <div class="card-features">
+                        <span class="card-feature">4 Report Tabs</span>
+                        <span class="card-feature">Interactive Charts</span>
+                        <span class="card-feature">Sortable Tables</span>
+                        <span class="card-feature">Date Range Picker</span>
+                        <span class="card-feature">LTV Bridge</span>
+                        <span class="card-feature">Impression Share</span>
+                    </div>
+                    <div class="card-cta">
+                        View Interactive Demo
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Coming Soon -->
+            <div class="coming-soon-grid">
+                <div class="coming-soon-card">
+                    <div class="card-platform">Meta Ads</div>
+                    <h4>Meta Ads Creative Dashboard</h4>
+                    <p>Creative performance analysis across Facebook and Instagram campaigns with asset-level breakdowns.</p>
+                    <div class="coming-soon-badge">Coming Soon</div>
+                </div>
+                <div class="coming-soon-card">
+                    <div class="card-platform">Shopify</div>
+                    <h4>Cohort LTV & Retention</h4>
+                    <p>Customer lifetime value tracking with cohort-based retention curves and revenue forecasting.</p>
+                    <div class="coming-soon-badge">Coming Soon</div>
+                </div>
+                <div class="coming-soon-card">
+                    <div class="card-platform">Multi-Channel</div>
+                    <h4>Attribution & Media Mix</h4>
+                    <p>Cross-channel attribution modeling with budget allocation recommendations.</p>
+                    <div class="coming-soon-badge">Coming Soon</div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-copy">&copy; 2026 Chris Mitchell. All rights reserved.</div>
+            <ul class="footer-links">
+                <li><a href="work.html">Work</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </footer>
 
 </body>
 </html>
