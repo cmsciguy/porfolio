@@ -6,15 +6,16 @@
 <title>Verdant Wellness — Ad Copy Intelligence</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2/dist/chartjs-plugin-zoom.min.js"></script>
 <style>
 :root {
-  --amber-dark: #92400e;
-  --amber-main: #b45309;
-  --amber-accent: #d97706;
-  --amber-light: #fef3c7;
-  --amber-pale: #fffbeb;
-  --bg: #fffbeb;
+  --amber-dark: #4c1d95;
+  --amber-main: #7c3aed;
+  --amber-accent: #8b5cf6;
+  --amber-light: #ede9fe;
+  --amber-pale: #f5f3ff;
+  --bg: #f0fdfa;
   --card-bg: #ffffff;
   --text-main: #1a1a2e;
   --text-mid: #888fb3;
@@ -83,7 +84,7 @@ body {
   padding: 10px 32px;
   font-size: 13px;
   color: #5a6577;
-  background: linear-gradient(90deg, var(--amber-pale), #fef3c7);
+  background: linear-gradient(90deg, var(--amber-pale), #ede9fe);
   border-bottom: 1px solid var(--border);
 }
 
@@ -296,7 +297,7 @@ tbody tr:hover td:first-child { background: var(--amber-light); }
 /* Asset Type Cards */
 .asset-type-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   margin-bottom: 24px;
 }
@@ -305,21 +306,36 @@ tbody tr:hover td:first-child { background: var(--amber-light); }
   border-radius: var(--radius);
   padding: 18px 20px;
   box-shadow: var(--shadow);
-  text-align: center;
   transition: box-shadow 0.2s;
 }
 .asset-type-card:hover { box-shadow: var(--shadow-hover); }
+.asset-type-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
 .asset-type-name {
-  font-size: 14px;
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 12px;
   font-weight: 700;
-  color: var(--text-main);
-  margin-bottom: 4px;
 }
 .asset-type-count {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 600;
   color: var(--text-mid);
 }
+.asset-type-kpis {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 12px;
+  border-top: 1px solid #eef1fa;
+  padding-top: 10px;
+}
+.asset-kpi-label { font-size: 10px; color: var(--text-mid); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+.asset-kpi-val { font-size: 13px; font-weight: 700; color: var(--text-main); }
 
 /* Column filter dropdown */
 .th-inner { display: flex; align-items: center; justify-content: space-between; gap: 4px; white-space: nowrap; }
@@ -540,11 +556,11 @@ tbody tr:hover td:first-child { background: var(--amber-light); }
   <!-- Two Column: Spend Bleeders + Top Performers -->
   <div class="two-col">
     <div class="mini-table">
-      <div class="mini-table-header">Spend Bleeders<div class="mini-table-subtitle">Highest Spend, 0 Conversions</div></div>
+      <div class="mini-table-header">🚨 Spend Bleeders<div class="mini-table-subtitle">Highest Spend, 0 Conversions</div></div>
       <div class="table-wrap"><table id="bleedersTable"><thead><tr></tr></thead><tbody></tbody></table></div>
     </div>
     <div class="mini-table">
-      <div class="mini-table-header">Top Performers<div class="mini-table-subtitle">Highest Conversions</div></div>
+      <div class="mini-table-header">🏆 Top Performers<div class="mini-table-subtitle">Highest Conversions</div></div>
       <div class="table-wrap"><table id="performersTable"><thead><tr></tr></thead><tbody></tbody></table></div>
     </div>
   </div>
@@ -556,7 +572,7 @@ tbody tr:hover td:first-child { background: var(--amber-light); }
   <!-- Asset Performance Master Table -->
   <div class="table-section">
     <div class="table-header-bar">
-      <div class="section-title">Asset Performance</div>
+      <div class="section-title">Asset Performance Master Table</div>
       <button class="csv-btn" id="googleCsvBtn">Export CSV</button>
     </div>
     <div class="table-filters" id="googleFilters">
@@ -595,7 +611,7 @@ tbody tr:hover td:first-child { background: var(--amber-light); }
         <div class="scatter-legend-item">&#x1F535; <div><strong>Hidden Gems (Top Left)</strong> &mdash; Convert well but low CTR. Improve ad copy/targeting.</div></div>
         <div class="scatter-legend-item">&#x1F7E1; <div><strong>Clickbait (Bottom Right)</strong> &mdash; Get clicks but don't convert. Fix landing pages or messaging.</div></div>
         <div class="scatter-legend-item">&#x1F534; <div><strong>Losers (Bottom Left)</strong> &mdash; Low CTR &amp; low conversion. Consider pausing or reworking.</div></div>
-        <div class="scatter-legend-item">&#x26AB; <div><strong>Bubble Size = Spend</strong> &mdash; Larger bubbles represent more spend.</div></div>
+        <div style="border-top:1px solid #e2e8f0;margin:6px 0;"></div><div class="scatter-legend-item">&#x26AB; <div><strong>Bubble Size = Spend</strong> &mdash; Larger bubbles represent more spend.</div></div>
       </div>
     </div>
   </div>
@@ -657,7 +673,7 @@ tbody tr:hover td:first-child { background: var(--amber-light); }
         <div class="scatter-legend-item">&#x1F535; <div><strong>Hidden Gems (Top Left)</strong> &mdash; Great ROAS but low CTR. Improve creative/targeting.</div></div>
         <div class="scatter-legend-item">&#x1F7E1; <div><strong>Clickbait (Bottom Right)</strong> &mdash; Get clicks but low ROAS. Fix funnel or messaging.</div></div>
         <div class="scatter-legend-item">&#x1F534; <div><strong>Losers (Bottom Left)</strong> &mdash; Low CTR &amp; low ROAS. Consider pausing or reworking.</div></div>
-        <div class="scatter-legend-item">&#x26AB; <div><strong>Bubble Size = Spend</strong> &mdash; Larger bubbles represent more spend.</div></div>
+        <div style="border-top:1px solid #e2e8f0;margin:6px 0;"></div><div class="scatter-legend-item">&#x26AB; <div><strong>Bubble Size = Spend</strong> &mdash; Larger bubbles represent more spend.</div></div>
       </div>
     </div>
   </div>
@@ -986,8 +1002,29 @@ document.querySelector('#performersTable tbody').innerHTML = topPerformers.map(a
 
 // ==================== ASSET TYPE CARDS ====================
 document.getElementById('assetTypeCards').innerHTML = assetTypes.map(type => {
-  const count = googleAssets.filter(a => a.type === type).length;
-  return `<div class="asset-type-card"><div class="asset-type-name">${type}</div><div class="asset-type-count">${count} Assets</div></div>`;
+  const items = googleAssets.filter(a => a.type === type);
+  const count = items.length;
+  const spend = items.reduce((s,a) => s+a.spend, 0);
+  const impr = items.reduce((s,a) => s+a.impressions, 0);
+  const clicks = items.reduce((s,a) => s+a.clicks, 0);
+  const ctr = impr > 0 ? (clicks/impr*100) : 0;
+  const conv = items.reduce((s,a) => s+a.conversions, 0);
+  const cpa = conv > 0 ? spend/conv : 0;
+  const cls = type.toLowerCase().replace(/\s+/g, '');
+  return `<div class="asset-type-card">
+    <div class="asset-type-header">
+      <span class="asset-type-name badge-${cls}">${type}</span>
+      <span class="asset-type-count">${count} Assets</span>
+    </div>
+    <div class="asset-type-kpis">
+      <div><div class="asset-kpi-label">Spend</div><div class="asset-kpi-val">${fmtCurrency(spend)}</div></div>
+      <div><div class="asset-kpi-label">Impr</div><div class="asset-kpi-val">${fmtNum(impr)}</div></div>
+      <div><div class="asset-kpi-label">Clicks</div><div class="asset-kpi-val">${fmtNum(clicks)}</div></div>
+      <div><div class="asset-kpi-label">CTR</div><div class="asset-kpi-val">${ctr.toFixed(2)}%</div></div>
+      <div><div class="asset-kpi-label">Conv</div><div class="asset-kpi-val">${fmtNum(conv)}</div></div>
+      <div><div class="asset-kpi-label">CPA</div><div class="asset-kpi-val">${conv > 0 ? fmtCurrency(cpa) : '—'}</div></div>
+    </div>
+  </div>`;
 }).join('');
 
 // ==================== GOOGLE MASTER TABLE ====================
@@ -1225,10 +1262,36 @@ function createSortableTable({ tableId, paginationId, columns, data, defaultSort
     }).join('');
 
     const tbody = document.querySelector(`#${tableId} tbody`);
-    tbody.innerHTML = pageData.map(r => {
+    let rowsHtml = pageData.map(r => {
       const cls = rowClass ? rowClass(r) : '';
       return `<tr${cls ? ' class="'+cls+'"' : ''}>${columns.map(c => `<td>${c.fmt(r[c.key], r)}</td>`).join('')}</tr>`;
     }).join('');
+
+    // Totals row from ALL filtered data
+    if (sorted.length > 0) {
+      const totals = {};
+      const numCols = columns.filter(c => c.numeric);
+      numCols.forEach(c => { totals[c.key] = 0; });
+      sorted.forEach(r => numCols.forEach(c => { totals[c.key] += (r[c.key] || 0); }));
+      // Recalculate ratio columns
+      if (totals.impressions > 0 && totals.clicks !== undefined) totals.ctr = totals.clicks / totals.impressions * 100;
+      if (totals.clicks > 0 && totals.spend !== undefined) totals.avgCpc = totals.spend / totals.clicks;
+      if (totals.clicks > 0 && totals.conversions !== undefined) totals.convRate = totals.conversions / totals.clicks * 100;
+      if (totals.conversions > 0 && totals.spend !== undefined) totals.cpa = totals.spend / totals.conversions;
+      else if (totals.cpa !== undefined) totals.cpa = 0;
+      // For Meta: ROAS
+      if (totals.purchases > 0 && totals.spend > 0 && totals.revenue !== undefined) totals.roas = totals.revenue / totals.spend;
+      if (totals.impressions > 0 && totals.reach !== undefined) totals.frequency = totals.impressions / totals.reach;
+      if (totals.purchases > 0 && totals.spend !== undefined) totals.metaCpa = totals.spend / totals.purchases;
+
+      const totalRow = { ...totals, text: `Total (${sorted.length})`, adName: `Total (${sorted.length})`, type: '', format: '', status: '', pinned: '', usedBy: '', campaignType: '' };
+      rowsHtml += `<tr style="font-weight:700;background:#f5f5f5;border-top:2px solid #333;">${columns.map(c => {
+        if (c.key === 'text' || c.key === 'adName') return `<td style="font-weight:700;color:#1a1a2e;">${totalRow[c.key]}</td>`;
+        if (c.numeric) return `<td>${c.fmt(totals[c.key], totalRow)}</td>`;
+        return '<td></td>';
+      }).join('')}</tr>`;
+    }
+    tbody.innerHTML = rowsHtml;
 
     // Wire up sorting
     if (hasColFilters) {
@@ -1302,7 +1365,7 @@ const gTable = createSortableTable({
   data: googleAssets,
   defaultSort: 'spend',
   defaultAsc: false,
-  pageSize: 25,
+  pageSize: 20,
   columnFilters: gColumnFilters,
   openColFilterDropFn: openColFilterDrop
 });
@@ -1352,6 +1415,7 @@ function updateGoogleScatter() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      animation: false,
       scales: {
         x: {
           title: { display: true, text: 'CTR (%)', font: { family: 'Inter', weight: 600 } },
@@ -1741,6 +1805,7 @@ function updateMetaScatter() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      animation: false,
       scales: {
         x: {
           title: { display: true, text: 'CTR (%)', font: { family: 'Inter', weight: 600 } },
