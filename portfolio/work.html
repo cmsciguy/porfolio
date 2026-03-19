@@ -240,6 +240,91 @@
             .card-feature { font-size: 0.65rem; padding: 0.2rem 0.5rem; }
             .footer-inner { flex-direction: column; gap: 1rem; text-align: center; }
             .coming-soon-grid { grid-template-columns: 1fr; }
+            .case-study-inner { padding: 1.5rem; }
+            .case-study-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+            .case-study-section h4 { font-size: 0.82rem; }
+            .case-study-section p { font-size: 0.82rem; }
+        }
+
+        /* ── Case Studies ── */
+        .case-study-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--accent);
+            border: none;
+            border-radius: 8px;
+            padding: 0.7rem 1.4rem;
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #0a0a0f;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: -0.5rem;
+            margin-bottom: 2rem;
+            letter-spacing: 0.02em;
+        }
+        .case-study-toggle:hover {
+            background: #33edd6;
+            color: #0a0a0f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 229, 204, 0.3);
+        }
+        .case-study-toggle .toggle-arrow {
+            transition: transform 0.3s;
+            font-size: 0.7rem;
+        }
+        .case-study-toggle.open .toggle-arrow {
+            display: inline-block;
+        }
+        .case-study-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.3s ease;
+            opacity: 0;
+            margin-bottom: 2rem;
+            margin-left: 1.5rem;
+            margin-top: -0.5rem;
+            border-left: 2px solid var(--accent);
+            padding-left: 1.5rem;
+        }
+        .case-study-panel.open {
+            opacity: 1;
+            margin-bottom: 2.5rem;
+        }
+        .case-study-inner {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem 2.5rem;
+        }
+        .case-study-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-bottom: 1.25rem;
+        }
+        .case-study-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem 2.5rem;
+        }
+        .case-study-section h4 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .case-study-section p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
         }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -306,27 +391,21 @@
                                 <div class="preview-metric-label">AutoShip Rate</div>
                             </div>
                         </div>
-                        <div class="preview-chart">
-                            <div class="preview-bar" style="height:25%;background:linear-gradient(to top,#225b3a,#2b7b31);"></div>
-                            <div class="preview-bar" style="height:30%;background:linear-gradient(to top,#225b3a,#2b7b31);"></div>
-                            <div class="preview-bar" style="height:38%;background:linear-gradient(to top,#225b3a,#2b7b31);"></div>
-                            <div class="preview-bar" style="height:42%;background:linear-gradient(to top,#225b3a,#2b7b31);"></div>
-                            <div class="preview-bar" style="height:48%;background:linear-gradient(to top,#225b3a,#2b7b31);"></div>
-                            <div class="preview-bar" style="height:45%;background:linear-gradient(to top,#225b3a,#2b7b31);"></div>
-                            <div class="preview-bar" style="height:55%;background:linear-gradient(to top,#225b3a,#2b7b31);"></div>
-                            <div class="preview-bar" style="height:52%;background:linear-gradient(to top,#225b3a,#2b7b31);"></div>
-                            <div class="preview-bar" style="height:60%;background:linear-gradient(to top,#225b3a,#2b7b31);"></div>
-                            <div class="preview-bar" style="height:58%;background:linear-gradient(to top,#225b3a,#2b7b31);"></div>
-                            <div class="preview-bar" style="height:65%;background:linear-gradient(to top,#225b3a,#2b7b31);"></div>
-                            <div class="preview-bar" style="height:62%;background:linear-gradient(to top,#225b3a,#2b7b31);"></div>
-                            <div class="preview-bar" style="height:70%;background:linear-gradient(to top,#225b3a,#2b7b31);"></div>
-                            <div class="preview-bar" style="height:68%;background:linear-gradient(to top,#225b3a,#2b7b31);"></div>
-                            <div class="preview-bar" style="height:78%;background:linear-gradient(to top,#225b3a,#2b7b31);"></div>
-                            <div class="preview-bar" style="height:82%;background:linear-gradient(to top,#225b3a,#2b7b31);"></div>
-                            <div class="preview-bar" style="height:85%;background:linear-gradient(to top,#225b3a,#2b7b31);"></div>
-                            <div class="preview-bar" style="height:90%;background:linear-gradient(to top,#225b3a,#2b7b31);"></div>
-                            <div class="preview-bar" style="height:95%;background:linear-gradient(to top,#225b3a,#2b7b31);"></div>
-                            <div class="preview-bar" style="height:100%;background:linear-gradient(to top,#225b3a,#2b7b31);"></div>
+                        <div class="preview-chart" style="height:80px;display:flex;align-items:center;justify-content:center;gap:20px;padding:0 16px;">
+                            <svg viewBox="0 0 80 80" style="width:70px;height:70px;flex-shrink:0;">
+                                <circle cx="40" cy="40" r="30" fill="none" stroke="#2b7b31" stroke-width="12" stroke-dasharray="75 113" stroke-dashoffset="0" />
+                                <circle cx="40" cy="40" r="30" fill="none" stroke="#4ebaaa" stroke-width="12" stroke-dasharray="53 135" stroke-dashoffset="-75" />
+                                <circle cx="40" cy="40" r="30" fill="none" stroke="#1f78b4" stroke-width="12" stroke-dasharray="24 164" stroke-dashoffset="-128" />
+                                <circle cx="40" cy="40" r="30" fill="none" stroke="#e07b00" stroke-width="12" stroke-dasharray="14 174" stroke-dashoffset="-152" />
+                                <circle cx="40" cy="40" r="30" fill="none" stroke="#8e44ad" stroke-width="12" stroke-dasharray="10 178" stroke-dashoffset="-166" />
+                            </svg>
+                            <div style="display:flex;flex-direction:column;gap:3px;font-size:7px;color:#888fb3;">
+                                <span><span style="color:#2b7b31;">&#9632;</span> New Customer</span>
+                                <span><span style="color:#4ebaaa;">&#9632;</span> AutoShip</span>
+                                <span><span style="color:#1f78b4;">&#9632;</span> Upsell</span>
+                                <span><span style="color:#e07b00;">&#9632;</span> Promo</span>
+                                <span><span style="color:#8e44ad;">&#9632;</span> Returning</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -348,6 +427,32 @@
                     </div>
                 </div>
             </a>
+            <button class="case-study-toggle" onclick="toggleCaseStudy(this)">
+                <span class="toggle-arrow">&#9656;</span> View Case Study
+            </button>
+            <div class="case-study-panel">
+                <div class="case-study-inner">
+                    <div class="case-study-label">Case Study</div>
+                    <div class="case-study-grid">
+                        <div class="case-study-section">
+                            <h4>The Problem</h4>
+                            <p>CPA costs were rising and acquisition volume had been declining for months. The media team knew we needed to raise CPA targets to restore performance, but had no visibility into what we could actually spend to acquire a customer and still be profitable. We suspected there was a breakeven timeframe where even a loss on the initial sale became profitable downstream, but we had no data to define that trajectory.</p>
+                        </div>
+                        <div class="case-study-section">
+                            <h4>What I Built</h4>
+                            <p>I pulled 2-3 years of customer and transaction data and built a dashboard that classified every order by lifecycle stage: first purchase, upsell, subscription rebill, returning purchase, refund, and promo. It tracked blended LTV by cohort age, upsell funnel take rates, subscription churn curves, and product-level AOV with COGS factored in.</p>
+                        </div>
+                        <div class="case-study-section">
+                            <h4>What It Revealed</h4>
+                            <p>Subscription churn and take rate had dipped in recent months, but the blended LTV at 3, 6, and 12 months was extremely healthy. The data showed that even with higher upfront acquisition costs, the customer payback curve was strong enough to support significantly more aggressive CPA targets.</p>
+                        </div>
+                        <div class="case-study-section">
+                            <h4>What Decision It Enabled</h4>
+                            <p>We shifted acquisition budget toward the top of funnel, identified the best products for cross-promotion, and pinpointed subscription take rate as the key lever to improve. Most importantly, it gave us exact CPA targets grounded in real LTV data, allowing us to 2x daily acquisition volume and restore both performance and scale.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- 2. Ad Copy Intelligence -->
             <a href="dashboards/ad-copy.html" class="dashboard-card">
@@ -413,74 +518,96 @@
                     </div>
                 </div>
             </a>
+            <button class="case-study-toggle" onclick="toggleCaseStudy(this)">
+                <span class="toggle-arrow">&#9656;</span> View Case Study
+            </button>
+            <div class="case-study-panel">
+                <div class="case-study-inner">
+                    <div class="case-study-label">Case Study</div>
+                    <div class="case-study-grid">
+                        <div class="case-study-section">
+                            <h4>The Problem</h4>
+                            <p>The creative and web teams were perpetually at capacity, with no bandwidth to run structured copy tests. When ad copy or landing page headlines were updated, changes were made in bulk based on brand guidelines alone, with zero input from performance data. There was no visibility into which specific headlines, descriptions, or hooks were actually converting versus quietly burning spend across hundreds of RSA and Meta assets.</p>
+                        </div>
+                        <div class="case-study-section">
+                            <h4>What I Built</h4>
+                            <p>I pulled six months of ad copy performance data across Google RSAs, Performance Max, and Meta campaigns and built a dashboard that maps every asset into an action quadrant based on CTR and conversion rate. It surfaces spend bleeders (high spend, zero conversions), ranks top performers, and provides filterable master tables with per-asset economics so the team could see exactly what language was working at a glance.</p>
+                        </div>
+                        <div class="case-study-section">
+                            <h4>What It Revealed</h4>
+                            <p>The quadrant analysis exposed a cluster of high-spend, zero-conversion headlines that had been running untouched across multiple ad groups for months. On the flip side, several high-converting assets were severely under-deployed, limited to one or two campaigns. The data also revealed clear patterns in what messaging resonated: benefit-driven copy consistently outperformed feature-focused language across both Google and Meta.</p>
+                        </div>
+                        <div class="case-study-section">
+                            <h4>What Decision It Enabled</h4>
+                            <p>We packaged the findings into a brief for the creative and web teams, giving them data-backed direction on which themes, hooks, and language to lean into for future copy swaps. Spend bleeders were paused immediately, top-performing assets were scaled across more campaigns, and the dashboard became the standard reference before any copy refresh. It turned ad copy decisions from brand-only guesswork into a data-informed process without requiring the creative team to run their own tests.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <!-- 3. Google Ads Performance -->
-            <a href="dashboards/google-ads.html" class="dashboard-card">
+            <!-- 3. CRO & Landing Page Analytics -->
+            <a href="dashboards/cro-analytics.html" class="dashboard-card">
                 <div class="card-preview">
                     <div class="card-preview-inner">
                         <div class="preview-header">
-                            <div class="preview-dot"></div>
-                            <div class="preview-title">Google Ads Performance</div>
-                        </div>
-                        <div class="preview-tabs">
-                            <div class="preview-tab active">Campaigns</div>
-                            <div class="preview-tab">Keywords</div>
-                            <div class="preview-tab">Search Terms</div>
-                            <div class="preview-tab">Placements</div>
+                            <div class="preview-dot" style="background:#e11d48;"></div>
+                            <div class="preview-title" style="color:#e11d48;">CRO & Landing Page Analytics</div>
                         </div>
                         <div class="preview-metrics">
                             <div class="preview-metric">
-                                <div class="preview-metric-val">$214.8K</div>
-                                <div class="preview-metric-label">Spend</div>
+                                <div class="preview-metric-val">42.3K</div>
+                                <div class="preview-metric-label">Sessions</div>
                             </div>
                             <div class="preview-metric">
-                                <div class="preview-metric-val">4,620</div>
-                                <div class="preview-metric-label">Purchases</div>
+                                <div class="preview-metric-val">3.42%</div>
+                                <div class="preview-metric-label">CVR</div>
                             </div>
                             <div class="preview-metric">
-                                <div class="preview-metric-val">$46.49</div>
-                                <div class="preview-metric-label">Cost / Conv.</div>
+                                <div class="preview-metric-val">+14.3%</div>
+                                <div class="preview-metric-label">Best Variant Lift</div>
                             </div>
                             <div class="preview-metric">
-                                <div class="preview-metric-val">1.18x</div>
-                                <div class="preview-metric-label">ROAS</div>
+                                <div class="preview-metric-val">99.1%</div>
+                                <div class="preview-metric-label">Confidence</div>
                             </div>
                         </div>
-                        <div class="preview-chart">
-                            <div class="preview-bar" style="height:45%"></div>
-                            <div class="preview-bar" style="height:52%"></div>
-                            <div class="preview-bar" style="height:48%"></div>
-                            <div class="preview-bar" style="height:61%"></div>
-                            <div class="preview-bar" style="height:55%"></div>
-                            <div class="preview-bar" style="height:70%"></div>
-                            <div class="preview-bar" style="height:65%"></div>
-                            <div class="preview-bar" style="height:58%"></div>
-                            <div class="preview-bar" style="height:72%"></div>
-                            <div class="preview-bar" style="height:68%"></div>
-                            <div class="preview-bar" style="height:78%"></div>
-                            <div class="preview-bar" style="height:82%"></div>
-                            <div class="preview-bar" style="height:75%"></div>
-                            <div class="preview-bar" style="height:88%"></div>
-                            <div class="preview-bar" style="height:85%"></div>
-                            <div class="preview-bar" style="height:92%"></div>
-                            <div class="preview-bar" style="height:80%"></div>
-                            <div class="preview-bar" style="height:95%"></div>
-                            <div class="preview-bar" style="height:90%"></div>
-                            <div class="preview-bar" style="height:100%"></div>
+                        <div class="preview-chart" style="height:70px;position:relative;padding:0;">
+                            <svg viewBox="0 0 300 70" preserveAspectRatio="none" style="width:100%;height:100%;">
+                                <!-- Variant C confidence band -->
+                                <path d="M0,28 Q30,25 60,26 T120,22 T180,20 T240,18 T300,15" fill="none" stroke="#22c55e" stroke-width="0" />
+                                <path d="M0,35 Q30,32 60,33 T120,30 T180,27 T240,25 T300,22 L300,10 Q240,12 180,14 T120,16 T60,19 T0,22 Z" fill="#22c55e" opacity="0.08" />
+                                <!-- Variant B confidence band -->
+                                <path d="M0,38 Q30,36 60,37 T120,35 T180,33 T240,32 T300,30 L300,22 Q240,24 180,26 T120,28 T60,30 T0,32 Z" fill="#3b82f6" opacity="0.08" />
+                                <!-- Control confidence band -->
+                                <path d="M0,45 Q30,43 60,44 T120,44 T180,43 T240,44 T300,43 L300,37 Q240,38 180,37 T120,38 T60,38 T0,39 Z" fill="#94a3b8" opacity="0.1" />
+                                <!-- Control line (A) -->
+                                <path d="M0,42 Q15,40 30,43 T60,41 T90,42 T120,41 T150,43 T180,40 T210,42 T240,41 T270,43 T300,41" fill="none" stroke="#94a3b8" stroke-width="1.5" opacity="0.6" />
+                                <!-- Variant B line -->
+                                <path d="M0,36 Q15,38 30,35 T60,36 T90,33 T120,32 T150,30 T180,31 T210,28 T240,29 T270,27 T300,26" fill="none" stroke="#3b82f6" stroke-width="1.5" opacity="0.7" />
+                                <!-- Variant C line (winner) -->
+                                <path d="M0,30 Q15,32 30,28 T60,27 T90,25 T120,23 T150,22 T180,20 T210,19 T240,17 T270,16 T300,14" fill="none" stroke="#22c55e" stroke-width="2" />
+                                <!-- 95% threshold line -->
+                                <line x1="0" y1="60" x2="300" y2="60" stroke="#e11d48" stroke-width="0.5" stroke-dasharray="4,3" opacity="0.4" />
+                            </svg>
+                            <div style="position:absolute;bottom:2px;right:8px;display:flex;gap:10px;font-size:7px;color:#888fb3;">
+                                <span><span style="color:#94a3b8;">&#9644;</span> Control</span>
+                                <span><span style="color:#3b82f6;">&#9644;</span> Var B</span>
+                                <span><span style="color:#22c55e;">&#9644;</span> Var C</span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="card-info">
-                    <div class="card-platform">Google Ads</div>
-                    <h3>Google Ads Performance Dashboard</h3>
-                    <p>Multi-tab campaign analytics built to centralize Google Ads reporting across Search, Display, and Performance Max. Includes trend visualization, keyword quality analysis, search term mining, and placement performance tracking.</p>
+                    <div class="card-platform">CRO / Analytics</div>
+                    <h3>CRO & Landing Page Analytics</h3>
+                    <p>Conversion rate optimization dashboard with session analysis by channel, scroll depth tracking, A/B test results with statistical significance indicators, and an interactive CRO impact modeler for projecting revenue lift.</p>
                     <div class="card-features">
-                        <span class="card-feature">4 Report Tabs</span>
-                        <span class="card-feature">Interactive Charts</span>
-                        <span class="card-feature">Sortable Tables</span>
-                        <span class="card-feature">Date Range Picker</span>
-                        <span class="card-feature">LTV Bridge</span>
-                        <span class="card-feature">Impression Share</span>
+                        <span class="card-feature">A/B Test Results</span>
+                        <span class="card-feature">Significance Testing</span>
+                        <span class="card-feature">CRO Impact Modeler</span>
+                        <span class="card-feature">Scroll Depth</span>
+                        <span class="card-feature">Channel Breakdown</span>
+                        <span class="card-feature">Page Performance</span>
                     </div>
                     <div class="card-cta">
                         View Interactive Demo
@@ -488,158 +615,34 @@
                     </div>
                 </div>
             </a>
+            <button class="case-study-toggle" onclick="toggleCaseStudy(this)">
+                <span class="toggle-arrow">&#9656;</span> View Case Study
+            </button>
+            <div class="case-study-panel">
+                <div class="case-study-inner">
+                    <div class="case-study-label">Case Study</div>
+                    <div class="case-study-grid">
+                        <div class="case-study-section">
+                            <h4>The Problem</h4>
+                            <p>Advertorial-to-sales-page click-through rates had stagnated, and we had no systematic way to test headline and hook variations at scale. The team was making creative decisions based on gut feeling, with no visibility into which hooks actually drove downstream conversions versus just clicks. We needed a framework to test, measure, and project the revenue impact of incremental CVR changes across the funnel.</p>
+                        </div>
+                        <div class="case-study-section">
+                            <h4>What I Built</h4>
+                            <p>A CRO analytics dashboard that tracks the full advertorial-to-purchase funnel: advertorial view, sales page click-through, initiate checkout, and purchase. It includes A/B test monitoring with real-time statistical significance indicators, scroll depth tracking by traffic source to measure engagement quality, and an interactive CRO impact modeler that projects CPA and revenue changes at various CVR lift levels.</p>
+                        </div>
+                        <div class="case-study-section">
+                            <h4>What It Revealed</h4>
+                            <p>The outcome-driven hook variant ("How I Fixed My Liver Panels in 60 Days") reached 99.1% statistical significance with a +14.3% CVR lift over the control. The fear-based variant also showed improvement but didn't clear the 95% confidence threshold. Scroll depth data revealed that TikTok traffic had the lowest advertorial engagement, suggesting a mismatch between ad creative expectations and landing page content for that channel.</p>
+                        </div>
+                        <div class="case-study-section">
+                            <h4>What Decision It Enabled</h4>
+                            <p>We rolled the winning hook across all advertorials and projected an additional 65 conversions per month at a $4.20 CPA reduction. The scroll depth findings led to a channel-specific advertorial for TikTok traffic with shorter copy and earlier CTAs. The impact modeler became the standard tool for evaluating whether to run or kill a test early based on projected revenue impact.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <!-- 4. Meta Ads Performance -->
-            <a href="dashboards/meta-ads.html" class="dashboard-card">
-                <div class="card-preview">
-                    <div class="card-preview-inner">
-                        <div class="preview-header">
-                            <div class="preview-dot" style="background:#1877f2;"></div>
-                            <div class="preview-title" style="color:#1877f2;">Meta Ads Performance</div>
-                        </div>
-                        <div class="preview-tabs">
-                            <div class="preview-tab active" style="background:#1877f2;">Campaigns</div>
-                            <div class="preview-tab">Ad Sets</div>
-                            <div class="preview-tab">Ads / Creative</div>
-                            <div class="preview-tab">Placements</div>
-                        </div>
-                        <div class="preview-metrics">
-                            <div class="preview-metric">
-                                <div class="preview-metric-val">$18.4K</div>
-                                <div class="preview-metric-label">Spend</div>
-                            </div>
-                            <div class="preview-metric">
-                                <div class="preview-metric-val">842</div>
-                                <div class="preview-metric-label">Purchases</div>
-                            </div>
-                            <div class="preview-metric">
-                                <div class="preview-metric-val">$21.86</div>
-                                <div class="preview-metric-label">CPA</div>
-                            </div>
-                            <div class="preview-metric">
-                                <div class="preview-metric-val">2.4x</div>
-                                <div class="preview-metric-label">ROAS</div>
-                            </div>
-                        </div>
-                        <div class="preview-chart">
-                            <div class="preview-bar" style="height:42%;background:linear-gradient(to top,#0d5bc6,#1877f2);"></div>
-                            <div class="preview-bar" style="height:48%;background:linear-gradient(to top,#0d5bc6,#1877f2);"></div>
-                            <div class="preview-bar" style="height:45%;background:linear-gradient(to top,#0d5bc6,#1877f2);"></div>
-                            <div class="preview-bar" style="height:52%;background:linear-gradient(to top,#0d5bc6,#1877f2);"></div>
-                            <div class="preview-bar" style="height:58%;background:linear-gradient(to top,#0d5bc6,#1877f2);"></div>
-                            <div class="preview-bar" style="height:55%;background:linear-gradient(to top,#0d5bc6,#1877f2);"></div>
-                            <div class="preview-bar" style="height:62%;background:linear-gradient(to top,#0d5bc6,#1877f2);"></div>
-                            <div class="preview-bar" style="height:60%;background:linear-gradient(to top,#0d5bc6,#1877f2);"></div>
-                            <div class="preview-bar" style="height:68%;background:linear-gradient(to top,#0d5bc6,#1877f2);"></div>
-                            <div class="preview-bar" style="height:65%;background:linear-gradient(to top,#0d5bc6,#1877f2);"></div>
-                            <div class="preview-bar" style="height:72%;background:linear-gradient(to top,#0d5bc6,#1877f2);"></div>
-                            <div class="preview-bar" style="height:70%;background:linear-gradient(to top,#0d5bc6,#1877f2);"></div>
-                            <div class="preview-bar" style="height:78%;background:linear-gradient(to top,#0d5bc6,#1877f2);"></div>
-                            <div class="preview-bar" style="height:82%;background:linear-gradient(to top,#0d5bc6,#1877f2);"></div>
-                            <div class="preview-bar" style="height:85%;background:linear-gradient(to top,#0d5bc6,#1877f2);"></div>
-                            <div class="preview-bar" style="height:88%;background:linear-gradient(to top,#0d5bc6,#1877f2);"></div>
-                            <div class="preview-bar" style="height:92%;background:linear-gradient(to top,#0d5bc6,#1877f2);"></div>
-                            <div class="preview-bar" style="height:90%;background:linear-gradient(to top,#0d5bc6,#1877f2);"></div>
-                            <div class="preview-bar" style="height:96%;background:linear-gradient(to top,#0d5bc6,#1877f2);"></div>
-                            <div class="preview-bar" style="height:100%;background:linear-gradient(to top,#0d5bc6,#1877f2);"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-info">
-                    <div class="card-platform">Meta Ads</div>
-                    <h3>Meta Ads Performance Dashboard</h3>
-                    <p>Full-funnel Meta campaign analytics with creative performance breakdowns, audience insights, placement optimization, and creative fatigue detection across Facebook and Instagram.</p>
-                    <div class="card-features">
-                        <span class="card-feature">4 Report Tabs</span>
-                        <span class="card-feature">Creative Analysis</span>
-                        <span class="card-feature">Audience Breakdown</span>
-                        <span class="card-feature">Fatigue Detection</span>
-                        <span class="card-feature">Placement Split</span>
-                        <span class="card-feature">Date Range Picker</span>
-                    </div>
-                    <div class="card-cta">
-                        View Interactive Demo
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
-                    </div>
-                </div>
-            </a>
-
-            <!-- 5. Organic Search Intelligence -->
-            <a href="dashboards/search-console.html" class="dashboard-card">
-                <div class="card-preview">
-                    <div class="card-preview-inner">
-                        <div class="preview-header">
-                            <div class="preview-dot" style="background:#1a73e8;"></div>
-                            <div class="preview-title" style="color:#1a73e8;">Search Console</div>
-                        </div>
-                        <div class="preview-tabs">
-                            <div class="preview-tab active" style="background:#1a73e8;">Overview</div>
-                            <div class="preview-tab">Queries</div>
-                            <div class="preview-tab">Pages</div>
-                            <div class="preview-tab">Opportunities</div>
-                        </div>
-                        <div class="preview-metrics">
-                            <div class="preview-metric">
-                                <div class="preview-metric-val">48.2K</div>
-                                <div class="preview-metric-label">Clicks</div>
-                            </div>
-                            <div class="preview-metric">
-                                <div class="preview-metric-val">1.8M</div>
-                                <div class="preview-metric-label">Impressions</div>
-                            </div>
-                            <div class="preview-metric">
-                                <div class="preview-metric-val">2.7%</div>
-                                <div class="preview-metric-label">Avg CTR</div>
-                            </div>
-                            <div class="preview-metric">
-                                <div class="preview-metric-val">14.2</div>
-                                <div class="preview-metric-label">Avg Position</div>
-                            </div>
-                        </div>
-                        <div class="preview-chart">
-                            <div class="preview-bar" style="height:35%;background:linear-gradient(to top,#1557b0,#1a73e8);"></div>
-                            <div class="preview-bar" style="height:40%;background:linear-gradient(to top,#1557b0,#1a73e8);"></div>
-                            <div class="preview-bar" style="height:38%;background:linear-gradient(to top,#1557b0,#1a73e8);"></div>
-                            <div class="preview-bar" style="height:45%;background:linear-gradient(to top,#1557b0,#1a73e8);"></div>
-                            <div class="preview-bar" style="height:50%;background:linear-gradient(to top,#1557b0,#1a73e8);"></div>
-                            <div class="preview-bar" style="height:48%;background:linear-gradient(to top,#1557b0,#1a73e8);"></div>
-                            <div class="preview-bar" style="height:55%;background:linear-gradient(to top,#1557b0,#1a73e8);"></div>
-                            <div class="preview-bar" style="height:58%;background:linear-gradient(to top,#1557b0,#1a73e8);"></div>
-                            <div class="preview-bar" style="height:52%;background:linear-gradient(to top,#1557b0,#1a73e8);"></div>
-                            <div class="preview-bar" style="height:62%;background:linear-gradient(to top,#1557b0,#1a73e8);"></div>
-                            <div class="preview-bar" style="height:65%;background:linear-gradient(to top,#1557b0,#1a73e8);"></div>
-                            <div class="preview-bar" style="height:60%;background:linear-gradient(to top,#1557b0,#1a73e8);"></div>
-                            <div class="preview-bar" style="height:70%;background:linear-gradient(to top,#1557b0,#1a73e8);"></div>
-                            <div class="preview-bar" style="height:75%;background:linear-gradient(to top,#1557b0,#1a73e8);"></div>
-                            <div class="preview-bar" style="height:72%;background:linear-gradient(to top,#1557b0,#1a73e8);"></div>
-                            <div class="preview-bar" style="height:80%;background:linear-gradient(to top,#1557b0,#1a73e8);"></div>
-                            <div class="preview-bar" style="height:85%;background:linear-gradient(to top,#1557b0,#1a73e8);"></div>
-                            <div class="preview-bar" style="height:90%;background:linear-gradient(to top,#1557b0,#1a73e8);"></div>
-                            <div class="preview-bar" style="height:88%;background:linear-gradient(to top,#1557b0,#1a73e8);"></div>
-                            <div class="preview-bar" style="height:100%;background:linear-gradient(to top,#1557b0,#1a73e8);"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-info">
-                    <div class="card-platform">Google Search Console</div>
-                    <h3>Organic Search Intelligence</h3>
-                    <p>SEO performance dashboard built on Search Console data. Surfaces ranking trends, query-level CTR analysis, page performance, and actionable optimization opportunities including quick wins, CTR gaps, and high-impression low-click queries.</p>
-                    <div class="card-features">
-                        <span class="card-feature">4 Report Tabs</span>
-                        <span class="card-feature">Query Analysis</span>
-                        <span class="card-feature">N-gram Mining</span>
-                        <span class="card-feature">Quick Wins</span>
-                        <span class="card-feature">CTR Opportunities</span>
-                        <span class="card-feature">Position Distribution</span>
-                    </div>
-                    <div class="card-cta">
-                        View Interactive Demo
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
-                    </div>
-                </div>
-            </a>
-
-            <!-- 6. Attribution & Media Mix -->
+            <!-- 4. Attribution & Media Mix -->
             <a href="dashboards/attribution.html" class="dashboard-card">
                 <div class="card-preview">
                     <div class="card-preview-inner">
@@ -716,6 +719,209 @@
                 </div>
             </a>
 
+            <div class="gallery-section-label" style="margin-top:3rem;">Platform Dashboards</div>
+
+            <!-- 5. Google Ads Performance -->
+            <a href="dashboards/google-ads.html" class="dashboard-card">
+                <div class="card-preview">
+                    <div class="card-preview-inner">
+                        <div class="preview-header">
+                            <div class="preview-dot"></div>
+                            <div class="preview-title">Google Ads Performance</div>
+                        </div>
+                        <div class="preview-tabs">
+                            <div class="preview-tab active">Campaigns</div>
+                            <div class="preview-tab">Keywords</div>
+                            <div class="preview-tab">Search Terms</div>
+                            <div class="preview-tab">Placements</div>
+                        </div>
+                        <div class="preview-metrics">
+                            <div class="preview-metric">
+                                <div class="preview-metric-val">$214.8K</div>
+                                <div class="preview-metric-label">Spend</div>
+                            </div>
+                            <div class="preview-metric">
+                                <div class="preview-metric-val">4,620</div>
+                                <div class="preview-metric-label">Purchases</div>
+                            </div>
+                            <div class="preview-metric">
+                                <div class="preview-metric-val">$46.49</div>
+                                <div class="preview-metric-label">Cost / Conv.</div>
+                            </div>
+                            <div class="preview-metric">
+                                <div class="preview-metric-val">1.18x</div>
+                                <div class="preview-metric-label">ROAS</div>
+                            </div>
+                        </div>
+                        <div class="preview-chart" style="height:70px;padding:0;">
+                            <svg viewBox="0 0 300 70" preserveAspectRatio="none" style="width:100%;height:100%;">
+                                <path d="M0,55 Q20,50 40,52 T80,45 T120,42 T160,38 T200,35 T240,30 T280,28 L300,26 L300,70 L0,70 Z" fill="#00b3a0" opacity="0.15" />
+                                <path d="M0,55 Q20,50 40,52 T80,45 T120,42 T160,38 T200,35 T240,30 T280,28 L300,26" fill="none" stroke="#00b3a0" stroke-width="2" />
+                                <path d="M0,60 Q20,58 40,55 T80,50 T120,48 T160,42 T200,38 T240,32 T280,28 L300,25" fill="none" stroke="#2b7b31" stroke-width="1.5" stroke-dasharray="4,2" />
+                                <circle cx="0" cy="55" r="2" fill="#00b3a0" /><circle cx="60" cy="48" r="2" fill="#00b3a0" /><circle cx="120" cy="42" r="2" fill="#00b3a0" /><circle cx="180" cy="36" r="2" fill="#00b3a0" /><circle cx="240" cy="30" r="2" fill="#00b3a0" /><circle cx="300" cy="26" r="2" fill="#00b3a0" />
+                            </svg>
+                            <div style="position:absolute;bottom:2px;right:8px;display:flex;gap:10px;font-size:7px;color:#888fb3;">
+                                <span><span style="color:#00b3a0;">&#9644;</span> Spend</span>
+                                <span><span style="color:#2b7b31;">- -</span> Purchases</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-info">
+                    <div class="card-platform">Google Ads</div>
+                    <h3>Google Ads Performance Dashboard</h3>
+                    <p>Multi-tab campaign analytics built to centralize Google Ads reporting across Search, Display, and Performance Max. Includes trend visualization, keyword quality analysis, search term mining, and placement performance tracking.</p>
+                    <div class="card-features">
+                        <span class="card-feature">4 Report Tabs</span>
+                        <span class="card-feature">Interactive Charts</span>
+                        <span class="card-feature">Sortable Tables</span>
+                        <span class="card-feature">Date Range Picker</span>
+                        <span class="card-feature">LTV Bridge</span>
+                        <span class="card-feature">Impression Share</span>
+                    </div>
+                    <div class="card-cta">
+                        View Interactive Demo
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 6. Meta Ads Performance -->
+            <a href="dashboards/meta-ads.html" class="dashboard-card">
+                <div class="card-preview">
+                    <div class="card-preview-inner">
+                        <div class="preview-header">
+                            <div class="preview-dot" style="background:#1877f2;"></div>
+                            <div class="preview-title" style="color:#1877f2;">Meta Ads Performance</div>
+                        </div>
+                        <div class="preview-tabs">
+                            <div class="preview-tab active" style="background:#1877f2;">Campaigns</div>
+                            <div class="preview-tab">Ad Sets</div>
+                            <div class="preview-tab">Ads / Creative</div>
+                            <div class="preview-tab">Placements</div>
+                        </div>
+                        <div class="preview-metrics">
+                            <div class="preview-metric">
+                                <div class="preview-metric-val">$18.4K</div>
+                                <div class="preview-metric-label">Spend</div>
+                            </div>
+                            <div class="preview-metric">
+                                <div class="preview-metric-val">842</div>
+                                <div class="preview-metric-label">Purchases</div>
+                            </div>
+                            <div class="preview-metric">
+                                <div class="preview-metric-val">$21.86</div>
+                                <div class="preview-metric-label">CPA</div>
+                            </div>
+                            <div class="preview-metric">
+                                <div class="preview-metric-val">2.4x</div>
+                                <div class="preview-metric-label">ROAS</div>
+                            </div>
+                        </div>
+                        <div class="preview-chart" style="height:70px;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:4px 12px;">
+                            <div style="display:flex;align-items:center;gap:6px;">
+                                <div style="font-size:6px;color:#888fb3;width:32px;text-align:right;">Impr</div>
+                                <div style="flex:1;height:14px;background:#1877f2;border-radius:3px;opacity:0.9;"></div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:6px;">
+                                <div style="font-size:6px;color:#888fb3;width:32px;text-align:right;">Clicks</div>
+                                <div style="width:38%;height:14px;background:#1877f2;border-radius:3px;opacity:0.7;"></div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:6px;">
+                                <div style="font-size:6px;color:#888fb3;width:32px;text-align:right;">ATC</div>
+                                <div style="width:15%;height:14px;background:#1877f2;border-radius:3px;opacity:0.5;"></div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:6px;">
+                                <div style="font-size:6px;color:#888fb3;width:32px;text-align:right;">Purch</div>
+                                <div style="width:6%;height:14px;background:#22c55e;border-radius:3px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-info">
+                    <div class="card-platform">Meta Ads</div>
+                    <h3>Meta Ads Performance Dashboard</h3>
+                    <p>Full-funnel Meta campaign analytics with creative performance breakdowns, audience insights, placement optimization, and creative fatigue detection across Facebook and Instagram.</p>
+                    <div class="card-features">
+                        <span class="card-feature">4 Report Tabs</span>
+                        <span class="card-feature">Creative Analysis</span>
+                        <span class="card-feature">Audience Breakdown</span>
+                        <span class="card-feature">Fatigue Detection</span>
+                        <span class="card-feature">Placement Split</span>
+                        <span class="card-feature">Date Range Picker</span>
+                    </div>
+                    <div class="card-cta">
+                        View Interactive Demo
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 7. Organic Search Intelligence -->
+            <a href="dashboards/search-console.html" class="dashboard-card">
+                <div class="card-preview">
+                    <div class="card-preview-inner">
+                        <div class="preview-header">
+                            <div class="preview-dot" style="background:#1a73e8;"></div>
+                            <div class="preview-title" style="color:#1a73e8;">Search Console</div>
+                        </div>
+                        <div class="preview-tabs">
+                            <div class="preview-tab active" style="background:#1a73e8;">Overview</div>
+                            <div class="preview-tab">Queries</div>
+                            <div class="preview-tab">Pages</div>
+                            <div class="preview-tab">Opportunities</div>
+                        </div>
+                        <div class="preview-metrics">
+                            <div class="preview-metric">
+                                <div class="preview-metric-val">48.2K</div>
+                                <div class="preview-metric-label">Clicks</div>
+                            </div>
+                            <div class="preview-metric">
+                                <div class="preview-metric-val">1.8M</div>
+                                <div class="preview-metric-label">Impressions</div>
+                            </div>
+                            <div class="preview-metric">
+                                <div class="preview-metric-val">2.7%</div>
+                                <div class="preview-metric-label">Avg CTR</div>
+                            </div>
+                            <div class="preview-metric">
+                                <div class="preview-metric-val">14.2</div>
+                                <div class="preview-metric-label">Avg Position</div>
+                            </div>
+                        </div>
+                        <div class="preview-chart" style="height:70px;padding:0;position:relative;">
+                            <svg viewBox="0 0 300 70" preserveAspectRatio="none" style="width:100%;height:100%;">
+                                <path d="M0,58 Q20,55 40,52 T80,48 T120,44 T160,40 T200,35 T240,30 T280,26 L300,22 L300,70 L0,70 Z" fill="#1a73e8" opacity="0.12" />
+                                <path d="M0,58 Q20,55 40,52 T80,48 T120,44 T160,40 T200,35 T240,30 T280,26 L300,22" fill="none" stroke="#1a73e8" stroke-width="2" />
+                                <path d="M0,32 Q20,35 40,30 T80,28 T120,25 T160,22 T200,20 T240,18 T280,16 L300,14" fill="none" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4,2" />
+                                <circle cx="40" cy="30" r="2.5" fill="#22c55e" /><circle cx="100" cy="26" r="2.5" fill="#22c55e" /><circle cx="160" cy="22" r="2.5" fill="#22c55e" /><circle cx="220" cy="19" r="2.5" fill="#22c55e" /><circle cx="280" cy="16" r="2.5" fill="#22c55e" />
+                            </svg>
+                            <div style="position:absolute;bottom:2px;right:8px;display:flex;gap:10px;font-size:7px;color:#888fb3;">
+                                <span><span style="color:#1a73e8;">&#9644;</span> Clicks</span>
+                                <span><span style="color:#22c55e;">&#8226;</span> Position</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-info">
+                    <div class="card-platform">Google Search Console</div>
+                    <h3>Organic Search Intelligence</h3>
+                    <p>SEO performance dashboard built on Search Console data. Surfaces ranking trends, query-level CTR analysis, page performance, and actionable optimization opportunities including quick wins, CTR gaps, and high-impression low-click queries.</p>
+                    <div class="card-features">
+                        <span class="card-feature">4 Report Tabs</span>
+                        <span class="card-feature">Query Analysis</span>
+                        <span class="card-feature">N-gram Mining</span>
+                        <span class="card-feature">Quick Wins</span>
+                        <span class="card-feature">CTR Opportunities</span>
+                        <span class="card-feature">Position Distribution</span>
+                    </div>
+                    <div class="card-cta">
+                        View Interactive Demo
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+                    </div>
+                </div>
+            </a>
+
         </div>
     </section>
 
@@ -730,6 +936,24 @@
             </ul>
         </div>
     </footer>
+
+    <script>
+    function toggleCaseStudy(btn) {
+        const panel = btn.nextElementSibling;
+        const isOpen = panel.classList.contains('open');
+        if (isOpen) {
+            panel.style.maxHeight = '0';
+            panel.classList.remove('open');
+            btn.classList.remove('open');
+            btn.querySelector('.toggle-arrow').innerHTML = '&#9656;';
+        } else {
+            panel.style.maxHeight = panel.scrollHeight + 'px';
+            panel.classList.add('open');
+            btn.classList.add('open');
+            btn.querySelector('.toggle-arrow').innerHTML = '&#9662;';
+        }
+    }
+    </script>
 
 </body>
 </html>

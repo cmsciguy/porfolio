@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verdant Wellness — CRO & Landing Page Analytics</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --rose-dark: #9f1239;
+  --rose-main: #e11d48;
+  --rose-light: #ffe4e6;
+  --rose-pale: #fff1f2;
+  --bg: #fef7f7;
+  --card-bg: #ffffff;
+  --text-main: #1a1a2e;
+  --text-mid: #888fb3;
+  --text-light: #b0b7d1;
+  --border: #e2e8f0;
+  --shadow: 0 1px 4px rgba(0,0,0,0.06), 0 2px 12px rgba(0,0,0,0.04);
+  --shadow-hover: 0 2px 8px rgba(0,0,0,0.10), 0 4px 16px rgba(0,0,0,0.06);
+  --radius: 16px;
+  --radius-sm: 8px;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --green-pos: #16a34a;
+  --green-light-pos: #dcfce7;
+  --yellow-warn: #ca8a04;
+  --red-neg: #dc2626;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text-main);
+  line-height: 1.5;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Header */
+.header {
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-left { display: flex; align-items: center; gap: 16px; }
+.back-link {
+  color: var(--text-mid);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--rose-main); }
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+.header-dot {
+  width: 12px; height: 12px;
+  background: var(--rose-main);
+  border-radius: 50%;
+  display: inline-block;
+}
+.header-meta {
+  font-size: 12px;
+  color: var(--text-mid);
+  font-weight: 500;
+}
+
+/* Demo Banner */
+.demo-banner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 10px 32px;
+  font-size: 13px;
+  color: #5a6577;
+  background: linear-gradient(90deg, #fff1f2, #fef7f7);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Container */
+.dashboard-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 32px;
+}
+
+/* Metric Cards */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.metric-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.2s;
+}
+.metric-card:hover { box-shadow: var(--shadow-hover); }
+.metric-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.metric-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+/* Section headers */
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 16px;
+  margin-top: 8px;
+}
+
+/* Chart Container */
+.chart-section {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+}
+.chart-canvas-wrap { position: relative; height: 340px; }
+.chart-canvas-wrap canvas { width: 100% !important; }
+
+/* Tables */
+.table-section {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+.table-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.table-header-bar h3 {
+  font-size: 14px;
+  font-weight: 700;
+}
+.table-wrap { overflow-x: auto; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+thead th {
+  text-align: left;
+  padding: 12px 14px;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-mid);
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s;
+}
+thead th:hover { color: var(--rose-main); }
+thead th .sort-indicator { margin-left: 4px; font-size: 10px; }
+tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+tbody tr:hover { background: var(--rose-pale); }
+tfoot td {
+  padding: 12px 14px;
+  font-weight: 700;
+  border-top: 2px solid #333;
+  background: #f5f5f5;
+  color: #1a1a2e;
+  white-space: nowrap;
+}
+
+/* Sticky first column */
+thead th:first-child,
+tbody td:first-child,
+tfoot td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: var(--card-bg);
+}
+thead th:first-child { background: var(--card-bg); z-index: 3; }
+tfoot td:first-child { background: #f5f5f5; }
+tbody tr:hover td:first-child { background: var(--rose-pale); }
+
+/* Color-coded cells */
+.cell-green { color: #16a34a; font-weight: 600; }
+.cell-yellow { color: #ca8a04; font-weight: 600; }
+.cell-red { color: #dc2626; font-weight: 600; }
+
+/* CSV export button */
+.csv-btn {
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  background: #fff;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s;
+}
+.csv-btn:hover { border-color: var(--rose-main); color: var(--rose-main); }
+
+/* Scroll depth cards grid */
+.scroll-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.scroll-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+.scroll-card-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 8px;
+}
+.scroll-bar-bg {
+  height: 12px;
+  background: #f1f5f9;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+.scroll-bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  background: var(--rose-main);
+  transition: width 0.5s ease;
+}
+.scroll-bar-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+/* AB Test variant cards */
+.variant-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.variant-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  border-top: 4px solid var(--border);
+}
+.variant-card.control { border-top-color: #94a3b8; }
+.variant-card.variant-b { border-top-color: #3b82f6; }
+.variant-card.variant-c { border-top-color: var(--rose-main); }
+.variant-card-name {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.variant-card-desc {
+  font-size: 12px;
+  color: var(--text-mid);
+  margin-bottom: 16px;
+}
+.variant-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 13px;
+}
+.variant-stat .label { color: var(--text-mid); font-weight: 500; }
+.variant-stat .value { font-weight: 700; }
+.variant-cvr {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 10px 0;
+}
+.variant-lift {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.variant-lift.positive { color: var(--green-pos); }
+.variant-lift.neutral { color: var(--text-mid); }
+
+/* Confidence bar */
+.confidence-bar-wrap {
+  margin-top: 16px;
+}
+.confidence-bar-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-mid);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.confidence-bar-outer {
+  position: relative;
+  height: 20px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  overflow: visible;
+  margin-bottom: 4px;
+}
+.confidence-bar-inner {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+.confidence-bar-inner.below { background: #cbd5e1; }
+.confidence-bar-inner.above { background: var(--green-pos); }
+.confidence-threshold {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 2px;
+  background: var(--text-main);
+  left: 95%;
+  z-index: 2;
+}
+.confidence-threshold::after {
+  content: '95%';
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text-mid);
+  white-space: nowrap;
+}
+.confidence-status {
+  font-size: 12px;
+  font-weight: 600;
+}
+.confidence-status.sig { color: var(--green-pos); }
+.confidence-status.not-sig { color: var(--text-mid); }
+
+/* CRO Modeler */
+.modeler-inputs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.modeler-input-group {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+.modeler-input-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 6px;
+}
+.modeler-input-group input {
+  width: 100%;
+  font-family: var(--font);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  transition: border-color 0.2s;
+}
+.modeler-input-group input:focus {
+  outline: none;
+  border-color: var(--rose-main);
+}
+
+.insight-card {
+  background: var(--rose-pale);
+  border: 1px solid var(--rose-light);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-top: 16px;
+  margin-bottom: 24px;
+}
+.insight-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--rose-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 6px;
+}
+.insight-card-text {
+  font-size: 14px;
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
+.row-highlight {
+  background: var(--rose-pale) !important;
+}
+.row-highlight td:first-child {
+  background: var(--rose-pale) !important;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .metrics-grid { grid-template-columns: repeat(3, 1fr); }
+  .variant-cards-grid { grid-template-columns: repeat(3, 1fr); }
+  .modeler-inputs { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .header { padding: 12px 16px; flex-direction: column; align-items: flex-start; gap: 8px; }
+  .dashboard-container { padding: 16px; overflow-x: hidden; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .metric-value { font-size: 18px; }
+  .metric-label { font-size: 11px; }
+  .variant-cards-grid { grid-template-columns: 1fr; }
+  .modeler-inputs { grid-template-columns: 1fr; }
+  .scroll-cards-grid { grid-template-columns: repeat(2, 1fr); }
+  .demo-banner { padding: 10px 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <a href="../work.html" class="back-link">&larr; Back to Work</a>
+    <div class="header-title">
+      <span class="header-dot"></span>
+      Verdant Wellness &mdash; CRO &amp; Landing Page Analytics
+    </div>
+  </div>
+  <div class="header-meta">Last 30 Days &middot; Feb 14 &ndash; Mar 15, 2026</div>
+</div>
+
+<!-- Demo Notice -->
+<div class="demo-banner">
+  This dashboard uses simulated data for a fictional DTC supplement brand. The structure, metrics, and functionality are real &mdash; built to be customized for any business, channel, or KPI set.
+</div>
+
+<!-- Main Container -->
+<div class="dashboard-container">
+
+  <!-- 1. Top Scorecards -->
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-label">Total Sessions</div>
+      <div class="metric-value">42,384</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Unique Visitors</div>
+      <div class="metric-value">31,290</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Overall Bounce Rate</div>
+      <div class="metric-value">52.3%</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Avg Session Duration</div>
+      <div class="metric-value">2:14</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Overall CVR</div>
+      <div class="metric-value">3.42%</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Revenue / Session</div>
+      <div class="metric-value">$4.87</div>
+    </div>
+  </div>
+
+  <!-- 2. Bounce Rate by Channel -->
+  <h2 class="section-title">Bounce Rate by Channel</h2>
+  <div class="chart-section">
+    <div class="chart-canvas-wrap">
+      <canvas id="channelChart"></canvas>
+    </div>
+  </div>
+
+  <div class="table-section">
+    <div class="table-header-bar">
+      <h3>Channel Summary</h3>
+      <button class="csv-btn" onclick="exportCSV('channelTable','channel-summary.csv')">Export CSV</button>
+    </div>
+    <div class="table-wrap">
+      <table id="channelTable">
+        <thead>
+          <tr>
+            <th data-col="0">Channel <span class="sort-indicator"></span></th>
+            <th data-col="1">Sessions <span class="sort-indicator"></span></th>
+            <th data-col="2">% of Total <span class="sort-indicator"></span></th>
+            <th data-col="3">Bounce Rate <span class="sort-indicator"></span></th>
+            <th data-col="4">Avg Duration <span class="sort-indicator"></span></th>
+            <th data-col="5">CVR <span class="sort-indicator"></span></th>
+            <th data-col="6">Revenue <span class="sort-indicator"></span></th>
+          </tr>
+        </thead>
+        <tbody id="channelTableBody"></tbody>
+        <tfoot id="channelTableFoot"></tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- 3. Scroll Depth Proxy -->
+  <h2 class="section-title">Scroll Depth Proxy</h2>
+  <div class="chart-section">
+    <div class="chart-canvas-wrap" style="height:220px;">
+      <canvas id="scrollDepthChart"></canvas>
+    </div>
+  </div>
+
+  <h3 class="section-title" style="font-size:14px;">50% Scroll Depth by Channel</h3>
+  <div class="scroll-cards-grid" id="scrollCardsGrid"></div>
+
+  <!-- 4. A/B Test Results -->
+  <h2 class="section-title">A/B Test Results &mdash; Liver Restore Product Page Redesign</h2>
+  <div class="variant-cards-grid" id="variantCards"></div>
+
+  <div class="chart-section">
+    <h3 style="font-size:14px;font-weight:700;margin-bottom:16px;">Daily CVR Trend by Variant</h3>
+    <div class="chart-canvas-wrap">
+      <canvas id="abTestChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Funnel Metric Breakdown -->
+  <h2 class="section-title">Funnel Metric Breakdown</h2>
+  <div class="card" style="margin-bottom:26px;">
+    <p style="font-size:13px;color:#64748b;margin-bottom:16px;">Step-by-step conversion funnel showing drop-off rates at each stage. Data aggregated across all traffic sources for the reporting period.</p>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+      <table id="funnelTable">
+        <thead>
+          <tr>
+            <th>Funnel Stage</th>
+            <th>Sessions / Entries</th>
+            <th>Drop-off</th>
+            <th>Drop-off Rate</th>
+            <th>Stage CVR</th>
+            <th>Cumulative CVR</th>
+          </tr>
+        </thead>
+        <tbody id="funnelBody"></tbody>
+      </table>
+    </div>
+    <div style="margin-top:20px;">
+      <div style="font-weight:700;color:#1a1a2e;font-size:14px;margin-bottom:10px;">Funnel by Advertorial</div>
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+        <table id="funnelByPageTable">
+          <thead>
+            <tr>
+              <th>Advertorial</th>
+              <th>Sessions</th>
+              <th>Sales Page CTR</th>
+              <th>SP Rate</th>
+              <th>Initiate Checkout</th>
+              <th>IC Rate</th>
+              <th>Purchase</th>
+              <th>Purchase Rate</th>
+              <th>Overall CVR</th>
+            </tr>
+          </thead>
+          <tbody id="funnelByPageBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. CRO Impact Modeler -->
+  <h2 class="section-title">CRO Impact Modeler</h2>
+  <div class="modeler-inputs">
+    <div class="modeler-input-group">
+      <label>Current Monthly Sessions</label>
+      <input type="text" id="modSessions" value="42,384">
+    </div>
+    <div class="modeler-input-group">
+      <label>Current CVR (%)</label>
+      <input type="text" id="modCVR" value="3.42">
+    </div>
+    <div class="modeler-input-group">
+      <label>Current CPA ($)</label>
+      <input type="text" id="modCPA" value="28.50">
+    </div>
+    <div class="modeler-input-group">
+      <label>Monthly Ad Spend ($)</label>
+      <input type="text" id="modSpend" value="35,200">
+    </div>
+  </div>
+
+  <div class="table-section">
+    <div class="table-header-bar">
+      <h3>Projected Impact by CVR Lift</h3>
+    </div>
+    <div class="table-wrap">
+      <table id="modelerTable">
+        <thead>
+          <tr>
+            <th>CVR Scenario</th>
+            <th>Projected CVR</th>
+            <th>Projected Conversions</th>
+            <th>Change in Conversions</th>
+            <th>Projected CPA</th>
+            <th>CPA Improvement</th>
+            <th>Projected Revenue</th>
+          </tr>
+        </thead>
+        <tbody id="modelerBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="insight-card" id="insightCard">
+    <div class="insight-card-title">Key Insight</div>
+    <div class="insight-card-text" id="insightText"></div>
+  </div>
+
+  <!-- 6. Page Performance Table -->
+  <h2 class="section-title">Page Performance</h2>
+  <div class="table-section">
+    <div class="table-header-bar">
+      <h3>Landing Page Metrics</h3>
+      <button class="csv-btn" onclick="exportCSV('pageTable','page-performance.csv')">Export CSV</button>
+    </div>
+    <div class="table-wrap">
+      <table id="pageTable">
+        <thead>
+          <tr>
+            <th data-col="0">Page URL <span class="sort-indicator"></span></th>
+            <th data-col="1">Sessions <span class="sort-indicator"></span></th>
+            <th data-col="2">Bounce Rate <span class="sort-indicator"></span></th>
+            <th data-col="3">Avg Scroll Depth <span class="sort-indicator"></span></th>
+            <th data-col="4">CVR <span class="sort-indicator"></span></th>
+            <th data-col="5">Revenue <span class="sort-indicator"></span></th>
+            <th data-col="6">Revenue/Session <span class="sort-indicator"></span></th>
+          </tr>
+        </thead>
+        <tbody id="pageTableBody"></tbody>
+        <tfoot id="pageTableFoot"></tfoot>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /dashboard-container -->
+
+<script>
+// ==================== SEEDED RANDOM ====================
+function seededRandom(seed) {
+  let s = seed;
+  return function() {
+    s = (s * 16807 + 0) % 2147483647;
+    return (s - 1) / 2147483646;
+  };
+}
+const rand = seededRandom(42);
+
+// ==================== HELPERS ====================
+function fmtNum(v) { return v.toLocaleString('en-US'); }
+function fmtCurrency(v) { return '$' + v.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+function fmtPct(v) { return v.toFixed(1) + '%'; }
+function fmtPct2(v) { return v.toFixed(2) + '%'; }
+function parseInputNum(s) { return parseFloat(s.replace(/,/g, '')) || 0; }
+
+function bounceColor(v) {
+  if (v < 45) return 'cell-green';
+  if (v <= 60) return 'cell-yellow';
+  return 'cell-red';
+}
+function cvrColor(v) {
+  if (v > 4) return 'cell-green';
+  if (v >= 2) return 'cell-yellow';
+  return 'cell-red';
+}
+
+// ==================== CHANNEL DATA ====================
+const channels = [
+  { name: 'Paid Search (Google)', sessions: 12400, bounce: 48, duration: '2:28', cvr: 3.8, color: '#3b82f6' },
+  { name: 'Paid Social (Meta)',   sessions: 10200, bounce: 58, duration: '1:52', cvr: 2.9, color: '#8b5cf6' },
+  { name: 'Paid Social (TikTok)', sessions: 4800,  bounce: 65, duration: '1:18', cvr: 1.8, color: '#06b6d4' },
+  { name: 'Organic Search',       sessions: 7600,  bounce: 42, duration: '2:41', cvr: 4.2, color: '#16a34a' },
+  { name: 'Email / SMS',          sessions: 3100,  bounce: 28, duration: '3:06', cvr: 6.8, color: '#f59e0b' },
+  { name: 'Direct',               sessions: 2800,  bounce: 38, duration: '2:55', cvr: 5.1, color: '#64748b' },
+  { name: 'Referral',             sessions: 1484,  bounce: 55, duration: '1:44', cvr: 2.4, color: '#ec4899' }
+];
+
+const totalSessions = 42384;
+channels.forEach(c => {
+  c.pctTotal = (c.sessions / totalSessions * 100);
+  c.conversions = Math.round(c.sessions * c.cvr / 100);
+  c.revenue = c.conversions * 65;
+});
+
+// Channel table
+function renderChannelTable() {
+  const tbody = document.getElementById('channelTableBody');
+  const tfoot = document.getElementById('channelTableFoot');
+  let html = '';
+  let totS = 0, totConv = 0, totRev = 0;
+  channels.forEach(c => {
+    totS += c.sessions; totConv += c.conversions; totRev += c.revenue;
+    html += `<tr>
+      <td><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${c.color};margin-right:6px;"></span>${c.name}</td>
+      <td>${fmtNum(c.sessions)}</td>
+      <td>${fmtPct(c.pctTotal)}</td>
+      <td class="${bounceColor(c.bounce)}">${fmtPct(c.bounce)}</td>
+      <td>${c.duration}</td>
+      <td class="${cvrColor(c.cvr)}">${fmtPct2(c.cvr)}</td>
+      <td>${fmtCurrency(c.revenue)}</td>
+    </tr>`;
+  });
+  tbody.innerHTML = html;
+  const avgBounce = channels.reduce((s,c) => s + c.bounce * c.sessions, 0) / totS;
+  const avgCvr = totConv / totS * 100;
+  tfoot.innerHTML = `<tr>
+    <td>Total / Avg</td>
+    <td>${fmtNum(totS)}</td>
+    <td>100.0%</td>
+    <td>${fmtPct(avgBounce)}</td>
+    <td>2:14</td>
+    <td>${fmtPct2(avgCvr)}</td>
+    <td>${fmtCurrency(totRev)}</td>
+  </tr>`;
+}
+renderChannelTable();
+
+// ==================== FUNNEL METRIC BREAKDOWN ====================
+const funnelStages = [
+  { name: 'Advertorial View', entries: 42384 },
+  { name: 'Sales Page Click-Through', entries: 18247 },
+  { name: 'Initiate Checkout', entries: 6358 },
+  { name: 'Order Form', entries: 3814 },
+  { name: 'Purchase', entries: 1450 }
+];
+
+function renderFunnelTable() {
+  const tbody = document.getElementById('funnelBody');
+  let html = '';
+  funnelStages.forEach((stage, i) => {
+    const prev = i > 0 ? funnelStages[i-1].entries : stage.entries;
+    const dropoff = i > 0 ? prev - stage.entries : 0;
+    const dropoffRate = i > 0 ? (dropoff / prev * 100) : 0;
+    const stageCvr = i > 0 ? (stage.entries / prev * 100) : 100;
+    const cumCvr = (stage.entries / funnelStages[0].entries * 100);
+    const dropClass = dropoffRate > 50 ? 'cell-red' : dropoffRate > 30 ? 'cell-yellow' : 'cell-green';
+    html += `<tr>
+      <td style="font-weight:600;color:#1a1a2e;">${stage.name}</td>
+      <td>${fmtNum(stage.entries)}</td>
+      <td>${i > 0 ? fmtNum(dropoff) : '\u2014'}</td>
+      <td class="${i > 0 ? dropClass : ''}">${i > 0 ? fmtPct(dropoffRate) : '\u2014'}</td>
+      <td>${i > 0 ? fmtPct2(stageCvr) : '\u2014'}</td>
+      <td style="font-weight:700;color:${cumCvr < 10 ? '#e11d48' : cumCvr < 50 ? '#d97706' : '#16a34a'};">${fmtPct2(cumCvr)}</td>
+    </tr>`;
+  });
+  tbody.innerHTML = html;
+}
+renderFunnelTable();
+
+// Funnel by advertorial
+const funnelPages = [
+  { page: 'Why Doctors Are Rethinking Liver Health', sessions: 14200, spCtr: 0.48, icRate: 0.168, purchRate: 0.38 },
+  { page: '5 Signs Your Liver Needs Help', sessions: 5800, spCtr: 0.44, icRate: 0.155, purchRate: 0.36 },
+  { page: 'The Hidden Toxin Destroying Your Liver', sessions: 4600, spCtr: 0.41, icRate: 0.098, purchRate: 0.34 },
+  { page: 'I Tried Every Liver Supplement (Results)', sessions: 3900, spCtr: 0.52, icRate: 0.072, purchRate: 0.32 },
+  { page: 'New Study: Liver Damage More Common Than You Think', sessions: 3200, spCtr: 0.38, icRate: 0.045, purchRate: 0.30 },
+  { page: 'This Ingredient Changed My Liver Panels', sessions: 2800, spCtr: 0.46, icRate: 0.12, purchRate: 0.35 },
+  { page: 'What Your Doctor Won\'t Tell You About Liver Health', sessions: 2400, spCtr: 0.35, icRate: 0.038, purchRate: 0.28 },
+  { page: 'How I Reversed My Fatty Liver Naturally', sessions: 2100, spCtr: 0.50, icRate: 0.11, purchRate: 0.33 },
+  { page: 'Liver Restore: The Science Behind the Formula', sessions: 1600, spCtr: 0.43, icRate: 0.14, purchRate: 0.40 },
+  { page: 'Why 10,000 Customers Trust Verdant Wellness', sessions: 1084, spCtr: 0.55, icRate: 0.22, purchRate: 0.52 }
+];
+
+function renderFunnelByPage() {
+  const tbody = document.getElementById('funnelByPageBody');
+  let html = '';
+  funnelPages.forEach(p => {
+    const spClicks = Math.round(p.sessions * p.spCtr);
+    const ic = Math.round(spClicks * p.icRate);
+    const purch = Math.round(ic * p.purchRate);
+    const overallCvr = purch / p.sessions * 100;
+    const spRate = p.spCtr * 100;
+    const icRate = ic / spClicks * 100;
+    const purchRate = p.purchRate * 100;
+    const cvrClass = overallCvr >= 4 ? 'cell-green' : overallCvr >= 2 ? 'cell-yellow' : 'cell-red';
+    html += `<tr>
+      <td style="font-weight:600;color:#1a1a2e;">${p.page}</td>
+      <td>${fmtNum(p.sessions)}</td>
+      <td>${fmtNum(spClicks)}</td>
+      <td>${fmtPct2(spRate)}</td>
+      <td>${fmtNum(ic)}</td>
+      <td>${fmtPct2(icRate)}</td>
+      <td>${fmtNum(purch)}</td>
+      <td>${fmtPct2(purchRate)}</td>
+      <td class="${cvrClass}">${fmtPct2(overallCvr)}</td>
+    </tr>`;
+  });
+  tbody.innerHTML = html;
+}
+renderFunnelByPage();
+
+// ==================== DAILY CHANNEL DATA (30 days stacked bar) ====================
+const dayLabels = [];
+const dailyChannelData = channels.map(() => []);
+
+for (let d = 0; d < 30; d++) {
+  const date = new Date(2026, 1, 14 + d); // Feb 14 start
+  const mm = date.getMonth() + 1;
+  const dd = date.getDate();
+  dayLabels.push(`${mm}/${dd}`);
+  const dow = date.getDay();
+  const isWeekend = (dow === 0 || dow === 6);
+  const weekendFactor = isWeekend ? 0.72 : 1.0;
+
+  channels.forEach((c, i) => {
+    const dailyAvg = c.sessions / 30;
+    const noise = 0.85 + rand() * 0.3;
+    dailyChannelData[i].push(Math.round(dailyAvg * weekendFactor * noise));
+  });
+}
+
+// Bounce Rate by Channel (horizontal bar)
+const sortedByBounce = [...channels].sort((a, b) => b.bounce - a.bounce);
+const channelChart = new Chart(document.getElementById('channelChart'), {
+  type: 'bar',
+  data: {
+    labels: sortedByBounce.map(c => c.name),
+    datasets: [{
+      label: 'Bounce Rate',
+      data: sortedByBounce.map(c => c.bounce),
+      backgroundColor: sortedByBounce.map(c => c.bounce >= 60 ? '#e11d48' : c.bounce >= 45 ? '#d97706' : '#16a34a'),
+      borderRadius: 4,
+      barThickness: 22
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        grid: { color: '#f1f5f9' },
+        ticks: { font: { size: 11 }, callback: v => v + '%' },
+        max: 80
+      },
+      y: {
+        grid: { display: false },
+        ticks: { font: { size: 11, family: "'Inter', sans-serif" } }
+      }
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: function(ctx) {
+            const ch = sortedByBounce[ctx.dataIndex];
+            return `Bounce: ${ch.bounce}% | Sessions: ${fmtNum(ch.sessions)} | CVR: ${fmtPct2(ch.cvr)}`;
+          }
+        }
+      }
+    }
+  }
+});
+
+// ==================== SCROLL DEPTH ====================
+const scrollDepths = [
+  { label: '25% Depth', pct: 78 },
+  { label: '50% Depth', pct: 54 },
+  { label: '75% Depth', pct: 31 },
+  { label: '100% Depth', pct: 12 }
+];
+
+new Chart(document.getElementById('scrollDepthChart'), {
+  type: 'bar',
+  data: {
+    labels: scrollDepths.map(d => d.label),
+    datasets: [{
+      data: scrollDepths.map(d => d.pct),
+      backgroundColor: ['#fda4af', '#fb7185', '#e11d48', '#9f1239'],
+      borderRadius: 6,
+      barThickness: 28
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: { max: 100, grid: { color: '#f1f5f9' }, ticks: { callback: v => v + '%', font: { size: 11 } } },
+      y: { grid: { display: false }, ticks: { font: { size: 12, weight: '600' } } }
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ctx.raw + '% of sessions' } }
+    }
+  }
+});
+
+// Scroll depth by channel cards
+const scrollByChannel = [
+  { name: 'Email / SMS', pct: 68, color: '#f59e0b' },
+  { name: 'Direct', pct: 62, color: '#64748b' },
+  { name: 'Organic Search', pct: 59, color: '#16a34a' },
+  { name: 'Paid Search (Google)', pct: 52, color: '#3b82f6' },
+  { name: 'Paid Social (Meta)', pct: 44, color: '#8b5cf6' },
+  { name: 'Referral', pct: 42, color: '#ec4899' },
+  { name: 'Paid Social (TikTok)', pct: 38, color: '#06b6d4' }
+];
+
+document.getElementById('scrollCardsGrid').innerHTML = scrollByChannel.map(c => `
+  <div class="scroll-card">
+    <div class="scroll-card-title">${c.name}</div>
+    <div class="scroll-bar-bg">
+      <div class="scroll-bar-fill" style="width:${c.pct}%;background:${c.color};"></div>
+    </div>
+    <div class="scroll-bar-value">${c.pct}%</div>
+  </div>
+`).join('');
+
+// ==================== A/B TEST ====================
+const variants = [
+  {
+    name: 'Control (A)',
+    desc: 'Original advertorial headline and hook',
+    sessions: 14200,
+    conversions: 486,
+    cvr: 3.42,
+    lift: 0,
+    liftPct: null,
+    confidence: null,
+    cssClass: 'control',
+    color: '#94a3b8',
+    rps: (486 * 65) / 14200
+  },
+  {
+    name: 'Variant B',
+    desc: 'Fear-based hook ("5 Signs Your Liver Is Failing")',
+    sessions: 14100,
+    conversions: 528,
+    cvr: 3.74,
+    lift: 0.32,
+    liftPct: 9.4,
+    confidence: 94.2,
+    cssClass: 'variant-b',
+    color: '#3b82f6',
+    rps: (528 * 65) / 14100
+  },
+  {
+    name: 'Variant C',
+    desc: 'Outcome-driven hook ("How I Fixed My Liver Panels in 60 Days")',
+    sessions: 14084,
+    conversions: 551,
+    cvr: 3.91,
+    lift: 0.49,
+    liftPct: 14.3,
+    confidence: 99.1,
+    cssClass: 'variant-c',
+    color: '#e11d48',
+    rps: (551 * 65) / 14084
+  }
+];
+
+document.getElementById('variantCards').innerHTML = variants.map(v => {
+  const liftHtml = v.liftPct !== null
+    ? `<div class="variant-lift positive">&uarr; ${v.liftPct}% lift vs control</div>`
+    : `<div class="variant-lift neutral">Baseline</div>`;
+
+  let confHtml = '';
+  if (v.confidence !== null) {
+    const isSig = v.confidence >= 95;
+    const barClass = isSig ? 'above' : 'below';
+    const statusClass = isSig ? 'sig' : 'not-sig';
+    const statusText = isSig ? 'Statistically significant (p < 0.05)' : 'Not yet significant';
+    confHtml = `
+      <div class="confidence-bar-wrap">
+        <div class="confidence-bar-label">Confidence: ${v.confidence}%</div>
+        <div class="confidence-bar-outer">
+          <div class="confidence-bar-inner ${barClass}" style="width:${v.confidence}%;"></div>
+          <div class="confidence-threshold"></div>
+        </div>
+        <div class="confidence-status ${statusClass}">${statusText}</div>
+      </div>`;
+  }
+
+  return `
+    <div class="variant-card ${v.cssClass}">
+      <div class="variant-card-name">${v.name}</div>
+      <div class="variant-card-desc">${v.desc}</div>
+      <div class="variant-stat"><span class="label">Sessions</span><span class="value">${fmtNum(v.sessions)}</span></div>
+      <div class="variant-stat"><span class="label">Conversions</span><span class="value">${fmtNum(v.conversions)}</span></div>
+      <div class="variant-cvr">${fmtPct2(v.cvr)}</div>
+      ${liftHtml}
+      <div class="variant-stat"><span class="label">Revenue / Session</span><span class="value">${fmtCurrency(v.rps)}</span></div>
+      ${confHtml}
+    </div>`;
+}).join('');
+
+// Daily CVR trend chart with confidence bands
+const dailyCVR_A = [], dailyCVR_B = [], dailyCVR_C = [];
+const bandA_upper = [], bandA_lower = [];
+const bandB_upper = [], bandB_lower = [];
+const bandC_upper = [], bandC_lower = [];
+
+const randAB = seededRandom(99);
+for (let d = 0; d < 30; d++) {
+  const noiseA = (randAB() - 0.5) * 0.6;
+  const noiseB = (randAB() - 0.5) * 0.6;
+  const noiseC = (randAB() - 0.5) * 0.5;
+  const a = 3.42 + noiseA;
+  const b = 3.74 + noiseB;
+  const c = 3.91 + noiseC;
+  dailyCVR_A.push(+a.toFixed(2));
+  dailyCVR_B.push(+b.toFixed(2));
+  dailyCVR_C.push(+c.toFixed(2));
+  bandA_upper.push(+(a + 0.35).toFixed(2));
+  bandA_lower.push(+(a - 0.35).toFixed(2));
+  bandB_upper.push(+(b + 0.32).toFixed(2));
+  bandB_lower.push(+(b - 0.32).toFixed(2));
+  bandC_upper.push(+(c + 0.28).toFixed(2));
+  bandC_lower.push(+(c - 0.28).toFixed(2));
+}
+
+new Chart(document.getElementById('abTestChart'), {
+  type: 'line',
+  data: {
+    labels: dayLabels,
+    datasets: [
+      { label: 'Control A - Upper', data: bandA_upper, borderColor: 'transparent', backgroundColor: 'rgba(148,163,184,0.12)', fill: '+1', pointRadius: 0, tension: 0.3 },
+      { label: 'Control A - Lower', data: bandA_lower, borderColor: 'transparent', backgroundColor: 'transparent', fill: false, pointRadius: 0, tension: 0.3 },
+      { label: 'Variant B - Upper', data: bandB_upper, borderColor: 'transparent', backgroundColor: 'rgba(59,130,246,0.10)', fill: '+1', pointRadius: 0, tension: 0.3 },
+      { label: 'Variant B - Lower', data: bandB_lower, borderColor: 'transparent', backgroundColor: 'transparent', fill: false, pointRadius: 0, tension: 0.3 },
+      { label: 'Variant C - Upper', data: bandC_upper, borderColor: 'transparent', backgroundColor: 'rgba(225,29,72,0.10)', fill: '+1', pointRadius: 0, tension: 0.3 },
+      { label: 'Variant C - Lower', data: bandC_lower, borderColor: 'transparent', backgroundColor: 'transparent', fill: false, pointRadius: 0, tension: 0.3 },
+      { label: 'Control (A)', data: dailyCVR_A, borderColor: '#94a3b8', backgroundColor: '#94a3b8', borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 4, tension: 0.3, fill: false },
+      { label: 'Variant B', data: dailyCVR_B, borderColor: '#3b82f6', backgroundColor: '#3b82f6', borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 4, tension: 0.3, fill: false },
+      { label: 'Variant C', data: dailyCVR_C, borderColor: '#e11d48', backgroundColor: '#e11d48', borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 4, tension: 0.3, fill: false }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+      y: {
+        grid: { color: '#f1f5f9' },
+        ticks: { callback: v => v.toFixed(1) + '%', font: { size: 11 } },
+        min: 2.5,
+        max: 5.0
+      }
+    },
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          filter: item => !item.text.includes('Upper') && !item.text.includes('Lower'),
+          boxWidth: 10,
+          font: { size: 11, family: "'Inter', sans-serif" },
+          padding: 12
+        }
+      },
+      tooltip: {
+        filter: item => !item.dataset.label.includes('Upper') && !item.dataset.label.includes('Lower'),
+        callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.raw + '%' }
+      }
+    }
+  }
+});
+
+// ==================== CRO IMPACT MODELER ====================
+const liftScenarios = [0, 0.25, 0.50, 0.75, 1.00, 1.25, 1.50, 2.00];
+
+function renderModeler() {
+  const sessions = parseInputNum(document.getElementById('modSessions').value);
+  const baseCVR = parseInputNum(document.getElementById('modCVR').value);
+  const baseCPA = parseInputNum(document.getElementById('modCPA').value);
+  const adSpend = parseInputNum(document.getElementById('modSpend').value);
+  const aov = 65;
+
+  const baseConv = Math.round(sessions * baseCVR / 100);
+  const tbody = document.getElementById('modelerBody');
+  let html = '';
+
+  // Find closest scenario to Variant C lift (+0.49)
+  const variantCLift = 0.49;
+  let closestIdx = 0;
+  let closestDiff = 999;
+  liftScenarios.forEach((lift, i) => {
+    const diff = Math.abs(lift - variantCLift);
+    if (diff < closestDiff) { closestDiff = diff; closestIdx = i; }
+  });
+
+  liftScenarios.forEach((lift, i) => {
+    const projCVR = baseCVR + lift;
+    const projConv = Math.round(sessions * projCVR / 100);
+    const changeConv = projConv - baseConv;
+    const projCPA = projConv > 0 ? adSpend / projConv : 0;
+    const cpaImprovement = baseCPA > 0 ? ((baseCPA - projCPA) / baseCPA * 100) : 0;
+    const projRevenue = projConv * aov;
+
+    const isHighlight = i === closestIdx && i > 0;
+    const rowClass = isHighlight ? ' class="row-highlight"' : '';
+
+    // Color intensity for improvement columns
+    const greenIntensity = Math.min(lift / 2.0, 1);
+    const convStyle = changeConv > 0 ? ` style="color:rgba(22,163,74,${0.5 + greenIntensity * 0.5});font-weight:600;"` : '';
+    const cpaStyle = cpaImprovement > 0 ? ` style="color:rgba(22,163,74,${0.5 + greenIntensity * 0.5});font-weight:600;"` : '';
+
+    const scenarioLabel = lift === 0 ? 'Current (Baseline)' : `+${lift.toFixed(2)}% lift`;
+
+    html += `<tr${rowClass}>
+      <td>${scenarioLabel}${isHighlight ? ' <span style="font-size:10px;color:var(--rose-main);font-weight:700;">&#9668; Variant C</span>' : ''}</td>
+      <td>${fmtPct2(projCVR)}</td>
+      <td>${fmtNum(projConv)}</td>
+      <td${convStyle}>${changeConv === 0 ? '&mdash;' : '+' + fmtNum(changeConv)}</td>
+      <td>${fmtCurrency(projCPA)}</td>
+      <td${cpaStyle}>${cpaImprovement === 0 ? '&mdash;' : fmtPct(cpaImprovement)}</td>
+      <td>${fmtCurrency(projRevenue)}</td>
+    </tr>`;
+  });
+  tbody.innerHTML = html;
+
+  // Insight card - based on Variant C scenario (+0.49% lift)
+  const varCCVR = baseCVR + variantCLift;
+  const varCConv = Math.round(sessions * varCCVR / 100);
+  const varCExtra = varCConv - baseConv;
+  const varCCPA = adSpend / varCConv;
+  const varCRev = varCExtra * aov;
+
+  document.getElementById('insightText').innerHTML =
+    `Implementing Variant C (+0.49% CVR lift) would generate an estimated <strong>${fmtNum(varCExtra)}</strong> additional conversions/month, reducing CPA from <strong>${fmtCurrency(baseCPA)}</strong> to <strong>${fmtCurrency(varCCPA)}</strong> and adding <strong>${fmtCurrency(varCRev)}</strong> in monthly revenue.`;
+}
+
+renderModeler();
+
+// Live update on input change
+['modSessions','modCVR','modCPA','modSpend'].forEach(id => {
+  document.getElementById(id).addEventListener('input', renderModeler);
+});
+
+// ==================== PAGE PERFORMANCE TABLE ====================
+const pages = [
+  { url: '/liver-restore-ultimate', sessions: 14200, bounce: 46, scroll: 58, cvr: 3.68 },
+  { url: '/shop', sessions: 5400, bounce: 52, scroll: 44, cvr: 2.10 },
+  { url: '/blog/liver-health-guide', sessions: 4200, bounce: 61, scroll: 72, cvr: 1.20 },
+  { url: '/blog/signs-of-liver-damage', sessions: 3800, bounce: 64, scroll: 68, cvr: 0.90 },
+  { url: '/blog/best-supplements-for-liver', sessions: 3100, bounce: 59, scroll: 65, cvr: 1.45 },
+  { url: '/', sessions: 2900, bounce: 44, scroll: 42, cvr: 2.80 },
+  { url: '/reviews', sessions: 2400, bounce: 35, scroll: 76, cvr: 4.60 },
+  { url: '/shop/turmeric-curcumin-complex', sessions: 1800, bounce: 50, scroll: 55, cvr: 3.10 },
+  { url: '/shop/omega-3-pure', sessions: 1500, bounce: 51, scroll: 53, cvr: 2.90 },
+  { url: '/shop/daily-greens-complex', sessions: 1200, bounce: 53, scroll: 50, cvr: 2.60 },
+  { url: '/faq', sessions: 984, bounce: 40, scroll: 62, cvr: 3.20 },
+  { url: '/autoship', sessions: 600, bounce: 22, scroll: 80, cvr: 12.50 }
+];
+
+pages.forEach(p => {
+  p.conversions = Math.round(p.sessions * p.cvr / 100);
+  p.revenue = p.conversions * 65;
+  p.rps = p.sessions > 0 ? p.revenue / p.sessions : 0;
+});
+
+function renderPageTable() {
+  const tbody = document.getElementById('pageTableBody');
+  const tfoot = document.getElementById('pageTableFoot');
+  let totS = 0, totRev = 0, totConv = 0;
+  let html = '';
+  pages.forEach(p => {
+    totS += p.sessions; totRev += p.revenue; totConv += p.conversions;
+    html += `<tr>
+      <td style="font-weight:600;">${p.url}</td>
+      <td>${fmtNum(p.sessions)}</td>
+      <td class="${bounceColor(p.bounce)}">${fmtPct(p.bounce)}</td>
+      <td>${p.scroll}%</td>
+      <td class="${cvrColor(p.cvr)}">${fmtPct2(p.cvr)}</td>
+      <td>${fmtCurrency(p.revenue)}</td>
+      <td>${fmtCurrency(p.rps)}</td>
+    </tr>`;
+  });
+  tbody.innerHTML = html;
+  tfoot.innerHTML = `<tr>
+    <td>Total / Avg</td>
+    <td>${fmtNum(totS)}</td>
+    <td>&mdash;</td>
+    <td>&mdash;</td>
+    <td>${fmtPct2(totConv / totS * 100)}</td>
+    <td>${fmtCurrency(totRev)}</td>
+    <td>${fmtCurrency(totRev / totS)}</td>
+  </tr>`;
+}
+renderPageTable();
+
+// ==================== SORTABLE TABLES ====================
+function makeSortable(tableId) {
+  const table = document.getElementById(tableId);
+  const headers = table.querySelectorAll('thead th');
+  let sortCol = -1, sortAsc = true;
+
+  headers.forEach((th, idx) => {
+    th.addEventListener('click', () => {
+      if (sortCol === idx) { sortAsc = !sortAsc; }
+      else { sortCol = idx; sortAsc = true; }
+
+      // Update indicators
+      headers.forEach(h => { const s = h.querySelector('.sort-indicator'); if (s) s.textContent = ''; });
+      const si = th.querySelector('.sort-indicator');
+      if (si) si.textContent = sortAsc ? ' \u25B2' : ' \u25BC';
+
+      const tbody = table.querySelector('tbody');
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      rows.sort((a, b) => {
+        let aVal = a.children[idx].textContent.trim();
+        let bVal = b.children[idx].textContent.trim();
+        // Try numeric parse
+        const aNum = parseFloat(aVal.replace(/[$,%,]/g, '').replace(/[^0-9.\-]/g, ''));
+        const bNum = parseFloat(bVal.replace(/[$,%,]/g, '').replace(/[^0-9.\-]/g, ''));
+        if (!isNaN(aNum) && !isNaN(bNum)) {
+          return sortAsc ? aNum - bNum : bNum - aNum;
+        }
+        return sortAsc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+      });
+      rows.forEach(r => tbody.appendChild(r));
+    });
+  });
+}
+
+makeSortable('channelTable');
+makeSortable('pageTable');
+
+// ==================== CSV EXPORT ====================
+function exportCSV(tableId, filename) {
+  const table = document.getElementById(tableId);
+  const rows = Array.from(table.querySelectorAll('tr'));
+  const csvRows = rows.map(row => {
+    const cells = Array.from(row.querySelectorAll('th, td'));
+    return cells.map(c => {
+      let text = c.textContent.trim().replace(/"/g, '""');
+      return '"' + text + '"';
+    }).join(',');
+  });
+  const csv = csvRows.join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+</script>
+</body>
+</html>
